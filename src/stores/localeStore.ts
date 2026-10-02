@@ -12,6 +12,7 @@ export interface LocaleOption {
 
 // Fallback demo options when Shopify is not connected
 export const DEMO_LOCALE_OPTIONS: LocaleOption[] = [
+  { country: 'India', countryCode: 'IN', currency: '₹', currencyCode: 'INR', locale: 'en-IN' },
   { country: 'United States', countryCode: 'US', currency: '$', currencyCode: 'USD', locale: 'en-US' },
   { country: 'United Kingdom', countryCode: 'GB', currency: '£', currencyCode: 'GBP', locale: 'en-GB' },
   { country: 'European Union', countryCode: 'DE', currency: '€', currencyCode: 'EUR', locale: 'de-DE' },
@@ -82,7 +83,7 @@ interface LocaleStore {
 export const useLocaleStore = create<LocaleStore>()(
   persist(
     (set, get) => ({
-      selectedLocale: DEMO_LOCALE_OPTIONS[2], // Default to EUR
+      selectedLocale: DEMO_LOCALE_OPTIONS[0], // Default to INR (India)
       availableLocales: DEMO_LOCALE_OPTIONS,
       isLoading: false,
       hasFetchedFromShopify: false,
