@@ -4,9 +4,8 @@ export function useFormattedPrice() {
   const { selectedLocale } = useLocaleStore();
 
   const formatPrice = (amount: string, currencyCode?: string): string => {
-    // Use the currency code from the product/API if provided (Shopify returns correct currency)
-    // Otherwise fall back to the selected locale's currency
-    const currency = currencyCode || selectedLocale.currencyCode;
+    // Always display prices in Indian Rupees
+    const currency = 'INR';
     
     return new Intl.NumberFormat(selectedLocale.locale, {
       style: 'currency',
