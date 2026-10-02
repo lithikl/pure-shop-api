@@ -1,14 +1,7 @@
 import { toast } from "sonner";
-import teeBlackFront from "@/assets/tee-black-front.png";
-import teeBlackBack from "@/assets/tee-black-back.png";
-import teeWhiteFront from "@/assets/tee-white-front.png";
-import teeWhiteBack from "@/assets/tee-white-back.png";
-import hoodieFront from "@/assets/front-hoodie.png";
-import hoodieBack from "@/assets/back-hoodie.png";
-import vintageFront from "@/assets/vintage-front.png";
-import vintageBack from "@/assets/vintage-back.png";
-import crewneckFront from "@/assets/crewneck-front.png";
-import crewneckBack from "@/assets/crewneck-back.png";
+import shoeBlack from "@/assets/shoe-black.png";
+import chainSilver from "@/assets/chain-silver.png";
+import ringSilver from "@/assets/ring-silver.png";
 
 const SHOPIFY_API_VERSION = "2025-07";
 
@@ -79,87 +72,54 @@ function demoProductNode(partial: Partial<DemoProductNode> & Pick<DemoProductNod
 const DEMO_PRODUCTS: ShopifyProduct[] = [
   {
     node: demoProductNode({
-      id: "demo-oversize-shirt",
-      title: "Oversize Shirt",
-      handle: "oversize-shirt",
-      description: "Heavyweight cotton tee. Clean fit, no noise.",
+      id: "demo-court-sneaker",
+      title: "Court Sneaker",
+      handle: "court-sneaker",
+      description: "Full-grain leather low-top. Minimal profile, all-day comfort.",
       tags: ["new"],
       images: {
         edges: [
-          { node: { url: teeBlackFront, altText: "Oversize Shirt - black front" } },
-          { node: { url: teeBlackBack, altText: "Oversize Shirt - black back" } },
-          { node: { url: teeWhiteFront, altText: "Oversize Shirt - white front" } },
-          { node: { url: teeWhiteBack, altText: "Oversize Shirt - white back" } },
-        ],
-      },
-      options: [
-        { name: "Color", values: ["Black", "White"] },
-        { name: "Size", values: ["S", "M", "L", "XL"] },
-      ],
-      priceRange: { minVariantPrice: { amount: "55", currencyCode: "EUR" } },
-      relatedProducts: {
-        references: {
-          edges: [
-            {
-              node: {
-                id: "demo-oversize-hoodie",
-                title: "Oversize Hoodie",
-                handle: "oversize-hoodie",
-                priceRange: { minVariantPrice: { amount: "95", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: hoodieFront, altText: "Oversize Hoodie - front" } }] },
-              },
-            },
-            {
-              node: {
-                id: "demo-vintage-shirt",
-                title: "Vintage Shirt",
-                handle: "vintage-shirt",
-                priceRange: { minVariantPrice: { amount: "65", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: vintageFront, altText: "Vintage Shirt - front" } }] },
-              },
-            },
-          ],
-        },
-      },
-    }),
-  },
-  {
-    node: demoProductNode({
-      id: "demo-oversize-hoodie",
-      title: "Oversize Hoodie",
-      handle: "oversize-hoodie",
-      description: "Structured fleece hoodie. Oversized comfort.",
-      tags: [],
-      images: {
-        edges: [
-          { node: { url: hoodieFront, altText: "Oversize Hoodie - front" } },
-          { node: { url: hoodieBack, altText: "Oversize Hoodie - back" } },
+          { node: { url: shoeBlack, altText: "Court Sneaker - black" } },
         ],
       },
       options: [
         { name: "Color", values: ["Black"] },
-        { name: "Size", values: ["S", "M", "L", "XL"] },
+        { name: "Size", values: ["UK 7", "UK 8", "UK 9", "UK 10", "UK 11"] },
       ],
-      priceRange: { minVariantPrice: { amount: "95", currencyCode: "EUR" } },
+      variants: {
+        edges: ["UK 7", "UK 8", "UK 9", "UK 10", "UK 11"].map((size) => ({
+          node: {
+            id: `demo-variant-court-sneaker-black-${size.replace(" ", "-").toLowerCase()}`,
+            title: `Black / ${size}`,
+            price: { amount: "4999", currencyCode: "INR" },
+            availableForSale: true,
+            selectedOptions: [
+              { name: "Color", value: "Black" },
+              { name: "Size", value: size },
+            ],
+          },
+        })),
+      },
+      priceRange: { minVariantPrice: { amount: "4999", currencyCode: "INR" } },
       relatedProducts: {
         references: {
           edges: [
             {
               node: {
-                id: "demo-crewneck",
-                title: "Crewneck",
-                handle: "crewneck",
-                priceRange: { minVariantPrice: { amount: "85", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: crewneckFront, altText: "Crewneck - front" } }] },
+                id: "demo-cuban-chain",
+                title: "Cuban Link Chain",
+                handle: "cuban-link-chain",
+                priceRange: { minVariantPrice: { amount: "2999", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: chainSilver, altText: "Cuban Link Chain - silver" } }] },
               },
             },
             {
               node: {
-                id: "demo-oversize-shirt",
-                title: "Oversize Shirt",
-                handle: "oversize-shirt",
-                priceRange: { minVariantPrice: { amount: "55", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: teeBlackFront, altText: "Oversize Shirt - black front" } }] },
+                id: "demo-signet-ring",
+                title: "Signet Ring",
+                handle: "signet-ring",
+                priceRange: { minVariantPrice: { amount: "1499", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: ringSilver, altText: "Signet Ring - silver" } }] },
               },
             },
           ],
@@ -169,41 +129,54 @@ const DEMO_PRODUCTS: ShopifyProduct[] = [
   },
   {
     node: demoProductNode({
-      id: "demo-vintage-shirt",
-      title: "Vintage Shirt",
-      handle: "vintage-shirt",
-      description: "Washed cotton tee with a lived-in feel. Relaxed vintage cut.",
+      id: "demo-cuban-chain",
+      title: "Cuban Link Chain",
+      handle: "cuban-link-chain",
+      description: "Sterling silver Cuban link chain. Weighty, polished, timeless.",
       tags: ["new"],
       images: {
         edges: [
-          { node: { url: vintageFront, altText: "Vintage Shirt - front" } },
-          { node: { url: vintageBack, altText: "Vintage Shirt - back" } },
+          { node: { url: chainSilver, altText: "Cuban Link Chain - silver" } },
         ],
       },
       options: [
-        { name: "Color", values: ["Washed Black"] },
-        { name: "Size", values: ["S", "M", "L", "XL"] },
+        { name: "Color", values: ["Silver"] },
+        { name: "Size", values: ["18 in", "20 in", "22 in"] },
       ],
-      priceRange: { minVariantPrice: { amount: "65", currencyCode: "EUR" } },
+      variants: {
+        edges: ["18 in", "20 in", "22 in"].map((size) => ({
+          node: {
+            id: `demo-variant-cuban-chain-silver-${size.replace(" ", "-")}`,
+            title: `Silver / ${size}`,
+            price: { amount: "2999", currencyCode: "INR" },
+            availableForSale: true,
+            selectedOptions: [
+              { name: "Color", value: "Silver" },
+              { name: "Size", value: size },
+            ],
+          },
+        })),
+      },
+      priceRange: { minVariantPrice: { amount: "2999", currencyCode: "INR" } },
       relatedProducts: {
         references: {
           edges: [
             {
               node: {
-                id: "demo-oversize-shirt",
-                title: "Oversize Shirt",
-                handle: "oversize-shirt",
-                priceRange: { minVariantPrice: { amount: "55", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: teeBlackFront, altText: "Oversize Shirt - black front" } }] },
+                id: "demo-signet-ring",
+                title: "Signet Ring",
+                handle: "signet-ring",
+                priceRange: { minVariantPrice: { amount: "1499", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: ringSilver, altText: "Signet Ring - silver" } }] },
               },
             },
             {
               node: {
-                id: "demo-crewneck",
-                title: "Crewneck",
-                handle: "crewneck",
-                priceRange: { minVariantPrice: { amount: "85", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: crewneckFront, altText: "Crewneck - front" } }] },
+                id: "demo-court-sneaker",
+                title: "Court Sneaker",
+                handle: "court-sneaker",
+                priceRange: { minVariantPrice: { amount: "4999", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: shoeBlack, altText: "Court Sneaker - black" } }] },
               },
             },
           ],
@@ -213,41 +186,54 @@ const DEMO_PRODUCTS: ShopifyProduct[] = [
   },
   {
     node: demoProductNode({
-      id: "demo-crewneck",
-      title: "Crewneck",
-      handle: "crewneck",
-      description: "Classic crewneck sweatshirt. Soft fleece, relaxed fit.",
+      id: "demo-signet-ring",
+      title: "Signet Ring",
+      handle: "signet-ring",
+      description: "Polished sterling silver signet ring. Clean face, solid feel.",
       tags: ["new"],
       images: {
         edges: [
-          { node: { url: crewneckFront, altText: "Crewneck - front" } },
-          { node: { url: crewneckBack, altText: "Crewneck - back" } },
+          { node: { url: ringSilver, altText: "Signet Ring - silver" } },
         ],
       },
       options: [
-        { name: "Color", values: ["Washed Black"] },
-        { name: "Size", values: ["S", "M", "L", "XL"] },
+        { name: "Color", values: ["Silver"] },
+        { name: "Size", values: ["8", "9", "10", "11"] },
       ],
-      priceRange: { minVariantPrice: { amount: "85", currencyCode: "EUR" } },
+      variants: {
+        edges: ["8", "9", "10", "11"].map((size) => ({
+          node: {
+            id: `demo-variant-signet-ring-silver-${size}`,
+            title: `Silver / ${size}`,
+            price: { amount: "1499", currencyCode: "INR" },
+            availableForSale: true,
+            selectedOptions: [
+              { name: "Color", value: "Silver" },
+              { name: "Size", value: size },
+            ],
+          },
+        })),
+      },
+      priceRange: { minVariantPrice: { amount: "1499", currencyCode: "INR" } },
       relatedProducts: {
         references: {
           edges: [
             {
               node: {
-                id: "demo-oversize-hoodie",
-                title: "Oversize Hoodie",
-                handle: "oversize-hoodie",
-                priceRange: { minVariantPrice: { amount: "95", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: hoodieFront, altText: "Oversize Hoodie - front" } }] },
+                id: "demo-cuban-chain",
+                title: "Cuban Link Chain",
+                handle: "cuban-link-chain",
+                priceRange: { minVariantPrice: { amount: "2999", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: chainSilver, altText: "Cuban Link Chain - silver" } }] },
               },
             },
             {
               node: {
-                id: "demo-vintage-shirt",
-                title: "Vintage Shirt",
-                handle: "vintage-shirt",
-                priceRange: { minVariantPrice: { amount: "65", currencyCode: "EUR" } },
-                images: { edges: [{ node: { url: vintageFront, altText: "Vintage Shirt - front" } }] },
+                id: "demo-court-sneaker",
+                title: "Court Sneaker",
+                handle: "court-sneaker",
+                priceRange: { minVariantPrice: { amount: "4999", currencyCode: "INR" } },
+                images: { edges: [{ node: { url: shoeBlack, altText: "Court Sneaker - black" } }] },
               },
             },
           ],
@@ -259,11 +245,10 @@ const DEMO_PRODUCTS: ShopifyProduct[] = [
 
 // Mapping of collection handles to product handles
 const DEMO_COLLECTION_PRODUCTS: Record<string, string[]> = {
-  frontpage: ["oversize-shirt", "oversize-hoodie", "vintage-shirt", "crewneck"],
-  "new-arrivals": ["oversize-shirt", "vintage-shirt", "crewneck"], // products with "new" tag
-  essentials: ["oversize-shirt", "oversize-hoodie", "vintage-shirt", "crewneck"],
-  "tops-tees": ["oversize-shirt", "vintage-shirt"],
-  "hoodies-sweats": ["oversize-hoodie", "crewneck"],
+  frontpage: ["court-sneaker", "cuban-link-chain", "signet-ring"],
+  "new-arrivals": ["court-sneaker", "cuban-link-chain", "signet-ring"], // products with "new" tag
+  footwear: ["court-sneaker"],
+  jewelry: ["cuban-link-chain", "signet-ring"],
 };
 
 const DEMO_COLLECTIONS: ShopifyCollection[] = [
@@ -274,7 +259,7 @@ const DEMO_COLLECTIONS: ShopifyCollection[] = [
       handle: "frontpage",
       description: "Demo collection (no Shopify connected).",
       image: {
-        url: hoodieFront,
+        url: shoeBlack,
         altText: "Featured collection",
       },
     },
@@ -286,44 +271,32 @@ const DEMO_COLLECTIONS: ShopifyCollection[] = [
       handle: "new-arrivals",
       description: "Fresh drops and latest additions.",
       image: {
-        url: crewneckFront,
+        url: chainSilver,
         altText: "New Arrivals collection",
       },
     },
   },
   {
     node: {
-      id: "demo-collection-essentials",
-      title: "Essentials",
-      handle: "essentials",
-      description: "Everyday staples built to last.",
+      id: "demo-collection-footwear",
+      title: "Footwear",
+      handle: "footwear",
+      description: "Sneakers built for every day.",
       image: {
-        url: teeBlackFront,
-        altText: "Essentials collection",
+        url: shoeBlack,
+        altText: "Footwear collection",
       },
     },
   },
   {
     node: {
-      id: "demo-collection-tops-tees",
-      title: "Tops & Tees",
-      handle: "tops-tees",
-      description: "Shirts, tees, and everything on top.",
+      id: "demo-collection-jewelry",
+      title: "Jewelry",
+      handle: "jewelry",
+      description: "Chains and rings in sterling silver.",
       image: {
-        url: vintageFront,
-        altText: "Tops & Tees collection",
-      },
-    },
-  },
-  {
-    node: {
-      id: "demo-collection-hoodies-sweats",
-      title: "Hoodies & Sweats",
-      handle: "hoodies-sweats",
-      description: "Warm layers for every season.",
-      image: {
-        url: hoodieFront,
-        altText: "Hoodies & Sweats collection",
+        url: ringSilver,
+        altText: "Jewelry collection",
       },
     },
   },
