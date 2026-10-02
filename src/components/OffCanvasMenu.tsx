@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useLocaleStore, LOCALE_OPTIONS } from '@/stores/localeStore';
 
 interface OffCanvasMenuProps {
@@ -26,8 +25,8 @@ const legalLinks = [
 ];
 
 export default function OffCanvasMenu({ open, onClose, onOpenSearch }: OffCanvasMenuProps) {
-  const isMobile = useIsMobile();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [localeOpen, setLocaleOpen] = useState(false);
@@ -37,25 +36,48 @@ export default function OffCanvasMenu({ open, onClose, onOpenSearch }: OffCanvas
     if (open) {
       setIsVisible(true);
       setIsClosing(false);
-      closeButtonRef.current?.focus();
       document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => closeButtonRef.current?.focus());
     } else if (isVisible) {
       setIsClosing(true);
-      const timer = setTimeout(() => {
+      const timer = window.setTimeout(() => {
         setIsVisible(false);
         setIsClosing(false);
         document.body.style.overflow = '';
       }, 500);
-      return () => clearTimeout(timer);
+      return () => window.clearTimeout(timer);
     }
   }, [open, isVisible]);
 
   useEffect(() => () => { document.body.style.overflow = ''; }, []);
 
   useEffect(() => {
+    if (!open) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) onClose();
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key !== 'Tab' || !panelRef.current) return;
+      const focusable = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose]);
@@ -71,6 +93,7 @@ export default function OffCanvasMenu({ open, onClose, onOpenSearch }: OffCanvas
       />
 
       <aside
+        ref={panelRef}
         className={`absolute left-0 top-0 h-full w-full max-w-[980px] overflow-hidden bg-[#f5f3ee] shadow-[30px_0_100px_rgba(0,0,0,0.14)] transition-transform duration-700 ease-[cubic-bezier(.76,0,.24,1)] ${isClosing ? '-translate-x-full' : 'translate-x-0'}`}
         role="dialog"
         aria-modal="true"
@@ -106,7 +129,7 @@ export default function OffCanvasMenu({ open, onClose, onOpenSearch }: OffCanvas
                     <Link
                       to={link.href}
                       onClick={onClose}
-                      className="group/link flex items-baseline gap-5 py-2 md:py-3"
+                      className="group/link flex items-baseline gap-5 py-2 md:py-3 animate-[menuItemIn_650ms_cubic-bezier(.22,1,.36,1)_both]"
                       style={{ animationDelay: `${i * 70 + 120}ms` }}
                     >
                       <span className="w-7 text-[9px] tracking-[0.2em] text-foreground/35 transition-colors duration-300 group-hover/link:text-foreground">{link.index}</span>
