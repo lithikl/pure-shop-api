@@ -20,6 +20,8 @@ import ShippingPage from "./pages/ShippingPage";
 import CookiesPage from "./pages/CookiesPage";
 import SitemapPage from "./pages/SitemapPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +50,8 @@ const App = () => (
               <Route path="/shipping" element={<ShippingPage />} />
               <Route path="/sitemap" element={<SitemapPage />} />
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </SmoothScroll>
