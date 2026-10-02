@@ -15,7 +15,6 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Roboto Mono', 'monospace'],
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
