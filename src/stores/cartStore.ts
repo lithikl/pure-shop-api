@@ -22,7 +22,6 @@ interface CartStore {
   items: CartItem[];
   isLoading: boolean;
   isOpen: boolean;
-  
   addItem: (item: CartItem) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   removeItem: (variantId: string) => void;
@@ -44,7 +43,7 @@ export const useCartStore = create<CartStore>()(
       addItem: (item) => {
         const { items } = get();
         const existingItem = items.find(i => i.variantId === item.variantId);
-        
+
         if (existingItem) {
           set({
             items: items.map(i =>
@@ -63,7 +62,7 @@ export const useCartStore = create<CartStore>()(
           get().removeItem(variantId);
           return;
         }
-        
+
         set({
           items: get().items.map(item =>
             item.variantId === variantId ? { ...item, quantity } : item
@@ -77,21 +76,17 @@ export const useCartStore = create<CartStore>()(
         });
       },
 
-      clearCart: () => {
-        set({ items: [] });
-      },
-
+      clearCart: () => set({ items: [] }),
       setLoading: (isLoading) => set({ isLoading }),
       setOpen: (isOpen) => set({ isOpen }),
 
       checkout: async () => {
         const { items, setLoading } = get();
-        if (items.length === 0) return;
+        if (items.length === 0 || get().isLoading) return;
 
-        // In demo mode, show a toast explaining checkout requires a connected store
         if (demoModeEnabled()) {
-          toast.info('Demo Mode', {
-            description: 'Connect a Shopify store to enable checkout.',
+          toast.info('Shopify checkout is not connected yet.', {
+            description: 'Add the Storefront API environment variables to enable live checkout.',
           });
           return;
         }
@@ -101,31 +96,34 @@ export const useCartStore = create<CartStore>()(
           const checkoutUrl = await createCheckout(
             items.map(item => ({
               variantId: item.variantId,
-              quantity: item.quantity
+              quantity: item.quantity,
             }))
           );
-          if (checkoutUrl) {
-            window.open(checkoutUrl, '_blank');
+
+          if (!checkoutUrl) {
+            toast.error('Checkout could not be created.', {
+              description: 'Please verify the Shopify Storefront API connection and try again.',
+            });
+            return;
           }
+
+          // Navigate in the same tab so popup blockers cannot prevent checkout.
+          window.location.assign(checkoutUrl);
         } catch (error) {
-          if (import.meta.env.DEV) {
-            console.error('Failed to create checkout:', error);
-          }
+          if (import.meta.env.DEV) console.error('Failed to create checkout:', error);
+          toast.error('Checkout failed.', {
+            description: 'Please try again in a moment.',
+          });
         } finally {
           setLoading(false);
         }
       },
 
-      getTotalItems: () => {
-        return get().items.reduce((sum, item) => sum + item.quantity, 0);
-      },
-
-      getTotalPrice: () => {
-        return get().items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
-      }
+      getTotalItems: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
+      getTotalPrice: () => get().items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0),
     }),
     {
-      name: 'void-cart',
+      name: 'noirknull-cart',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
     }
