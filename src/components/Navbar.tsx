@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
-
 import { useCartStore } from '@/stores/cartStore';
 import OffCanvasMenu from './OffCanvasMenu';
 import SearchPanel from './SearchPanel';
@@ -12,72 +11,53 @@ export default function Navbar() {
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(true);
   const totalItems = useCartStore(state => state.getTotalItems());
   const setCartOpen = useCartStore(state => state.setOpen);
   const cartOpen = useCartStore(state => state.isOpen);
   const location = useLocation();
-  
-  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
-    // Always show solid navbar
-    setScrolled(true);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const navStyles = scrolled
-    ? 'bg-background/95 backdrop-blur-sm border-b border-border text-foreground'
-    : 'bg-transparent border-transparent text-white';
+    ? 'bg-background/90 backdrop-blur-xl border-b border-border/80 shadow-[0_8px_35px_rgba(0,0,0,0.05)]'
+    : 'bg-transparent border-transparent';
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navStyles}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navStyles}`}>
         <nav className="nav-height flex items-center justify-between page-padding">
-          {/* Left - Menu button */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="text-xs uppercase tracking-wide hover:opacity-60 transition-opacity"
+            className="group flex min-h-11 items-center gap-3 rounded-full border border-foreground/15 px-5 text-[11px] font-medium uppercase tracking-[0.24em] transition-all duration-300 hover:-translate-y-0.5 hover:bg-foreground hover:text-background hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
             aria-label="Open menu"
           >
+            <span className="flex w-5 flex-col gap-1">
+              <span className="h-px w-5 bg-current transition-transform duration-300 group-hover:translate-x-1" />
+              <span className="h-px w-3 bg-current transition-transform duration-300 group-hover:w-5" />
+            </span>
             Menu
           </button>
 
-          {/* Center - Logo */}
-          <Link 
-            to="/" 
-            className="absolute left-1/2 -translate-x-1/2"
-          >
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 transition-transform duration-300 hover:scale-[1.04]">
             <Logo />
           </Link>
 
-          {/* Right - Actions */}
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
             {!isMobile && (
               <>
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="text-xs uppercase tracking-wide hover:opacity-60 transition-opacity"
-                  aria-label="Search"
-                >
-                  Search
-                </button>
-                
-                <Link
-                  to="/account"
-                  className="text-xs uppercase tracking-wide hover:opacity-60 transition-opacity"
-                  aria-label="Account"
-                >
-                  Account
-                </Link>
+                <button onClick={() => setSearchOpen(true)} className="min-h-11 rounded-full px-4 text-[10px] uppercase tracking-[0.2em] transition hover:bg-secondary">Search</button>
+                <Link to="/account" className="min-h-11 rounded-full px-4 flex items-center text-[10px] uppercase tracking-[0.2em] transition hover:bg-secondary">Account</Link>
               </>
             )}
-            
-            <button
-              onClick={() => setCartOpen(true)}
-              className="text-xs uppercase tracking-wide hover:opacity-60 transition-opacity"
-              aria-label="Cart"
-            >
+            <button onClick={() => setCartOpen(true)} className="group relative min-h-11 rounded-full border border-foreground/15 px-5 text-[10px] uppercase tracking-[0.2em] transition-all duration-300 hover:-translate-y-0.5 hover:bg-foreground hover:text-background" aria-label="Open cart">
               Cart{totalItems > 0 && ` (${totalItems})`}
+              <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-foreground opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           </div>
         </nav>
