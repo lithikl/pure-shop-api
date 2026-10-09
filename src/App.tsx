@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 
 type Shoe = { id: number; name: string; kind: string; price: number; image: string; tone: string; tag?: string };
 type CartItem = { shoe: Shoe; size: number };
@@ -15,6 +15,10 @@ const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency",
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
+  const [shopOpen, setShopOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("ALL");
+  const [sortBy, setSortBy] = useState("featured");
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>("description");
   const [cartOpen, setCartOpen] = useState(false);
@@ -29,6 +33,7 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  const openShop = () => { setMenuOpen(false); setSelectedProduct(null); setShopOpen(true); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goTo = (id: string) => {
     setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -40,6 +45,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedSize(null); };
+  const categories = ["ALL", "RUNNERS", "STREET", "COURT", "ESSENTIALS"];
+  const visibleShoes = shoes.filter((shoe) => {
+    const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
+    const category = shoe.kind === "Everyday Runner" ? "RUNNERS" : shoe.kind === "Street Low" ? "STREET" : shoe.kind === "Retro Court" ? "COURT" : "ESSENTIALS";
+    return matchesSearch && (activeCategory === "ALL" || category === activeCategory);
+  }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
   const add = (shoe: Shoe, size: number) => {
     setCart((old) => [...old, { shoe, size }]);
     setAdded(shoe.id);
@@ -52,14 +63,21 @@ export default function App() {
     <header className="noir-header">
       <button className="mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
-        <button className="nav-primary" onClick={() => { closeProduct(); goTo("collection"); }}>SHOP <span>↗</span></button>
-        <button className="nav-primary" onClick={() => { closeProduct(); goTo("collection"); }}>COLLECTION</button>
+        <button className="nav-primary" onClick={openShop}>SHOP <span>↗</span></button>
+        <button className="nav-primary" onClick={openShop}>COLLECTION</button>
         <button className="nav-primary" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
       </nav>
       <button className="noir-logo" onClick={() => goTo("top")} aria-label="Noirknull home">noirknull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
+    {shopOpen && !selectedProduct && <main className="shop-page">
+      <div className="shop-page-top"><div className="shop-breadcrumb"><button onClick={() => { setShopOpen(false); window.scrollTo({top:0,behavior:"smooth"}); }}>HOME</button><span>/</span><span>SHOP ALL</span></div><p className="kicker">NOIRKNULL® — THE FIRST DROP</p><h1>Find your<br/><em>own pace.</em></h1><p className="shop-intro">Considered silhouettes. Everyday movement.<br/>Find the pair that feels like you.</p></div>
+      <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
+      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?shoes.length:shoes.filter((shoe)=> (shoe.kind==="Everyday Runner"?"RUNNERS":shoe.kind==="Street Low"?"STREET":shoe.kind==="Retro Court"?"COURT":"ESSENTIALS")===category).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
+      <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.kind}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
+      <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
+    </main>}
     {selectedProduct && <main className="product-page">
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
       <div className="product-layout">
@@ -89,7 +107,7 @@ export default function App() {
       </div>
       <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{shoes.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.kind} ↗</small></button>)}</div></section>
     </main>}
-    <main id="top" className={selectedProduct ? "home-content home-hidden" : "home-content"}>
+    <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
       <section className="shoe-hero">
         <div className="hero-copy reveal">
           <p className="kicker"><i/> NOT MADE TO BLEND IN</p>
@@ -131,7 +149,7 @@ export default function App() {
       <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>
     </main>
 
-    <footer className={selectedProduct ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>noirknull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+    <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>noirknull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
 
     {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind}/><div><p>{item.shoe.kind} · SIZE {item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={() => alert("This is a storefront preview. Connect checkout and payment processing before accepting orders.")}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
   </div>;
