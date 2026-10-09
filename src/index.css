@@ -175,3 +175,16 @@
 @media(max-width:800px){.shop-editorial{grid-template-columns:1fr}.shop-editorial-copy{padding:38px 7% 24px}.shop-editorial-art{min-height:360px}.editorial-main-sneaker{width:100%}.editorial-float-card{width:clamp(105px,22vw,150px)}.fit-picks-grid{grid-template-columns:1fr 1fr}.fit-pick-wide{grid-column:1/-1;min-height:400px}.fit-pick{min-height:310px}}
 @media(max-width:560px){.shop-page-top{padding:43px 6% 38px}.shop-page-top:after{font-size:55vw;right:5%}.shop-page-top h1{font-size:clamp(58px,15vw,88px)}.shop-editorial-copy{padding:52px 6% 24px}.shop-editorial-copy h2{font-size:clamp(51px,13vw,70px)}.shop-editorial-art{min-height:410px}.editorial-main-sneaker{width:128%}.editorial-accessory-one{left:4%;top:13%}.editorial-accessory-two{right:4%;bottom:8%}.editorial-art-stamp{font-size:22px;right:6%;top:7%}.editorial-vertical{left:10px}.editorial-float-card{width:105px}.editorial-orbit-label{left:5%;font-size:7px}.fit-picks{padding:62px 5% 22px}.fit-picks-heading{align-items:flex-start;flex-direction:column;gap:16px}.fit-picks-heading h2{font-size:clamp(45px,12vw,64px)}.fit-picks-grid{gap:10px}.fit-pick-wide{min-height:340px}.fit-pick{min-height:260px}.fit-pick>div{left:13px;right:12px;bottom:14px}.fit-pick h3{font-size:25px}.fit-pick p{font-size:9px}.fit-picks-bottom{font-size:7px;line-height:1.7;flex-direction:column;gap:5px}}
 @media(prefers-reduced-motion:reduce){.editorial-main-sneaker,.editorial-float-card{animation:none!important}}
+
+
+/* Put the actual product catalogue first; editorial styling follows below it. */
+.shop-page{display:flex;flex-direction:column}
+.shop-page-top{order:1}
+.shop-toolbar{order:2}
+.shop-body{order:3}
+.shop-bottom-note{order:4}
+.shop-editorial{order:5;min-height:360px}
+.shop-editorial-art{min-height:360px}
+.fit-picks{order:6;padding-top:36px}
+@media(max-width:800px){.shop-editorial{min-height:0}.shop-editorial-art{min-height:300px}.fit-pick-wide{min-height:280px}.fit-pick{min-height:210px}}
+@media(max-width:560px){.shop-page-top{padding:26px 6% 26px}.shop-breadcrumb{margin-bottom:24px}.shop-editorial-copy{padding:32px 6% 20px}.shop-editorial-art{min-height:280px}.fit-picks{padding:30px 6% 18px}.fit-pick-wide{min-height:240px}.fit-pick{min-height:190px}}
