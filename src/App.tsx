@@ -32,17 +32,31 @@ export default function App() {
   const [added, setAdded] = useState<number | null>(null);
 
   useEffect(() => {
+    const revealElements = Array.from(document.querySelectorAll(".reveal"));
+    if (!revealElements.length) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); }
-    }), { threshold: 0.12 });
-    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }), { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
+    revealElements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [shopOpen, selectedProduct, checkoutOpen]);
 
-  const openShop = () => { setMenuOpen(false); setSelectedProduct(null); setShopOpen(true); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const openShop = () => {
+    setMenuOpen(false);
+    setSelectedProduct(null);
+    setShopOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const goTo = (id: string) => {
     setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setSelectedProduct(null);
+    setShopOpen(false);
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
   const openProduct = (shoe: Shoe) => {
     setSelectedProduct(shoe);
