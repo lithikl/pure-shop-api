@@ -862,3 +862,109 @@ html{
   .shipping-flight-product-5{left:39%;top:42%;width:clamp(112px,31vw,165px);--fall-y:190px}
   .shipping-flight-note{right:6%;bottom:20px;font-size:7px}
 }
+
+/* Shipping reference composition: products stay, boxes fall */
+.shipping-flight-products{z-index:3}
+.shipping-flight-product{
+  transform:none !important;
+  transition:none !important;
+  will-change:auto;
+}
+.shipping-flight-product img{transform:none !important}
+.shipping-flight-boxes{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+}
+.shipping-drop-box{
+  position:absolute;
+  width:clamp(90px,10vw,145px);
+  height:clamp(62px,7vw,98px);
+  opacity:calc(.18 + var(--shipping-progress) * .82);
+  transform:
+    translate3d(var(--box-x),calc(var(--shipping-progress) * var(--box-fall)),0)
+    rotate(calc(var(--shipping-progress) * var(--box-r)));
+  transition:transform .08s linear,opacity .08s linear;
+  background:linear-gradient(145deg,#d9b27a,#b98548);
+  border:1px solid rgba(65,43,21,.25);
+  box-shadow:0 18px 26px rgba(65,43,21,.13),inset 0 1px 0 rgba(255,255,255,.38);
+}
+.shipping-drop-box:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:48%;
+  height:100%;
+  border-right:1px solid rgba(91,58,25,.22);
+  background:linear-gradient(90deg,rgba(255,255,255,.13),transparent);
+}
+.shipping-drop-box:after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:34%;
+  border-bottom:1px solid rgba(91,58,25,.2);
+  background:rgba(255,255,255,.08);
+}
+.shipping-box-top{
+  position:absolute;
+  left:3%;
+  top:-18%;
+  width:94%;
+  height:22%;
+  background:#c9995f;
+  border:1px solid rgba(65,43,21,.2);
+  transform:skewX(-28deg);
+  transform-origin:left bottom;
+}
+.shipping-box-label{
+  position:absolute;
+  z-index:2;
+  left:13%;
+  top:32%;
+  padding:5px 7px;
+  background:rgba(247,243,234,.78);
+  border:1px solid rgba(65,43,21,.16);
+  font:6px var(--mono);
+  letter-spacing:.04em;
+  color:#443322;
+}
+.shipping-drop-box-1{left:26%;top:20%;--box-x:-8px;--box-fall:250px;--box-r:-8deg}
+.shipping-drop-box-2{right:10%;top:17%;--box-x:10px;--box-fall:280px;--box-r:8deg}
+.shipping-drop-box-3{left:10%;top:38%;--box-x:-18px;--box-fall:220px;--box-r:-6deg}
+.shipping-drop-box-4{right:25%;top:43%;--box-x:16px;--box-fall:235px;--box-r:7deg}
+.shipping-drop-box-5{left:48%;top:31%;--box-x:4px;--box-fall:285px;--box-r:-4deg}
+.shipping-flight-product-1{left:31%;top:38%;width:clamp(145px,17vw,245px)}
+.shipping-flight-product-2{right:9%;top:34%;width:clamp(145px,17vw,245px)}
+.shipping-flight-product-3{left:17%;top:51%;width:clamp(145px,17vw,245px)}
+.shipping-flight-product-4{right:19%;top:53%;width:clamp(145px,17vw,245px)}
+.shipping-flight-product-5{left:49%;top:48%;width:clamp(160px,19vw,270px)}
+.shipping-flight-plane{
+  transform:
+    translate3d(calc(var(--shipping-progress) * 250px),calc(var(--shipping-progress) * 45px),0)
+    scale(calc(1 + var(--shipping-progress) * .16));
+}
+@media(max-width:900px){
+  .shipping-drop-box{width:clamp(72px,13vw,110px);height:clamp(50px,9vw,76px)}
+  .shipping-drop-box-1{left:25%;--box-fall:210px}.shipping-drop-box-2{right:5%;--box-fall:230px}
+  .shipping-drop-box-3{left:4%;--box-fall:190px}.shipping-drop-box-4{right:15%;--box-fall:205px}.shipping-drop-box-5{left:47%;--box-fall:240px}
+  .shipping-flight-product-1{left:29%;top:40%;width:clamp(115px,22vw,175px)}
+  .shipping-flight-product-2{right:4%;top:37%;width:clamp(115px,22vw,175px)}
+  .shipping-flight-product-3{left:7%;top:53%;width:clamp(115px,22vw,175px)}
+  .shipping-flight-product-4{right:13%;top:55%;width:clamp(115px,22vw,175px)}
+  .shipping-flight-product-5{left:46%;top:49%;width:clamp(125px,24vw,195px)}
+}
+@media(max-width:600px){
+  .shipping-drop-box{width:clamp(58px,17vw,90px);height:clamp(40px,12vw,62px)}
+  .shipping-drop-box-1{left:23%;--box-fall:165px}.shipping-drop-box-2{right:1%;--box-fall:185px}
+  .shipping-drop-box-3{left:0;--box-fall:150px}.shipping-drop-box-4{right:9%;--box-fall:165px}.shipping-drop-box-5{left:44%;--box-fall:190px}
+  .shipping-flight-product-1{left:26%;top:41%;width:clamp(90px,26vw,135px)}
+  .shipping-flight-product-2{right:0;top:39%;width:clamp(90px,26vw,135px)}
+  .shipping-flight-product-3{left:2%;top:55%;width:clamp(90px,26vw,135px)}
+  .shipping-flight-product-4{right:8%;top:57%;width:clamp(90px,26vw,135px)}
+  .shipping-flight-product-5{left:43%;top:50%;width:clamp(100px,29vw,150px)}
+}
