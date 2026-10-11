@@ -272,3 +272,32 @@
   .shop-product-grid{align-items:start}
   .shop-product-meta{min-height:0}
 }
+
+
+/* Product page liquid-glass controls */
+.product-page button{
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.68);
+  background:rgba(255,255,255,.34);
+  color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82),0 7px 20px rgba(25,24,20,.08);
+  backdrop-filter:blur(18px) saturate(170%);
+  -webkit-backdrop-filter:blur(18px) saturate(170%);
+  transition:transform .2s ease,background .2s ease,box-shadow .2s ease,border-color .2s ease,color .2s ease;
+}
+.product-page button:hover{transform:translateY(-1px);background:rgba(255,255,255,.52);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 9px 24px rgba(25,24,20,.11)}
+.product-crumb>button{padding:10px 14px;font:8px var(--mono);letter-spacing:.06em}
+.size-heading>button{padding:9px 13px;font:8px var(--mono);letter-spacing:.06em}
+.size-option{min-height:44px;border-radius:16px!important;background:rgba(255,255,255,.38)!important}
+.size-option:hover,.size-option.size-selected{background:rgba(23,23,21,.88)!important;color:#fff!important;border-color:rgba(255,255,255,.38)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 20px rgba(25,24,20,.14)!important}
+.product-add-button{border-radius:20px!important;background:rgba(23,23,21,.88)!important;color:#fff!important;border-color:rgba(255,255,255,.34)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 26px rgba(25,24,20,.16)!important;backdrop-filter:blur(20px) saturate(175%);-webkit-backdrop-filter:blur(20px) saturate(175%)}
+.product-add-button:hover{background:rgba(23,23,21,.96)!important;color:#fff!important}
+.product-accordion>button{border:0!important;border-radius:18px!important;background:rgba(255,255,255,.24)!important;padding:14px 16px!important;margin:7px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 5px 15px rgba(25,24,20,.05)!important}
+.related-card{border-radius:22px!important;overflow:hidden;padding:0!important;background:rgba(255,255,255,.22)!important;border-color:rgba(255,255,255,.58)!important}
+.related-card img{border-radius:20px 20px 0 0}
+
+/* Bring the shop catalogue into view sooner */
+.shop-page-top{padding-top:32px;padding-bottom:30px}
+.shop-breadcrumb{margin-bottom:18px}
+@media(max-width:900px){.shop-page-top{padding-top:28px;padding-bottom:32px}.shop-breadcrumb{margin-bottom:24px}}
+@media(max-width:600px){.shop-page-top{padding-top:24px;padding-bottom:28px}.shop-breadcrumb{margin-bottom:20px}.product-page button{border-radius:18px}.product-add-button{border-radius:18px!important}.product-accordion>button{border-radius:16px!important}}
