@@ -222,13 +222,27 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      <section className="collection section-wrap" id="collection">
-        <div className="section-top reveal"><div><p className="kicker">01 / THE FIRST DROP</p><h2>Objects for<br/><em>everyday motion.</em></h2></div><p className="section-intro">Four silhouettes. No unnecessary noise.<br/>Find your own kind of everyday.</p></div>
-        <div className="shoe-grid">{homeCollection.map((shoe, i) => <article className="shoe-card reveal" key={shoe.id} style={{ transitionDelay: `${i * 90}ms` }}>
-          <button className="shoe-photo" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name} details`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag && <span className="shoe-tag">{shoe.tag}</span>}<span className="quick-add">VIEW DETAILS ↗</span></button>
-          <div className="shoe-info"><div><p>{shoe.kind}</p><h3>{shoe.name}</h3><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div>
-        </article>)}</div>
-        <div className="collection-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
+      <section className="best-sellers section-wrap" id="collection">
+        <div className="best-sellers-heading reveal">
+          <div><p className="kicker">01 / THE MOST WANTED</p><h2>Best<br/><em>sellers.</em></h2></div>
+          <p className="section-intro">The pairs people keep coming back for.<br/>Tap any object to explore it.</p>
+        </div>
+        <div className="best-sellers-stage">
+          {homeCollection.slice(0, 5).map((shoe, i) => (
+            <article className={"best-seller-item best-seller-" + (i + 1) + " reveal"} key={shoe.id} style={{ animationDelay: (i * 110) + "ms" }}>
+              <button className="best-seller-product" onClick={() => openProduct(shoe)} aria-label={"View " + shoe.name + " details"}>
+                <div className="best-seller-glass">
+                  <span>{shoe.kind}</span>
+                  <strong>{shoe.name}</strong>
+                </div>
+                <img src={shoe.image} alt={shoe.kind}/>
+                {shoe.tag && <span className="best-seller-tag">{shoe.tag}</span>}
+                <span className="best-seller-price">{money(shoe.price)}</span>
+              </button>
+            </article>
+          ))}
+        </div>
+        <div className="best-sellers-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
       </section>
 
       <section className="manifesto" id="manifesto">
