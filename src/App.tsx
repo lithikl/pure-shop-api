@@ -241,7 +241,7 @@ export default function App() {
           <p className="section-intro">The pairs people keep coming back for.<br/>Tap any object to explore it.</p>
         </div>
         <div className="best-sellers-stage">
-          {homeCollection.slice(0, 5).map((shoe, i) => (
+          {Array.from({ length: Math.min(5, Math.max(1, homeCollection.length)) }, (_, i) => homeCollection[i % homeCollection.length]).map((shoe, i) => (
             <article className={"best-seller-item best-seller-" + (i + 1)} key={shoe.id} style={{ animationDelay: (i * 110) + "ms" }}>
               <button className="best-seller-product" onClick={() => openProduct(shoe)} aria-label={"View " + shoe.name + " details"}>
                 <div className="best-seller-glass">
