@@ -72,6 +72,8 @@ export default function App() {
     return matchesSearch && (activeCategory === "ALL" || category === activeCategory);
   }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
   const add = (shoe: Shoe, size: number) => {
+    setSelectedProduct(null);
+    setShopOpen(false);
     setCart((old) => [...old, { shoe, size }]);
     setAdded(shoe.id);
     setCartOpen(true);
@@ -80,19 +82,26 @@ export default function App() {
   const cartSubtotal = cart.reduce((sum, item) => sum + item.shoe.price, 0);
   const shippingCost = cart.length === 0 ? 0 : shippingMethod === "express" ? 199 : cartSubtotal >= 5000 ? 0 : 99;
   const checkoutTotal = cartSubtotal + shippingCost;
-  const openCheckout = () => { setCartOpen(false); setCheckoutStep("details"); setCheckoutOpen(true); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const openCheckout = () => {
+    setCartOpen(false);
+    setSelectedProduct(null);
+    setShopOpen(false);
+    setCheckoutStep("details");
+    setCheckoutOpen(true);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  };
   const updateCheckout = (key: keyof typeof checkoutData, value: string) => setCheckoutData((old) => ({ ...old, [key]: value }));
   const checkoutReady = Boolean(checkoutData.email.trim() && checkoutData.phone.trim() && checkoutData.firstName.trim() && checkoutData.lastName.trim() && checkoutData.address.trim() && checkoutData.city.trim() && checkoutData.state.trim() && checkoutData.pincode.trim().length === 6);
 
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
-    <header className={shopOpen || selectedProduct ? "noir-header" : "noir-header liquid-glass-header"}>
+    <header className={shopOpen || selectedProduct || checkoutOpen ? "noir-header" : "noir-header liquid-glass-header"}>
       <button className="mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
       </nav>
-      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} aria-label="Noirknull home">noirknull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); setMenuOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="Noirknull home">noirknull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
@@ -161,7 +170,7 @@ export default function App() {
       <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{shoes.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.kind} ↗</small></button>)}</div></section>
     </main>}
     {checkoutOpen && <Checkout cart={cart} onBack={() => { setCheckoutOpen(false); setCartOpen(true); }} onComplete={() => { setCheckoutOpen(false); setCart([]); setCheckoutStep("details"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />}
-    <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
+    {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
       <section className="shoe-hero">
         <div className="hero-copy reveal">
           <p className="kicker"><i/> NOT MADE TO BLEND IN</p>
@@ -201,9 +210,11 @@ export default function App() {
       </div></section>
 
       <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>
-    </main>
+    </main>}
 
-    <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>noirknull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>noirknull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+
+    </footer>}
 
     {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind}/><div><p>{item.shoe.kind} · SIZE {item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
   </div>;
