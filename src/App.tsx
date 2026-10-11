@@ -145,7 +145,7 @@ export default function App() {
       </div>
       <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{shoes.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.kind} ↗</small></button>)}</div></section>
     </main>}
-    {checkoutOpen && <main className="checkout-page">
+    {checkoutOpen && (<main className="checkout-page">
       {checkoutStep === "success" ? <section className="checkout-success">
         <div className="checkout-success-mark">✓</div>
         <p className="kicker">NOIRKNULL / ORDER CONFIRMED</p><h1>You are<br/><em>all set.</em></h1>
