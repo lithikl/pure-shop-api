@@ -8,6 +8,22 @@ type CartItem = { shoe: Shoe; size: number };
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
+const tintFromTone = (tone: string) => {
+  const t = tone.toLowerCase();
+  if (t.includes("crimson") || t.includes("red") || t.includes("burgundy") || t.includes("maroon")) return "#c94b45";
+  if (t.includes("orange") || t.includes("coral") || t.includes("peach")) return "#d77b4a";
+  if (t.includes("yellow") || t.includes("gold") || t.includes("mustard")) return "#c9a83d";
+  if (t.includes("green") || t.includes("olive") || t.includes("mint")) return "#6e9b72";
+  if (t.includes("blue") || t.includes("navy") || t.includes("cobalt") || t.includes("cyan")) return "#557ca8";
+  if (t.includes("purple") || t.includes("violet") || t.includes("lilac")) return "#8a72a5";
+  if (t.includes("pink") || t.includes("rose")) return "#c98292";
+  if (t.includes("brown") || t.includes("tan") || t.includes("camel") || t.includes("beige")) return "#a98768";
+  if (t.includes("black") || t.includes("ink") || t.includes("charcoal")) return "#55575a";
+  if (t.includes("white") || t.includes("cloud") || t.includes("chalk") || t.includes("bone")) return "#bfc5c9";
+  if (t.includes("grey") || t.includes("gray") || t.includes("stone") || t.includes("mono")) return "#8c9094";
+  return "#8b8b86";
+};
+
 export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
@@ -157,7 +173,7 @@ export default function App() {
         </div>
       </section>
  </main>}
-    {selectedProduct && <main className="product-page">
+    {selectedProduct && <main className="product-page" style={{ "--product-glass-tint": selectedProduct.glassTint?.trim() || tintFromTone(selectedProduct.tone) } as React.CSSProperties}>
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
       <div className="product-layout">
         <div className="product-gallery">
