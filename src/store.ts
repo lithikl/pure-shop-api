@@ -7,6 +7,7 @@ export type Shoe = {
   tone: string;
   tag?: string;
   glassTint?: string;
+  glassTint?: string;
 };
 
 export const DEFAULT_SHOES: Shoe[] = [
