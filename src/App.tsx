@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal, Plane } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { Shoe, loadFeatured, loadProducts } from "./store";
@@ -90,12 +90,17 @@ export default function App() {
     const section = document.querySelector<HTMLElement>(".shipping-flight-section");
     if (!section) return;
     let frame = 0;
+    let current = 0;
+    let target = 0;
     const update = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
       const travel = Math.max(section.offsetHeight - window.innerHeight, 1);
-      const progress = Math.min(1, Math.max(0, -rect.top / travel));
-      section.style.setProperty("--shipping-progress", progress.toFixed(4));
+      target = Math.min(1, Math.max(0, -rect.top / travel));
+      current += (target - current) * 0.045;
+      if (Math.abs(target - current) < 0.0005) current = target;
+      section.style.setProperty("--shipping-progress", current.toFixed(4));
+      if (Math.abs(target - current) > 0.0005) frame = requestAnimationFrame(update);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -283,28 +288,23 @@ export default function App() {
       </section>
 
       <section className="shipping-flight-section" aria-label="All India shipping">
-        <div className="shipping-flight-plane" aria-hidden="true"><Plane size={310} strokeWidth={0.75}/></div>
-        <div className="shipping-flight-copy">
-          <p className="kicker">02 / DELIVERED ACROSS THE COUNTRY</p>
-          <h2>All India<br/><em>shipping.</em></h2>
-          <p>From our studio to your doorstep.<br/>Every pair moves with you.</p>
+        <div className="shipping-flight-plane" aria-hidden="true">
+          <img src="/assets/noir-cargo-plane.png" alt="" />
         </div>
         <div className="shipping-flight-products" aria-hidden="true">
-          {Array.from({ length: 5 }, (_, i) => homeCollection[i % homeCollection.length]).map((shoe, i) => (
+          {homeCollection.slice(0, 2).map((shoe, i) => (
             <div className={"shipping-flight-product shipping-flight-product-" + (i + 1)} key={shoe.id + "-shipping-" + i}>
               <img src={shoe.image} alt="" />
             </div>
           ))}
         </div>
         <div className="shipping-flight-boxes" aria-hidden="true">
-          {Array.from({ length: 5 }, (_, i) => (
+          {Array.from({ length: 4 }, (_, i) => (
             <div className={"shipping-drop-box shipping-drop-box-" + (i + 1)} key={"shipping-box-" + i}>
-              <span className="shipping-box-top"></span>
-              <span className="shipping-box-label">NOIR / SHIPPING</span>
+              <img src="/assets/noir-shipping-box.png" alt="" />
             </div>
           ))}
         </div>
-        <div className="shipping-flight-note">PAN INDIA / 01 — 05</div>
       </section>
 
       <section className="manifesto" id="manifesto">
