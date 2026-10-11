@@ -662,3 +662,11 @@ html{
 /* Best sellers motion timing — enter first, then float */
 .best-seller-item{transition:opacity .95s cubic-bezier(.18,.72,.18,1),transform .95s cubic-bezier(.18,.72,.18,1)}
 .best-seller-item.is-visible{opacity:1;transform:rotate(var(--float-r)) scale(1);animation:best-seller-float 5.5s ease-in-out 1s infinite}
+
+/* Reliable scroll-triggered entrance for best sellers */
+.best-seller-item{opacity:0;transform:translateX(-120vw) rotate(-12deg) scale(.92)}
+.best-sellers-stage.best-sellers-active .best-seller-item{animation:best-seller-arrive .95s cubic-bezier(.18,.72,.18,1) forwards,best-seller-float 5.5s ease-in-out infinite 1s}
+.best-sellers-stage.best-sellers-active .best-seller-item:nth-child(2){animation-delay:.11s,1.11s}
+.best-sellers-stage.best-sellers-active .best-seller-item:nth-child(3){animation-delay:.22s,1.22s}
+.best-sellers-stage.best-sellers-active .best-seller-item:nth-child(4){animation-delay:.33s,1.33s}
+.best-sellers-stage.best-sellers-active .best-seller-item:nth-child(5){animation-delay:.44s,1.44s}
