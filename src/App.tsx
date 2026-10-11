@@ -214,7 +214,7 @@ export default function App() {
         <div className="hero-art" aria-label="Featured sneaker">
           <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
           <div className="hero-stamp">N/K<br/><small>OBJECTS IN MOTION</small></div>
-          <img className="floating-shoe" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1500&q=95" alt="Sculptural red sneaker from the Noirknull visual campaign"/>
+          <img className="floating-shoe" src="/assets/output-onlinepngtools.png" alt="NOIR / 01 sneaker"/>
           <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
         </div>
         <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>
