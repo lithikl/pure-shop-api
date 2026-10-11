@@ -177,7 +177,7 @@ export default function App() {
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
       <div className="product-layout">
         <div className="product-gallery">
-          <div className="product-main-image"><img src={selectedProduct.image} alt={selectedProduct.kind}/><span className="product-image-index">N/K — OBJECT {String(selectedProduct.id).padStart(2, "0")}</span></div>
+          <div className="product-main-image"><img src={selectedProduct.image} alt={selectedProduct.kind}/><div className="product-glass-product-label"><span>{selectedProduct.kind}</span><strong>{selectedProduct.name}</strong></div><span className="product-image-index">N/K — OBJECT {String(selectedProduct.id).padStart(2, "0")}</span></div>
           <div className="product-gallery-note"><span>FORM FOLLOWS FEELING.</span><span>DESIGNED FOR EVERYDAY MOTION ↗</span></div>
         </div>
         <div className="product-information">
