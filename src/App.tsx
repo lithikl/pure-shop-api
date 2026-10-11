@@ -9,8 +9,7 @@ type CartItem = { shoe: Shoe; size: number };
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 export default function App() {
-  if (window.location.pathname === "/admin") return <Admin />;
-
+  const isAdmin = window.location.pathname === "/admin";
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -108,6 +107,8 @@ export default function App() {
   };
   const updateCheckout = (key: keyof typeof checkoutData, value: string) => setCheckoutData((old) => ({ ...old, [key]: value }));
   const checkoutReady = Boolean(checkoutData.email.trim() && checkoutData.phone.trim() && checkoutData.firstName.trim() && checkoutData.lastName.trim() && checkoutData.address.trim() && checkoutData.city.trim() && checkoutData.state.trim() && checkoutData.pincode.trim().length === 6);
+
+  if (isAdmin) return <Admin />;
 
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
