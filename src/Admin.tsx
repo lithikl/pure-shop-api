@@ -9,7 +9,8 @@ const emptyProduct = (): Shoe => ({
   price: 0,
   image: "",
   tone: "",
-  tag: ""
+  tag: "",
+  glassTint: ""
 });
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -121,7 +122,9 @@ export default function Admin() {
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label className="wide"><span>IMAGE URL</span><input value={editing.image} onChange={e => setEditing({...editing,image:e.target.value})} placeholder="https://..."/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
+          <label className="wide"><span>PRODUCT PAGE LIQUID GLASS TINT</span><div className="admin-color-field"><input type="color" value={editing.glassTint || "#d72d28"} onChange={e => setEditing({...editing,glassTint:e.target.value})}/><input value={editing.glassTint || ""} onChange={e => setEditing({...editing,glassTint:e.target.value})} placeholder="Auto from product colour"/></div></label>
         </div>
+        <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone. Set your own HEX colour to override it.</div>
         <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.kind} · {editing.tone || "Tone"}</span></div></div>
         <div className="admin-modal-actions"><button onClick={() => setEditing(null)}>CANCEL</button><button className="admin-primary" onClick={saveProduct}><Save size={15}/> SAVE PRODUCT</button></div>
       </div></div>}
