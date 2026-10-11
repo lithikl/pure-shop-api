@@ -524,3 +524,75 @@ html{
     min-height:52px;
   }
 }
+
+
+/* Checkout is a standalone viewport */
+.checkout-page{
+  position:relative;
+  z-index:20;
+  min-height:calc(100vh - 92px);
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:clamp(28px,5vw,72px) max(5%,calc((100vw - 1320px)/2)) 80px;
+  box-sizing:border-box;
+  background:var(--paper,#f4f1ea);
+}
+.checkout-shell{
+  width:100%;
+  max-width:1320px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(320px,.72fr);
+  gap:clamp(32px,6vw,96px);
+  align-items:start;
+}
+.checkout-main{min-width:0}
+.checkout-header{width:100%;margin-bottom:42px}
+.checkout-form,.checkout-review{width:100%}
+.checkout-summary{min-width:0}
+.checkout-summary-sticky{
+  position:sticky;
+  top:112px;
+  max-height:calc(100vh - 136px);
+  overflow:auto;
+  scrollbar-width:thin;
+}
+.checkout-primary{width:100%;box-sizing:border-box}
+.checkout-grid{width:100%;box-sizing:border-box}
+.checkout-grid label{min-width:0}
+.checkout-grid input{width:100%;max-width:100%;box-sizing:border-box}
+.checkout-options{width:100%}
+.checkout-option{width:100%;box-sizing:border-box}
+.checkout-back{cursor:pointer}
+.checkout-page button{cursor:pointer}
+.checkout-success{
+  width:min(760px,100%);
+  min-height:calc(100vh - 260px);
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+}
+.checkout-success .checkout-primary{width:auto;min-width:220px}
+.checkout-page h1,
+.checkout-page h2,
+.checkout-page p{overflow-wrap:anywhere}
+
+@media(max-width:980px){
+  .checkout-page{padding:28px 5% 60px}
+  .checkout-shell{grid-template-columns:1fr;gap:40px}
+  .checkout-summary{order:-1}
+  .checkout-summary-sticky{position:static;max-height:none;overflow:visible}
+}
+@media(max-width:600px){
+  .checkout-page{padding:22px 5% 48px;min-height:calc(100vh - 76px)}
+  .checkout-shell{gap:28px}
+  .checkout-header{margin-bottom:28px}
+  .checkout-grid.two{grid-template-columns:1fr}
+  .checkout-grid.two .wide{grid-column:auto}
+  .checkout-progress{width:100%;overflow:hidden}
+  .checkout-summary{width:100%}
+  .summary-items{max-height:320px;overflow:auto}
+}
