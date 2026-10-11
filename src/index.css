@@ -985,9 +985,9 @@ html{
 .shipping-flight-plane{
   position:absolute;
   z-index:1;
-  left:-18px;
+  left:0;
   top:42px;
-  width:510px;
+  width:560px;
   height:auto;
   opacity:1;
   transform:translate3d(calc(var(--shipping-progress) * 420px),0,0);
@@ -1095,9 +1095,9 @@ html{
     min-height:600px;
   }
   .shipping-flight-plane{
-    left:-70px;
+    left:0;
     top:36px;
-    width:500px;
+    width:540px;
   }
   .shipping-flight-product-1{left:53%;top:78%;width:82px}
   .shipping-flight-product-2{left:79%;top:68%;width:100px}
@@ -1110,9 +1110,9 @@ html{
 @media(max-width:600px){
   .shipping-flight-section{height:500px;min-height:500px}
   .shipping-flight-plane{
-    left:-105px;
+    left:-18px;
     top:28px;
-    width:390px;
+    width:420px;
   }
   .shipping-flight-product-1{left:52%;top:79%;width:65px}
   .shipping-flight-product-2{left:78%;top:69%;width:78px}
