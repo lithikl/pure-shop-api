@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal, Plane } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { Shoe, loadFeatured, loadProducts } from "./store";
@@ -85,6 +85,30 @@ export default function App() {
     observer.observe(stage);
     return () => observer.disconnect();
   }, [shopOpen, selectedProduct, checkoutOpen]);
+
+  useEffect(() => {
+    const section = document.querySelector<HTMLElement>(".shipping-flight-section");
+    if (!section) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      const travel = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const progress = Math.min(1, Math.max(0, -rect.top / travel));
+      section.style.setProperty("--shipping-progress", progress.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", update);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [shopOpen, selectedProduct, checkoutOpen, products.length]);
 
   const openShop = () => {
     setMenuOpen(false);
@@ -256,6 +280,24 @@ export default function App() {
           ))}
         </div>
         <div className="best-sellers-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
+      </section>
+
+      <section className="shipping-flight-section" aria-label="All India shipping">
+        <div className="shipping-flight-plane" aria-hidden="true"><Plane size={310} strokeWidth={0.75}/></div>
+        <div className="shipping-flight-copy">
+          <p className="kicker">02 / DELIVERED ACROSS THE COUNTRY</p>
+          <h2>All India<br/><em>shipping.</em></h2>
+          <p>From our studio to your doorstep.<br/>Every pair moves with you.</p>
+        </div>
+        <div className="shipping-flight-products" aria-hidden="true">
+          {Array.from({ length: 5 }, (_, i) => homeCollection[i % homeCollection.length]).map((shoe, i) => (
+            <div className={"shipping-flight-product shipping-flight-product-" + (i + 1)} key={shoe.id + "-shipping-" + i}>
+              <span className="shipping-parcel"></span>
+              <img src={shoe.image} alt="" />
+            </div>
+          ))}
+        </div>
+        <div className="shipping-flight-note">PAN INDIA / 01 — 05</div>
       </section>
 
       <section className="manifesto" id="manifesto">
