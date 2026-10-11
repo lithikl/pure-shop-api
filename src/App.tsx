@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
+import Admin from "./Admin";
+import { Shoe, loadFeatured, loadProducts } from "./store";
 
-type Shoe = { id: number; name: string; kind: string; price: number; image: string; tone: string; tag?: string };
 type CartItem = { shoe: Shoe; size: number };
 
-const shoes: Shoe[] = [
-  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", price: 4290, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1100&q=90", tone: "Crimson / Chalk", tag: "BESTSELLER" },
-  { id: 2, name: "NULL / 02", kind: "Street Low", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", tone: "Cloud / Ink", tag: "NEW DROP" },
-  { id: 3, name: "FORM / 03", kind: "Retro Court", price: 4590, image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", tone: "Stone / Bone" },
-  { id: 4, name: "AFTER / 04", kind: "Daily Essential", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", tone: "Mono / Grey" },
-];
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 export default function App() {
+  if (window.location.pathname === "/admin") return <Admin />;
+
+  const [products, setProducts] = useState<Shoe[]>(loadProducts);
+  const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
   const [shopOpen, setShopOpen] = useState(false);
@@ -30,6 +29,21 @@ export default function App() {
   const [checkoutData, setCheckoutData] = useState({ email: "", phone: "", firstName: "", lastName: "", address: "", apartment: "", city: "Chennai", state: "Tamil Nadu", pincode: "" });
   const [menuOpen, setMenuOpen] = useState(false);
   const [added, setAdded] = useState<number | null>(null);
+
+  useEffect(() => {
+    const syncProducts = () => setProducts(loadProducts());
+    const syncFeatured = () => setFeaturedIds(loadFeatured());
+    window.addEventListener("noirknull:products", syncProducts);
+    window.addEventListener("noirknull:featured", syncFeatured);
+    window.addEventListener("storage", syncProducts);
+    window.addEventListener("storage", syncFeatured);
+    return () => {
+      window.removeEventListener("noirknull:products", syncProducts);
+      window.removeEventListener("noirknull:featured", syncFeatured);
+      window.removeEventListener("storage", syncProducts);
+      window.removeEventListener("storage", syncFeatured);
+    };
+  }, []);
 
   useEffect(() => {
     const revealElements = Array.from(document.querySelectorAll(".reveal"));
@@ -66,7 +80,9 @@ export default function App() {
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedSize(null); };
   const categories = ["ALL", "RUNNERS", "STREET", "COURT", "ESSENTIALS"];
-  const visibleShoes = shoes.filter((shoe) => {
+  const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
+  const homeCollection = homepageShoes.length ? homepageShoes : products;
+  const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
     const category = shoe.kind === "Everyday Runner" ? "RUNNERS" : shoe.kind === "Street Low" ? "STREET" : shoe.kind === "Retro Court" ? "COURT" : "ESSENTIALS";
     return matchesSearch && (activeCategory === "ALL" || category === activeCategory);
@@ -118,7 +134,7 @@ export default function App() {
       </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
-      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?shoes.length:shoes.filter((shoe)=> (shoe.kind==="Everyday Runner"?"RUNNERS":shoe.kind==="Street Low"?"STREET":shoe.kind==="Retro Court"?"COURT":"ESSENTIALS")===category).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
+      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=> (shoe.kind==="Everyday Runner"?"RUNNERS":shoe.kind==="Street Low"?"STREET":shoe.kind==="Retro Court"?"COURT":"ESSENTIALS")===category).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
       <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.kind}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
       <section className="shop-editorial reveal">
@@ -167,7 +183,7 @@ export default function App() {
           <div className="product-number"><span>NOIRKNULL / 2026</span><span>0{selectedProduct.id} — 04</span></div>
         </div>
       </div>
-      <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{shoes.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.kind} ↗</small></button>)}</div></section>
+      <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{products.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.kind} ↗</small></button>)}</div></section>
     </main>}
     {checkoutOpen && <Checkout cart={cart} onBack={() => { setCheckoutOpen(false); setCartOpen(true); }} onComplete={() => { setCheckoutOpen(false); setCart([]); setCheckoutStep("details"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />}
     {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
@@ -191,7 +207,7 @@ export default function App() {
 
       <section className="collection section-wrap" id="collection">
         <div className="section-top reveal"><div><p className="kicker">01 / THE FIRST DROP</p><h2>Objects for<br/><em>everyday motion.</em></h2></div><p className="section-intro">Four silhouettes. No unnecessary noise.<br/>Find your own kind of everyday.</p></div>
-        <div className="shoe-grid">{shoes.map((shoe, i) => <article className="shoe-card reveal" key={shoe.id} style={{ transitionDelay: `${i * 90}ms` }}>
+        <div className="shoe-grid">{homeCollection.map((shoe, i) => <article className="shoe-card reveal" key={shoe.id} style={{ transitionDelay: `${i * 90}ms` }}>
           <button className="shoe-photo" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name} details`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag && <span className="shoe-tag">{shoe.tag}</span>}<span className="quick-add">VIEW DETAILS ↗</span></button>
           <div className="shoe-info"><div><p>{shoe.kind}</p><h3>{shoe.name}</h3><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div>
         </article>)}</div>
