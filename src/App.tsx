@@ -169,7 +169,7 @@ export default function App() {
           </div>}
         </div>
         <aside className="checkout-summary"><div className="checkout-summary-sticky"><div className="summary-title"><p className="kicker">YOUR ORDER</p><h2>Order summary <span>{cart.length}</span></h2></div><div className="summary-items">{cart.map((item,i)=><div className="summary-item" key={`${item.shoe.id}-${item.size}-${i}`}><div className="summary-image"><img src={item.shoe.image} alt={item.shoe.kind}/><span>{item.size}</span></div><div><p>{item.shoe.kind}</p><h3>{item.shoe.name}</h3><small>SIZE {item.size}</small></div><strong>{money(item.shoe.price)}</strong></div>)}</div><div className="summary-totals"><div><span>SUBTOTAL</span><b>{money(cartSubtotal)}</b></div><div><span>SHIPPING</span><b>{shippingCost===0?"FREE":money(shippingCost)}</b></div><div className="summary-total"><span>TOTAL</span><strong>{money(checkoutTotal)}</strong></div></div><p className="summary-note">Prices include applicable taxes. Free standard shipping on orders over ₹5,000.</p></div></aside>
-      </div></main>}
+      </div></main>)}
     <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
       <section className="shoe-hero">
         <div className="hero-copy reveal">
