@@ -73,6 +73,19 @@ export default function App() {
     return () => observer.disconnect();
   }, [shopOpen, selectedProduct, checkoutOpen]);
 
+  useEffect(() => {
+    const stage = document.querySelector(".best-sellers-stage");
+    if (!stage) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        stage.classList.add("best-sellers-active");
+        observer.disconnect();
+      }
+    }, { threshold: 0.12 });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, [shopOpen, selectedProduct, checkoutOpen]);
+
   const openShop = () => {
     setMenuOpen(false);
     setSelectedProduct(null);
