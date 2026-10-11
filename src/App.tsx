@@ -229,7 +229,7 @@ export default function App() {
         </div>
         <div className="best-sellers-stage">
           {homeCollection.slice(0, 5).map((shoe, i) => (
-            <article className={"best-seller-item best-seller-" + (i + 1) + " reveal"} key={shoe.id} style={{ animationDelay: (i * 110) + "ms" }}>
+            <article className={"best-seller-item best-seller-" + (i + 1)} key={shoe.id} style={{ animationDelay: (i * 110) + "ms" }}>
               <button className="best-seller-product" onClick={() => openProduct(shoe)} aria-label={"View " + shoe.name + " details"}>
                 <div className="best-seller-glass">
                   <span>{shoe.kind}</span>
