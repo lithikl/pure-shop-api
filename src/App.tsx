@@ -60,13 +60,13 @@ export default function App() {
 
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
-    <header className="noir-header">
+    <header className={shopOpen || selectedProduct ? "noir-header" : "noir-header liquid-glass-header"}>
       <button className="mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
       </nav>
-      <button className="noir-logo" onClick={() => goTo("top")} aria-label="Noirknull home">noirknull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} aria-label="Noirknull home">noirknull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
