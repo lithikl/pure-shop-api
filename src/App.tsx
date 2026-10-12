@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts } from "./store";
+import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts } from "./store";
 import PatternWaves from "./PatternWaves";
 
 type CartItem = { shoe: Shoe; size: number };
@@ -30,6 +30,7 @@ export default function App() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
+  const [homepage, setHomepage] = useState<HomepageSettings>(loadHomepageSettings);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
   const [shopOpen, setShopOpen] = useState(false);
@@ -50,19 +51,24 @@ export default function App() {
     const syncProducts = () => setProducts(loadProducts());
     const syncFeatured = () => setFeaturedIds(loadFeatured());
     const syncEternalFits = () => setEternalFits(loadEternalFits());
+    const syncHomepage = () => setHomepage(loadHomepageSettings());
     window.addEventListener("noirknull:products", syncProducts);
     window.addEventListener("noirknull:featured", syncFeatured);
     window.addEventListener("noirknull:eternal-fits", syncEternalFits);
+    window.addEventListener("noirknull:homepage", syncHomepage);
     window.addEventListener("storage", syncProducts);
     window.addEventListener("storage", syncFeatured);
     window.addEventListener("storage", syncEternalFits);
+    window.addEventListener("storage", syncHomepage);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
       window.removeEventListener("noirknull:eternal-fits", syncEternalFits);
+      window.removeEventListener("noirknull:homepage", syncHomepage);
       window.removeEventListener("storage", syncProducts);
       window.removeEventListener("storage", syncFeatured);
       window.removeEventListener("storage", syncEternalFits);
+      window.removeEventListener("storage", syncHomepage);
     };
   }, []);
 
@@ -127,13 +133,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedSize(null); };
-  const categories = ["ALL", "RUNNERS", "STREET", "COURT", "ESSENTIALS"];
+  const categoryName = (shoe: Shoe) => (shoe.category?.trim() || (shoe.kind === "Everyday Runner" ? "Runners" : shoe.kind === "Street Low" ? "Street" : shoe.kind === "Retro Court" ? "Court" : "Essentials"));
+  const categories = ["ALL", ...Array.from(new Set(products.map(categoryName))).sort()];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
   const homeCollection = homepageShoes.length ? homepageShoes : products;
   const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
-    const category = shoe.kind === "Everyday Runner" ? "RUNNERS" : shoe.kind === "Street Low" ? "STREET" : shoe.kind === "Retro Court" ? "COURT" : "ESSENTIALS";
-    return matchesSearch && (activeCategory === "ALL" || category === activeCategory);
+    const category = categoryName(shoe);
+    return matchesSearch && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
   }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
   const add = (shoe: Shoe, size: number) => {
     setSelectedProduct(null);
@@ -175,15 +182,15 @@ export default function App() {
       <section className="fit-picks">
         <div className="fit-picks-heading"><div><p className="kicker">STYLE NOTES / 001</p><h2>The finishing<br/><em>touches.</em></h2></div><p>Small details. Entirely different energy.<br/>Explore the moodboard, then find your pair below.</p></div>
         <div className="fit-picks-grid">
-          <article className="fit-pick fit-pick-wide"><img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1000&q=85" alt="Streetwear outfit inspiration"/><div><span>01 / THE OFF-DUTY FIT</span><h3>Easy layers.<br/>Strong silhouette.</h3><p>Keep the shape relaxed and let the sneakers do the talking.</p></div></article>
-          <article className="fit-pick"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=650&q=85" alt="Minimal watch detail"/><div><span>02 / ACCESSORIES</span><h3>Details that<br/>feel like you.</h3><p>Clean, useful, never too much.</p></div></article>
-          <article className="fit-pick"><img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=650&q=85" alt="Everyday backpack"/><div><span>03 / EVERYDAY CARRY</span><h3>Take your<br/>own route.</h3><p>Built around the places your day takes you.</p></div></article>
+          <article className="fit-pick fit-pick-wide"><img src={homepage.fitPickImages[0]} alt="Streetwear outfit inspiration"/><div><span>01 / THE OFF-DUTY FIT</span><h3>Easy layers.<br/>Strong silhouette.</h3><p>Keep the shape relaxed and let the sneakers do the talking.</p></div></article>
+          <article className="fit-pick"><img src={homepage.fitPickImages[1]} alt="Minimal watch detail"/><div><span>02 / ACCESSORIES</span><h3>Details that<br/>feel like you.</h3><p>Clean, useful, never too much.</p></div></article>
+          <article className="fit-pick"><img src={homepage.fitPickImages[2]} alt="Everyday backpack"/><div><span>03 / EVERYDAY CARRY</span><h3>Take your<br/>own route.</h3><p>Built around the places your day takes you.</p></div></article>
         </div>
         <div className="fit-picks-bottom"><span>STYLE IS PERSONAL. THIS IS JUST A STARTING POINT.</span><span>NOIRKNULL® — 2026</span></div>
       </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
-      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=> (shoe.kind==="Everyday Runner"?"RUNNERS":shoe.kind==="Street Low"?"STREET":shoe.kind==="Retro Court"?"COURT":"ESSENTIALS")===category).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
+      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
       <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.kind}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
       <section className="shop-editorial reveal">
@@ -197,9 +204,9 @@ export default function App() {
         <div className="shop-editorial-art">
           <div className="editorial-ring editorial-ring-a"/><div className="editorial-ring editorial-ring-b"/>
           <span className="editorial-vertical">FORM / FUNCTION / FEELING</span>
-          <img className="editorial-main-sneaker" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=90" alt="Red sneaker styled for the Noirknull collection"/>
-          <div className="editorial-float-card editorial-accessory-one"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=420&q=85" alt="Minimal everyday watch accessory"/><span>THE DAILY DETAIL <b>01</b></span></div>
-          <div className="editorial-float-card editorial-accessory-two"><img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=420&q=85" alt="Minimal streetwear backpack"/><span>CARRY YOUR WORLD <b>02</b></span></div>
+          <img className="editorial-main-sneaker" src={homepage.editorialMainImage} alt="Red sneaker styled for the Noirknull collection"/>
+          <div className="editorial-float-card editorial-accessory-one"><img src={homepage.editorialAccessoryImages[0]} alt="Minimal everyday watch accessory"/><span>THE DAILY DETAIL <b>01</b></span></div>
+          <div className="editorial-float-card editorial-accessory-two"><img src={homepage.editorialAccessoryImages[1]} alt="Minimal streetwear backpack"/><span>CARRY YOUR WORLD <b>02</b></span></div>
           <div className="editorial-art-stamp">N/K<small>STYLE STUDY 001</small></div>
           <span className="editorial-orbit-label">EVERYDAY / UNCOMMON ↗</span>
         </div>
@@ -246,7 +253,7 @@ export default function App() {
         <div className="hero-art" aria-label="Featured sneaker">
           <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
           <div className="hero-stamp">N/K<br/><small>OBJECTS IN MOTION</small></div>
-          <img className="floating-shoe" src="/assets/output-onlinepngtools.png" alt="NOIR / 01 sneaker"/>
+          <img className="floating-shoe" src={homepage.heroImage} alt="NOIR / 01 sneaker"/>
           <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
         </div>
         <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>
@@ -254,7 +261,7 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      <section className="best-sellers section-wrap" id="collection">
+      {homepage.showBestSellers && <section className="best-sellers section-wrap" id="collection">
         <div className="best-sellers-heading reveal">
           <div><p className="kicker">01 / THE MOST WANTED</p><h2>Best<br/><em>sellers.</em></h2></div>
           <p className="section-intro">The pairs people keep coming back for.<br/>Tap any object to explore it.</p>
@@ -275,10 +282,10 @@ export default function App() {
           ))}
         </div>
         <div className="best-sellers-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
-      </section>
+      </section>}
 
-      <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
-        <PatternWaves color="#0b0b0a" opacity={0.68} speed={0.42} spacing={17} depth={1.0} interactive={true} />
+      {homepage.showEternalFits && <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
+        {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
         <div className="eternal-fits-heading reveal">
           <div>
             <p className="kicker">02 / THE CAMPAIGN</p>
@@ -304,20 +311,24 @@ export default function App() {
           </div>
         </div>
         <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
-      </section>
+      </section>}
 
-      <section className="manifesto" id="manifesto">
-        <div className="manifesto-image"><img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=1400&q=90" alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
+      {homepage.showManifesto && <section className="manifesto" id="manifesto">
+        <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
         <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button><span className="manifesto-mark">N/K</span></div>
       </section>
 
-      <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
+      </section>}
+
+      {homepage.showDetails && <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
         <div className="detail-row reveal"><span>01</span><h3>Everyday comfort</h3><p>Easy-wearing silhouettes made to keep pace with your day.</p><ArrowUpRight size={18}/></div>
         <div className="detail-row reveal"><span>02</span><h3>Quiet statement</h3><p>Distinct shape, restrained details, nothing there by accident.</p><ArrowUpRight size={18}/></div>
         <div className="detail-row reveal"><span>03</span><h3>Your own direction</h3><p>Not here to tell you where to go. Just what to go in.</p><ArrowUpRight size={18}/></div>
       </div></section>
 
-      <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>
+      </section>}
+
+      {homepage.showClosingBanner && <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>
     </main>}
 
     {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
