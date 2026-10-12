@@ -100,15 +100,23 @@ export default function App() {
     if (!section || !stage || !track || !eternalFits.length) return;
 
     let frame = 0;
+
     const update = () => {
       frame = 0;
       const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
-      const stageHeight = stage.clientHeight;
-      section.style.height = `${stageHeight + horizontalDistance}px`;
+      const stickyTop = window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
 
-      const scrollRange = Math.max(1, section.offsetHeight - stageHeight);
-      const rect = section.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / scrollRange));
+      // Add exactly the horizontal travel to the section's natural height.
+      // This keeps the campaign contained while the sticky stage converts
+      // vertical scroll into horizontal movement.
+      section.style.paddingBottom = `${horizontalDistance}px`;
+
+      const stageTop = stage.getBoundingClientRect().top + window.scrollY;
+      const start = stageTop - stickyTop;
+      const progress = horizontalDistance
+        ? Math.min(1, Math.max(0, (window.scrollY - start) / horizontalDistance))
+        : 0;
+
       stage.style.setProperty("--eternal-shift", `${-(horizontalDistance * progress).toFixed(2)}px`);
     };
 
@@ -124,6 +132,7 @@ export default function App() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", update);
       if (frame) cancelAnimationFrame(frame);
+      section.style.paddingBottom = "";
     };
   }, [eternalFits.length, shopOpen, selectedProduct, checkoutOpen]);
 
