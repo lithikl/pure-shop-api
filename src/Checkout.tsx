@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { createOrder } from "./orders";
 
 type Shoe = { id: number; name: string; kind: string; price: number; image: string; tone: string; tag?: string };
 type CartItem = { shoe: Shoe; size: number };
-type Props = { cart: CartItem[]; onBack: () => void; onComplete: () => void };
+type Props = { cart: CartItem[]; onBack: () => void; onComplete: (orderId?: string) => void };
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 export default function Checkout({ cart, onBack, onComplete }: Props) {
@@ -29,11 +30,13 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
     }
   };
 
+  const saveOrder = (paymentId?: string) => createOrder({ payment: payment, total, shipping: shippingCost, paymentId, customer: data, items: cart.map(item => ({ productId: item.shoe.id, name: item.shoe.name, kind: item.shoe.kind, image: item.shoe.image, price: item.shoe.price, size: item.size })) });
+
   if (step === "success") return <main className="checkout-page"><section className="checkout-success">
     <div className="checkout-success-mark">✓</div><p className="kicker">NOIRKNULL / ORDER CONFIRMED</p><h1>You are<br/><em>all set.</em></h1>
     <p>Your order has been placed successfully. A confirmation will be sent to {data.email || "your email"}.</p>
     <div className="checkout-success-meta"><span>ORDER CONFIRMED</span><span>NOIRKNULL® — 2026</span></div>
-    <button className="checkout-primary" onClick={onComplete}>RETURN HOME <ArrowUpRight size={16}/></button>
+    <button className="checkout-primary" onClick={() => onComplete()}>RETURN HOME <ArrowUpRight size={16}/></button>
   </section></main>;
 
   return <main className="checkout-page"><div className="checkout-shell"><div className="checkout-main">
@@ -49,7 +52,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">DELIVERY</p><h2>{shipping==="standard"?"Standard":"Express"} delivery</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{shipping==="standard"?"3–7 business days":"1–3 business days"}</p></div>
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">PAYMENT</p><h2>{payment==="razorpay"?"Razorpay":"Cash on delivery"}</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{payment==="cod"?"Pay when your order arrives.":"You will complete payment securely through Razorpay after confirming this order."}</p></div>
       <button className="checkout-primary" onClick={async()=>{ 
-        if (payment === "cod") { setStep("success"); return; }
+        if (payment === "cod") { const order = saveOrder(); setStep("success"); return; }
         try {
           const orderResponse = await fetch("/api/create-order", {
             method: "POST", headers: {"Content-Type":"application/json"},
@@ -78,7 +81,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
                 const verifyResponse = await fetch("/api/verify-payment", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(response) });
                 const verified = await readJsonResponse(verifyResponse);
                 if (!verifyResponse.ok || !verified.verified) throw new Error(verified.error || "Payment verification failed.");
-                setStep("success");
+                const saved = saveOrder(response.razorpay_payment_id); setStep("success");
               } catch (error) { alert(error instanceof Error ? error.message : "Payment verification failed."); }
             }
           });
