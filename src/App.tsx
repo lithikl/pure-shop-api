@@ -4,6 +4,7 @@ import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts } from "./store";
 import PatternWaves from "./PatternWaves";
+import TrackOrder from "./TrackOrder";
 
 type CartItem = { shoe: Shoe; size: number };
 
@@ -27,6 +28,7 @@ const tintFromTone = (tone: string) => {
 
 export default function App() {
   const isAdmin = window.location.pathname === "/admin";
+  const isTrackOrder = window.location.pathname === "/track-order";
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
@@ -165,6 +167,7 @@ export default function App() {
   const checkoutReady = Boolean(checkoutData.email.trim() && checkoutData.phone.trim() && checkoutData.firstName.trim() && checkoutData.lastName.trim() && checkoutData.address.trim() && checkoutData.city.trim() && checkoutData.state.trim() && checkoutData.pincode.trim().length === 6);
 
   if (isAdmin) return <Admin />;
+  if (isTrackOrder) return <TrackOrder />;
 
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
@@ -327,7 +330,7 @@ export default function App() {
       {homepage.showClosingBanner && <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>}
     </main>}
 
-    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="/track-order">TRACK ORDER ↗</a><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
 
     }
 
