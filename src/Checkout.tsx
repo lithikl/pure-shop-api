@@ -17,6 +17,18 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
   const update = (key: keyof typeof data, value: string) => setData(old => ({ ...old, [key]: value }));
   const ready = Boolean(data.email.trim() && data.phone.trim() && data.firstName.trim() && data.lastName.trim() && data.address.trim() && data.city.trim() && data.state.trim() && data.pincode.length === 6);
 
+  const readJsonResponse = async (response: Response) => {
+    const raw = await response.text();
+    if (!raw.trim()) {
+      throw new Error(`Payment server returned an empty response (HTTP ${response.status}). If you are testing locally with Vite, use the deployed Vercel site or \`vercel dev\` so /api routes are available.`);
+    }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      throw new Error(`Payment server returned an invalid response (HTTP ${response.status}). Please try again.`);
+    }
+  };
+
   if (step === "success") return <main className="checkout-page"><section className="checkout-success">
     <div className="checkout-success-mark">✓</div><p className="kicker">NOIRKNULL / ORDER CONFIRMED</p><h1>You are<br/><em>all set.</em></h1>
     <p>Your order has been placed successfully. A confirmation will be sent to {data.email || "your email"}.</p>
@@ -43,7 +55,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
             method: "POST", headers: {"Content-Type":"application/json"},
             body: JSON.stringify({ amount: total, currency: "INR", receipt: `noir-${Date.now()}`, customer: { name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone } })
           });
-          const order = await orderResponse.json();
+          const order = await readJsonResponse(orderResponse);
           if (!orderResponse.ok) throw new Error(order.error || "Unable to create payment order.");
           const loadRazorpay = () => new Promise<boolean>((resolve) => {
             if ((window as any).Razorpay) return resolve(true);
@@ -64,7 +76,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
             handler: async (response: any) => {
               try {
                 const verifyResponse = await fetch("/api/verify-payment", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(response) });
-                const verified = await verifyResponse.json();
+                const verified = await readJsonResponse(verifyResponse);
                 if (!verifyResponse.ok || !verified.verified) throw new Error(verified.error || "Payment verification failed.");
                 setStep("success");
               } catch (error) { alert(error instanceof Error ? error.message : "Payment verification failed."); }
