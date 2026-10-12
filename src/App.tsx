@@ -288,8 +288,8 @@ export default function App() {
         </div>
         <div className="eternal-fits-stage">
           <div className="eternal-fits-track">
-            {eternalFits.map((fit, index) => (
-              <article className="eternal-fit-card" key={fit.id}>
+            {[...eternalFits, ...eternalFits].map((fit, index) => (
+              <article className="eternal-fit-card" key={`${fit.id}-${index}`}>
                 <div className="eternal-fit-image">
                   <img src={fit.image} alt={fit.title}/>
                   <div className="eternal-fit-glass">
