@@ -824,6 +824,20 @@ html{
   color:rgba(255,255,255,.88);
   text-shadow:0 2px 14px rgba(23,23,21,.24);
 }
+/* Eternal Fits releases directly into the next section with no blank tail */
+.eternal-fits{z-index:5}
+.eternal-fits + .manifesto{
+  position:relative;
+  z-index:1;
+  margin-top:calc(-1 * (min(72vh,700px) + 96px));
+}
+@media(max-width:900px){
+  .eternal-fits + .manifesto{margin-top:calc(-1 * (min(68vh,610px) + 88px))}
+}
+@media(max-width:600px){
+  .eternal-fits + .manifesto{margin-top:calc(-1 * (72vh + 80px))}
+}
+
 .eternal-fits-footer{
   position:absolute;
   left:7.2%;
