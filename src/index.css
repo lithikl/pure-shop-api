@@ -946,6 +946,6 @@ html{
 
 
 /* Eternal Fits — Pattern Waves background */
-.eternal-fits > .pattern-waves{position:absolute;inset:0;opacity:.9;}
+.eternal-fits > .pattern-waves{position:absolute;inset:0;z-index:2;opacity:1;pointer-events:none;mix-blend-mode:multiply;}
 .eternal-fits-heading,.eternal-fits-stage,.eternal-fits-footer{position:relative;z-index:3;}
 .eternal-fits::before{z-index:1;}
