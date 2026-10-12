@@ -15,10 +15,10 @@ type PatternWavesProps = {
 export default function PatternWaves({
   color = "#171512",
   backgroundColor = "transparent",
-  opacity = 0.22,
-  speed = 0.32,
-  spacing = 12,
-  depth = 0.9,
+  opacity = 0.48,
+  speed = 0.42,
+  spacing = 20,
+  depth = 1.15,
   interactive = true,
   className = "",
 }: PatternWavesProps) {
@@ -71,9 +71,10 @@ export default function PatternWaves({
       ctx.clearRect(0, 0, width, height);
       ctx.globalAlpha = opacity;
       ctx.fillStyle = color;
+      ctx.lineWidth = 1;
 
       const gap = Math.max(7, spacing);
-      const radius = Math.max(0.65, gap * 0.065);
+      const radius = Math.max(1.1, gap * 0.095);
 
       for (let y = -gap; y < height + gap; y += gap) {
         for (let x = -gap; x < width + gap; x += gap) {
@@ -94,7 +95,7 @@ export default function PatternWaves({
           }
 
           const size = radius * (0.65 + (lift + 1) * 0.28);
-          const alpha = Math.max(0.12, Math.min(1, 0.35 + (lift + 1) * 0.18));
+          const alpha = Math.max(0.35, Math.min(1, 0.58 + (lift + 1) * 0.22));
           ctx.globalAlpha = opacity * alpha;
           ctx.beginPath();
           ctx.arc(x, y + lift * gap * 0.28, size, 0, Math.PI * 2);
