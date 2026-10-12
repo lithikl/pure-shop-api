@@ -108,14 +108,15 @@ export default function App() {
       const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
       const stageOffset = stage.offsetTop;
       const stageHeight = stage.offsetHeight;
-      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-      const start = sectionTop + stageOffset - stickyTop();
-      const end = start + horizontalDistance;
+      const top = stickyTop();
 
-      // The section ends exactly when the horizontal travel ends.
-      // This prevents a blank vertical gap after the final image.
+      // Keep the section exactly as tall as the heading + sticky stage +
+      // the vertical distance needed to finish the horizontal gallery.
       section.style.height = `${stageOffset + stageHeight + horizontalDistance}px`;
 
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const start = sectionTop + stageOffset - top;
+      const end = start + horizontalDistance;
       return { horizontalDistance, start, end };
     };
 
@@ -136,16 +137,27 @@ export default function App() {
     const onWheel = (event: WheelEvent) => {
       const { start, end } = metrics();
       const y = window.scrollY;
-      const proposed = y + event.deltaY;
+      const delta = event.deltaY;
+
+      if (!delta) return;
+
+      // At either edge, release the wheel so the page can continue normally.
+      if ((delta > 0 && y >= end) || (delta < 0 && y <= start)) return;
+
+      const proposed = y + delta;
+      const crossesSection =
+        (y < start && proposed >= start) ||
+        (y > end && proposed <= end);
+
       const inside = y >= start && y <= end;
-      const entering = (y < start && proposed >= start) || (y > end && proposed <= end);
+      if (!inside && !crossesSection) return;
 
-      if (!inside && !entering) return;
-
-      // Convert the wheel movement into the horizontal campaign progress.
+      // While inside Eternal Fits, convert vertical wheel movement into
+      // horizontal gallery progress.
       event.preventDefault();
+
       const next = Math.min(end, Math.max(start, proposed));
-      window.scrollTo(0, next);
+      window.scrollTo({ top: next, behavior: "auto" });
       scheduleUpdate();
     };
 
@@ -160,18 +172,27 @@ export default function App() {
 
       const { start, end } = metrics();
       const y = window.scrollY;
-      const proposed = y + delta;
-      const inside = y >= start && y <= end;
-      const entering = (y < start && proposed >= start) || (y > end && proposed <= end);
 
-      if (!inside && !entering) {
+      if ((delta > 0 && y >= end) || (delta < 0 && y <= start)) {
+        touchY = currentY;
+        return;
+      }
+
+      const proposed = y + delta;
+      const crossesSection =
+        (y < start && proposed >= start) ||
+        (y > end && proposed <= end);
+      const inside = y >= start && y <= end;
+
+      if (!inside && !crossesSection) {
         touchY = currentY;
         return;
       }
 
       event.preventDefault();
+
       const next = Math.min(end, Math.max(start, proposed));
-      window.scrollTo(0, next);
+      window.scrollTo({ top: next, behavior: "auto" });
       touchY = currentY;
       scheduleUpdate();
     };
