@@ -188,11 +188,13 @@
 
 /* Home liquid-glass navigation — intentionally scoped to the homepage */
 .liquid-glass-header{
-  position:sticky;
+  position:fixed;
   top:12px;
+  left:50%;
+  transform:translateX(-50%);
   width:min(calc(100% - 40px),1320px);
   height:72px;
-  margin:12px auto -84px;
+  margin:0;
   padding:0 28px;
   border:1px solid rgba(255,255,255,.68);
   border-radius:999px;
@@ -251,7 +253,7 @@
 .fit-picks-grid{align-items:stretch}
 
 @media(max-width:900px){
-  .liquid-glass-header{width:calc(100% - 28px);margin:10px auto -80px;padding:0 18px}
+  .liquid-glass-header{width:calc(100% - 28px);top:10px;margin:0;padding:0 18px}
   .shop-body{grid-template-columns:145px minmax(0,1fr);padding-left:5%;padding-right:5%}
   .shop-toolbar{padding-left:5%;padding-right:5%}
   .shop-page-top{padding-left:5%;padding-right:5%}
@@ -262,6 +264,8 @@
   .liquid-glass-header{
     top:8px;
     width:calc(100% - 20px);
+    left:50%;
+    transform:translateX(-50%);
     height:62px;
     margin:8px auto -70px;
     padding:0 13px;
