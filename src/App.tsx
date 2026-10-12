@@ -280,7 +280,7 @@ export default function App() {
       </section>
 
       <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
-        <PatternWaves color="#171512" opacity={0.18} speed={0.28} spacing={13} depth={0.85} interactive={true} />
+        <PatternWaves color="#171512" opacity={0.58} speed={0.42} spacing={20} depth={1.15} interactive={true} />
         <div className="eternal-fits-heading reveal">
           <div>
             <p className="kicker">02 / THE CAMPAIGN</p>
