@@ -99,66 +99,76 @@ export default function App() {
     const track = document.querySelector<HTMLElement>(".eternal-fits-track");
     if (!section || !stage || !track || !eternalFits.length) return;
 
-    let frame = 0;
+    let raf = 0;
     let touchY = 0;
+    let start = 0;
+    let end = 0;
+    let distance = 0;
 
-    const stickyTop = () => window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
+    const getTop = () => window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
 
-    const metrics = () => {
-      const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
-      const stageOffset = stage.offsetTop;
-      const stageHeight = stage.offsetHeight;
-      const top = stickyTop();
-
-      // Keep the section exactly as tall as the heading + sticky stage +
-      // the vertical distance needed to finish the horizontal gallery.
-      section.style.height = `${stageOffset + stageHeight + horizontalDistance}px`;
-
+    const measure = () => {
+      distance = Math.max(0, track.scrollWidth - stage.clientWidth);
+      const stageTopInSection = stage.offsetTop;
       const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-      const start = sectionTop + stageOffset - top;
-      const end = start + horizontalDistance;
-      return { horizontalDistance, start, end };
+      start = sectionTop + stageTopInSection - getTop();
+      end = start + distance;
+
+      // Vertical scroll distance equals horizontal travel — no extra blank space.
+      section.style.height = `${stageTopInSection + stage.offsetHeight + distance}px`;
     };
 
-    const update = () => {
-      frame = 0;
-      const { horizontalDistance, start, end } = metrics();
-      const progress = horizontalDistance
-        ? Math.min(1, Math.max(0, (window.scrollY - start) / horizontalDistance))
+    const render = () => {
+      raf = 0;
+      measure();
+      const progress = distance > 0
+        ? Math.min(1, Math.max(0, (window.scrollY - start) / distance))
         : 0;
-
-      stage.style.setProperty("--eternal-shift", `${-(horizontalDistance * progress).toFixed(2)}px`);
+      stage.style.setProperty("--eternal-shift", `${-distance * progress}px`);
     };
 
-    const scheduleUpdate = () => {
-      if (!frame) frame = requestAnimationFrame(update);
+    const requestRender = () => {
+      if (!raf) raf = requestAnimationFrame(render);
+    };
+
+    const consume = (delta: number) => {
+      measure();
+      const y = window.scrollY;
+
+      // Only consume scroll while the horizontal gallery has room to move.
+      if (delta > 0 && y < end) {
+        const next = Math.min(end, y + delta);
+        window.scrollTo(0, next);
+        requestRender();
+        return true;
+      }
+      if (delta < 0 && y > start) {
+        const next = Math.max(start, y + delta);
+        window.scrollTo(0, next);
+        requestRender();
+        return true;
+      }
+      return false;
     };
 
     const onWheel = (event: WheelEvent) => {
-      const { start, end } = metrics();
       const y = window.scrollY;
       const delta = event.deltaY;
-
       if (!delta) return;
 
-      // At either edge, release the wheel so the page can continue normally.
-      if ((delta > 0 && y >= end) || (delta < 0 && y <= start)) return;
+      measure();
 
-      const proposed = y + delta;
-      const crossesSection =
-        (y < start && proposed >= start) ||
-        (y > end && proposed <= end);
+      const approaching =
+        (delta > 0 && y < start && y + delta >= start) ||
+        (delta < 0 && y > end && y + delta <= end);
 
       const inside = y >= start && y <= end;
-      if (!inside && !crossesSection) return;
 
-      // While inside Eternal Fits, convert vertical wheel movement into
-      // horizontal gallery progress.
-      event.preventDefault();
-
-      const next = Math.min(end, Math.max(start, proposed));
-      window.scrollTo({ top: next, behavior: "auto" });
-      scheduleUpdate();
+      if (inside || approaching) {
+        // Browser vertical scrolling is converted into the gallery's horizontal progress.
+        event.preventDefault();
+        consume(delta);
+      }
     };
 
     const onTouchStart = (event: TouchEvent) => {
@@ -166,51 +176,35 @@ export default function App() {
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY ?? touchY;
-      const delta = touchY - currentY;
+      const yNow = event.touches[0]?.clientY ?? touchY;
+      const delta = touchY - yNow;
+      touchY = yNow;
       if (!delta) return;
 
-      const { start, end } = metrics();
+      measure();
       const y = window.scrollY;
-
-      if ((delta > 0 && y >= end) || (delta < 0 && y <= start)) {
-        touchY = currentY;
-        return;
-      }
-
-      const proposed = y + delta;
-      const crossesSection =
-        (y < start && proposed >= start) ||
-        (y > end && proposed <= end);
       const inside = y >= start && y <= end;
 
-      if (!inside && !crossesSection) {
-        touchY = currentY;
-        return;
+      if (inside || (delta > 0 && y < start && y + delta >= start) || (delta < 0 && y > end && y + delta <= end)) {
+        if (consume(delta)) event.preventDefault();
       }
-
-      event.preventDefault();
-
-      const next = Math.min(end, Math.max(start, proposed));
-      window.scrollTo({ top: next, behavior: "auto" });
-      touchY = currentY;
-      scheduleUpdate();
     };
 
-    update();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
+    measure();
+    render();
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("scroll", requestRender, { passive: true });
+    window.addEventListener("resize", requestRender);
 
     return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestRender);
+      window.removeEventListener("resize", requestRender);
+      if (raf) cancelAnimationFrame(raf);
       section.style.height = "";
     };
   }, [eternalFits.length, shopOpen, selectedProduct, checkoutOpen]);
