@@ -100,19 +100,28 @@ export default function App() {
     if (!section || !stage || !track || !eternalFits.length) return;
 
     let frame = 0;
+    let touchY = 0;
+
+    const stickyTop = () => window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
+
+    const metrics = () => {
+      const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
+      const stageOffset = stage.offsetTop;
+      const stageHeight = stage.offsetHeight;
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const start = sectionTop + stageOffset - stickyTop();
+      const end = start + horizontalDistance;
+
+      // The section ends exactly when the horizontal travel ends.
+      // This prevents a blank vertical gap after the final image.
+      section.style.height = `${stageOffset + stageHeight + horizontalDistance}px`;
+
+      return { horizontalDistance, start, end };
+    };
 
     const update = () => {
       frame = 0;
-      const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
-      const stickyTop = window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
-
-      // Add exactly the horizontal travel to the section's natural height.
-      // This keeps the campaign contained while the sticky stage converts
-      // vertical scroll into horizontal movement.
-      section.style.paddingBottom = `${horizontalDistance}px`;
-
-      const stageTop = stage.getBoundingClientRect().top + window.scrollY;
-      const start = stageTop - stickyTop;
+      const { horizontalDistance, start, end } = metrics();
       const progress = horizontalDistance
         ? Math.min(1, Math.max(0, (window.scrollY - start) / horizontalDistance))
         : 0;
@@ -120,19 +129,68 @@ export default function App() {
       stage.style.setProperty("--eternal-shift", `${-(horizontalDistance * progress).toFixed(2)}px`);
     };
 
-    const onScroll = () => {
+    const scheduleUpdate = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
 
+    const onWheel = (event: WheelEvent) => {
+      const { start, end } = metrics();
+      const y = window.scrollY;
+      const proposed = y + event.deltaY;
+      const inside = y >= start && y <= end;
+      const entering = (y < start && proposed >= start) || (y > end && proposed <= end);
+
+      if (!inside && !entering) return;
+
+      // Convert the wheel movement into the horizontal campaign progress.
+      event.preventDefault();
+      const next = Math.min(end, Math.max(start, proposed));
+      window.scrollTo(0, next);
+      scheduleUpdate();
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchY;
+      const delta = touchY - currentY;
+      if (!delta) return;
+
+      const { start, end } = metrics();
+      const y = window.scrollY;
+      const proposed = y + delta;
+      const inside = y >= start && y <= end;
+      const entering = (y < start && proposed >= start) || (y > end && proposed <= end);
+
+      if (!inside && !entering) {
+        touchY = currentY;
+        return;
+      }
+
+      event.preventDefault();
+      const next = Math.min(end, Math.max(start, proposed));
+      window.scrollTo(0, next);
+      touchY = currentY;
+      scheduleUpdate();
+    };
+
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       if (frame) cancelAnimationFrame(frame);
-      section.style.paddingBottom = "";
+      section.style.height = "";
     };
   }, [eternalFits.length, shopOpen, selectedProduct, checkoutOpen]);
 
