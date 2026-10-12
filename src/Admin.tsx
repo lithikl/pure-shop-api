@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X } from "lucide-react";
-import { DEFAULT_SHOES, Shoe, loadFeatured, loadProducts, saveFeatured, saveProducts } from "./store";
+import { DEFAULT_SHOES, DEFAULT_ETERNAL_FITS, EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts, saveEternalFits, saveFeatured, saveProducts } from "./store";
 
 const emptyProduct = (): Shoe => ({
   id: Date.now(),
@@ -10,18 +10,27 @@ const emptyProduct = (): Shoe => ({
   image: "",
   tone: "",
   tag: "",
-  glassTint: "",
   glassTint: ""
 });
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
+const emptyEternalFit = (): EternalFit => ({
+  id: Date.now(),
+  image: "",
+  title: "",
+  meta: "",
+  caption: "",
+});
+
 export default function Admin() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featured, setFeatured] = useState<number[]>(loadFeatured);
+  const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
   const [editing, setEditing] = useState<Shoe | null>(null);
+  const [editingFit, setEditingFit] = useState<EternalFit | null>(null);
   const [saved, setSaved] = useState(false);
-  const [tab, setTab] = useState<"products" | "homepage" | "settings">("products");
+  const [tab, setTab] = useState<"products" | "homepage" | "eternal" | "settings">("products");
 
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
@@ -66,10 +75,48 @@ export default function Admin() {
     persistFeatured(next);
   };
 
+  const persistEternalFits = (next: EternalFit[]) => {
+    setEternalFits(next);
+    saveEternalFits(next);
+    flash();
+  };
+
+  const saveEternalFit = () => {
+    if (!editingFit?.image.trim() || !editingFit.title.trim()) return;
+    const exists = eternalFits.some(fit => fit.id === editingFit.id);
+    const normalized = {
+      ...editingFit,
+      image: editingFit.image.trim(),
+      title: editingFit.title.trim(),
+      meta: editingFit.meta?.trim(),
+      caption: editingFit.caption?.trim(),
+    };
+    const next = exists ? eternalFits.map(fit => fit.id === editingFit.id ? normalized : fit) : [...eternalFits, normalized];
+    persistEternalFits(next);
+    setEditingFit(null);
+  };
+
+  const deleteEternalFit = (id: number) => {
+    persistEternalFits(eternalFits.filter(fit => fit.id !== id));
+    if (editingFit?.id === id) setEditingFit(null);
+  };
+
+  const moveEternalFit = (id: number, direction: -1 | 1) => {
+    const index = eternalFits.findIndex(fit => fit.id === id);
+    if (index < 0) return;
+    const target = index + direction;
+    if (target < 0 || target >= eternalFits.length) return;
+    const next = [...eternalFits];
+    [next[index], next[target]] = [next[target], next[index]];
+    persistEternalFits(next);
+  };
+
   const reset = () => {
     persistProducts(DEFAULT_SHOES);
     persistFeatured(DEFAULT_SHOES.map(p => p.id));
+    persistEternalFits(DEFAULT_ETERNAL_FITS);
     setEditing(null);
+    setEditingFit(null);
   };
 
   return <div className="admin-page">
@@ -78,6 +125,7 @@ export default function Admin() {
       <nav>
         <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
         <button className={tab === "homepage" ? "active" : ""} onClick={() => setTab("homepage")}><Eye size={16}/> HOMEPAGE</button>
+        <button className={tab === "eternal" ? "active" : ""} onClick={() => setTab("eternal")}><Eye size={16}/> ETERNAL FITS</button>
         <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={16}/> SETTINGS</button>
       </nav>
       <a href="/" className="admin-back"><ArrowLeft size={15}/> VIEW STORE</a>
@@ -85,7 +133,7 @@ export default function Admin() {
 
     <main className="admin-main">
       <header className="admin-topbar">
-        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : "Settings."}</h1></div>
+        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
         <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "LOCAL CONTROL"}</div>
       </header>
 
@@ -109,10 +157,23 @@ export default function Admin() {
       </section>}
 
       {tab === "settings" && <section className="admin-section">
-        <div className="admin-section-head"><div><span>03 / STORE SETTINGS</span><h2>Control the storefront.</h2><p>Product and homepage controls are active. The controls below are intentionally lightweight until a real database/auth layer is connected.</p></div></div>
+        <div className="admin-section-head"><div><span>04 / STORE SETTINGS</span><h2>Control the storefront.</h2><p>Product and homepage controls are active. The controls below are intentionally lightweight until a real database/auth layer is connected.</p></div></div>
         <div className="admin-warning"><strong>Important</strong><p>This admin currently stores catalogue and homepage choices in <code>localStorage</code>. That means it is perfect for controlling the site in the same browser, but it is <b>not a secure multi-device production admin</b>. For real customer-facing management, the next step is a database + authenticated admin API.</p></div>
         <button className="admin-reset" onClick={reset}>RESET CATALOGUE TO ORIGINAL PRODUCTS</button>
       </section>}
+
+
+      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal" onClick={e => e.stopPropagation()}>
+        <div className="admin-modal-head"><div><p className="kicker">{eternalFits.some(fit => fit.id === editingFit.id) ? "EDIT ETERNAL FIT" : "NEW ETERNAL FIT"}</p><h2>{editingFit.title || "Create campaign image"}</h2></div><button onClick={() => setEditingFit(null)}><X size={18}/></button></div>
+        <div className="admin-form-grid">
+          <label className="wide"><span>MODEL IMAGE URL</span><input value={editingFit.image} onChange={e => setEditingFit({...editingFit,image:e.target.value})} placeholder="https://..."/></label>
+          <label><span>FIT TITLE</span><input value={editingFit.title} onChange={e => setEditingFit({...editingFit,title:e.target.value})} placeholder="THE OFF-DUTY FIT"/></label>
+          <label><span>META / LOCATION</span><input value={editingFit.meta || ""} onChange={e => setEditingFit({...editingFit,meta:e.target.value})} placeholder="01 / 05 · CHENNAI"/></label>
+          <label className="wide"><span>CAPTION</span><input value={editingFit.caption || ""} onChange={e => setEditingFit({...editingFit,caption:e.target.value})} placeholder="Quiet layers. Strong silhouette."/></label>
+        </div>
+        <div className="admin-preview">{editingFit.image ? <img src={editingFit.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editingFit.title || "Eternal fit"}</strong><span>{editingFit.meta || "Campaign metadata"}</span></div></div>
+        <div className="admin-modal-actions"><button onClick={() => setEditingFit(null)}>CANCEL</button><button className="admin-primary" onClick={saveEternalFit}><Save size={15}/> SAVE FIT</button></div>
+      </div></div>}
 
       {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{products.some(p => p.id === editing.id) ? "EDIT PRODUCT" : "NEW PRODUCT"}</p><h2>{editing.name || "Create product"}</h2></div><button onClick={() => setEditing(null)}><X size={18}/></button></div>
