@@ -943,3 +943,9 @@ html{
   .admin-eternal-row>img{width:72px;height:76px}
   .admin-eternal-actions{grid-column:1/-1}
 }
+
+
+/* Eternal Fits — Pattern Waves background */
+.eternal-fits > .pattern-waves{position:absolute;inset:0;opacity:.9;}
+.eternal-fits-heading,.eternal-fits-stage,.eternal-fits-footer{position:relative;z-index:3;}
+.eternal-fits::before{z-index:1;}
