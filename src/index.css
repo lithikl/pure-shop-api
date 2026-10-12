@@ -703,6 +703,7 @@ html{
 .eternal-fits{
   position:relative;
   overflow:visible;
+  scroll-margin-top:96px;
   background:var(--paper);
   padding-top:115px;
   padding-bottom:0;
@@ -824,13 +825,17 @@ html{
   text-shadow:0 2px 14px rgba(23,23,21,.24);
 }
 .eternal-fits-footer{
+  position:absolute;
+  left:7.2%;
+  right:7.2%;
+  bottom:16px;
   display:flex;
   justify-content:space-between;
   gap:20px;
-  padding:18px 0 0;
   font:9px var(--mono);
   letter-spacing:.08em;
   color:var(--muted);
+  pointer-events:none;
 }
 @media(max-width:900px){
   .eternal-fits{padding-top:90px}
@@ -848,7 +853,7 @@ html{
   .eternal-fit-glass strong{font-size:18px}
   .eternal-fit-glass small{font-size:8px}
   .eternal-fit-mark{right:14px;top:14px;font-size:21px}
-  .eternal-fits-footer{padding-top:14px;font-size:7px}
+  .eternal-fits-footer{left:5%;right:5%;bottom:12px;font-size:7px}
 }
 
 /* Admin — Eternal Fits manager */
