@@ -290,16 +290,9 @@ export default function App() {
         <div className="shipping-flight-plane" aria-hidden="true">
           <img src="/assets/flight.png" alt="" />
         </div>
-        <div className="shipping-flight-products" aria-hidden="true">
-          {homeCollection.slice(0, 2).map((shoe, i) => (
-            <div className={"shipping-flight-product shipping-flight-product-" + (i + 1)} key={shoe.id + "-shipping-" + i}>
-              <img src={shoe.image} alt="" />
-            </div>
-          ))}
-        </div>
         <div className="shipping-flight-boxes" aria-hidden="true">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div className={"shipping-drop-box shipping-drop-box-" + (i + 1)} key={"shipping-box-" + i}>
+          {[1, 2].map((i) => (
+            <div className={"shipping-drop-box shipping-drop-box-" + i} key={"shipping-box-" + i}>
               <img src="/assets/box.png" alt="" />
             </div>
           ))}
