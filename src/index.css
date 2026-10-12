@@ -994,6 +994,7 @@ textarea:focus-visible{
   }
 
   .noir-header .nav-links{
+    display:flex;
     grid-column:1;
     justify-self:start;
     gap:0;
