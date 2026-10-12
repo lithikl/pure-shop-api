@@ -36,7 +36,43 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">DELIVERING TO</p><h2>{data.firstName} {data.lastName}</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{data.address}{data.apartment ? ", " + data.apartment : ""}<br/>{data.city}, {data.state} — {data.pincode}</p><span>{data.email} · {data.phone}</span></div>
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">DELIVERY</p><h2>{shipping==="standard"?"Standard":"Express"} delivery</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{shipping==="standard"?"3–7 business days":"1–3 business days"}</p></div>
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">PAYMENT</p><h2>{payment==="upi"?"UPI":payment==="card"?"Card":"Cash on delivery"}</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{payment==="cod"?"Pay when your order arrives.":"You will complete payment securely after confirming this order."}</p></div>
-      <button className="checkout-primary" onClick={()=>setStep("success")}>PLACE ORDER — {money(total)} <ArrowRight size={17}/></button><p className="checkout-terms">By placing your order, you confirm that your delivery details are correct and agree to the store purchase terms.</p>
+      <button className="checkout-primary" onClick={async()=>{ 
+        if (payment === "cod") { setStep("success"); return; }
+        try {
+          const orderResponse = await fetch("/api/create-order", {
+            method: "POST", headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ amount: total, currency: "INR", receipt: `noir-${Date.now()}`, customer: { name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone } })
+          });
+          const order = await orderResponse.json();
+          if (!orderResponse.ok) throw new Error(order.error || "Unable to create payment order.");
+          const loadRazorpay = () => new Promise<boolean>((resolve) => {
+            if ((window as any).Razorpay) return resolve(true);
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.onload = () => resolve(true); script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+          });
+          if (!(await loadRazorpay())) throw new Error("Razorpay Checkout could not be loaded.");
+          const Razorpay = (window as any).Razorpay;
+          const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
+          if (!key) throw new Error("Razorpay key is not configured.");
+          const razorpay = new Razorpay({
+            key, amount: order.amount, currency: order.currency, order_id: order.id,
+            name: "NOIRKNULL", description: "NOIRKNULL footwear order",
+            prefill: { name: `${data.firstName} ${data.lastName}`, email: data.email, contact: data.phone },
+            theme: { color: "#111111" },
+            handler: async (response: any) => {
+              try {
+                const verifyResponse = await fetch("/api/verify-payment", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(response) });
+                const verified = await verifyResponse.json();
+                if (!verifyResponse.ok || !verified.verified) throw new Error(verified.error || "Payment verification failed.");
+                setStep("success");
+              } catch (error) { alert(error instanceof Error ? error.message : "Payment verification failed."); }
+            }
+          });
+          razorpay.open();
+        } catch (error) { alert(error instanceof Error ? error.message : "Unable to start payment."); }
+      }}>PAY SECURELY — {money(total)} <ArrowRight size={17}/></button><p className="checkout-terms">By placing your order, you confirm that your delivery details are correct and agree to the store purchase terms.</p>
     </div>}
   </div><aside className="checkout-summary"><div className="checkout-summary-sticky"><div className="summary-title"><p className="kicker">YOUR ORDER</p><h2>Order summary <span>{cart.length}</span></h2></div><div className="summary-items">{cart.map((item,i)=><div className="summary-item" key={item.shoe.id+"-"+item.size+"-"+i}><div className="summary-image"><img src={item.shoe.image} alt={item.shoe.kind}/><span>{item.size}</span></div><div><p>{item.shoe.kind}</p><h3>{item.shoe.name}</h3><small>SIZE {item.size}</small></div><strong>{money(item.shoe.price)}</strong></div>)}</div><div className="summary-totals"><div><span>SUBTOTAL</span><b>{money(subtotal)}</b></div><div><span>SHIPPING</span><b>{shippingCost===0?"FREE":money(shippingCost)}</b></div><div className="summary-total"><span>TOTAL</span><strong>{money(total)}</strong></div></div><p className="summary-note">Prices include applicable taxes. Free standard shipping on orders over ₹5,000.</p></div></aside></div></main>;
 }
