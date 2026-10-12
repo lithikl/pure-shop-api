@@ -95,8 +95,7 @@ export default function App() {
     const update = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
-      const travel = Math.max(section.offsetHeight - window.innerHeight, 1);
-      target = Math.min(1, Math.max(0, -rect.top / travel));
+      target = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + section.offsetHeight)));
       current += (target - current) * 0.045;
       if (Math.abs(target - current) < 0.0005) current = target;
       section.style.setProperty("--shipping-progress", current.toFixed(4));
@@ -289,7 +288,7 @@ export default function App() {
 
       <section className="shipping-flight-section" aria-label="All India shipping">
         <div className="shipping-flight-plane" aria-hidden="true">
-          <img src="/assets/noir-cargo-plane.png" alt="" />
+          <img src="/assets/flight.png" alt="" />
         </div>
         <div className="shipping-flight-products" aria-hidden="true">
           {homeCollection.slice(0, 2).map((shoe, i) => (
@@ -301,7 +300,7 @@ export default function App() {
         <div className="shipping-flight-boxes" aria-hidden="true">
           {Array.from({ length: 4 }, (_, i) => (
             <div className={"shipping-drop-box shipping-drop-box-" + (i + 1)} key={"shipping-box-" + i}>
-              <img src="/assets/noir-shipping-box.png" alt="" />
+              <img src="/assets/box.png" alt="" />
             </div>
           ))}
         </div>
