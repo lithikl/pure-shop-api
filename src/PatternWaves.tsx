@@ -17,8 +17,8 @@ export default function PatternWaves({
   backgroundColor = "transparent",
   opacity = 0.72,
   speed = 0.42,
-  spacing = 20,
-  depth = 1.15,
+  spacing = 17,
+  depth = 1.0,
   interactive = true,
   className = "",
 }: PatternWavesProps) {
@@ -73,35 +73,71 @@ export default function PatternWaves({
       ctx.fillStyle = color;
       ctx.lineWidth = 1;
 
-      const gap = Math.max(7, spacing);
-      const radius = Math.max(1.1, gap * 0.095);
+      const gap = Math.max(8, spacing);
+      const lineGap = Math.max(18, gap * 1.35);
+      const amplitude = gap * 1.7;
 
-      for (let y = -gap; y < height + gap; y += gap) {
-        for (let x = -gap; x < width + gap; x += gap) {
-          const nx = x / 260;
-          const ny = y / 210;
-          const wave =
-            Math.sin(nx * 4.7 + time * 1.1 + Math.sin(ny * 2.8) * 1.5) * 0.55 +
-            Math.sin(ny * 5.1 - time * 0.8) * 0.28 +
-            Math.sin((nx + ny) * 3.2 - time * 0.45) * 0.17;
+      // Two diagonal families create a crossing "X" wave field instead of a
+      // regular horizontal/vertical dot grid.
+      ctx.lineWidth = Math.max(0.55, gap * 0.045);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
 
-          let lift = wave * depth;
-          if (interactive && pointer.inside) {
-            const dx = x - pointer.x;
-            const dy = y - pointer.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const influence = Math.max(0, 1 - distance / 190);
-            lift += Math.sin(distance * 0.075 - time * 5) * influence * 1.7;
+      const drawWaveFamily = (direction: 1 | -1) => {
+        const diagonalLength = Math.hypot(width, height) + 180;
+        const count = Math.ceil(diagonalLength / lineGap) + 4;
+
+        for (let line = -count; line <= count; line += 1) {
+          const offset = line * lineGap;
+          ctx.beginPath();
+          let started = false;
+
+          for (let distance = -90; distance <= diagonalLength; distance += 9) {
+            const baseX = direction === 1
+              ? distance + offset
+              : width - distance + offset;
+            const baseY = direction === 1
+              ? distance
+              : distance;
+
+            const nx = baseX / 190;
+            const ny = baseY / 170;
+            const wave =
+              Math.sin(nx * 3.7 + time * 1.05 + line * 0.08) * 0.55 +
+              Math.sin(ny * 4.5 - time * 0.72 - line * 0.05) * 0.3 +
+              Math.sin((nx - ny) * 2.7 + time * 0.4) * 0.15;
+
+            let lift = wave * depth * amplitude;
+
+            if (interactive && pointer.inside) {
+              const px = baseX - pointer.x;
+              const py = baseY - pointer.y;
+              const distanceToPointer = Math.sqrt(px * px + py * py);
+              const influence = Math.max(0, 1 - distanceToPointer / 240);
+              lift += Math.sin(distanceToPointer * 0.045 - time * 4) * influence * amplitude * 0.55;
+            }
+
+            const x = baseX;
+            const y = baseY + lift;
+
+            if (x < -120 || x > width + 120 || y < -120 || y > height + 120) continue;
+
+            const alpha = Math.max(0.18, Math.min(1, 0.48 + Math.abs(wave) * 0.42));
+            ctx.globalAlpha = opacity * alpha;
+            if (!started) {
+              ctx.moveTo(x, y);
+              started = true;
+            } else {
+              ctx.lineTo(x, y);
+            }
           }
 
-          const size = radius * (0.65 + (lift + 1) * 0.28);
-          const alpha = Math.max(0.62, Math.min(1, 0.82 + (lift + 1) * 0.18));
-          ctx.globalAlpha = opacity * alpha;
-          ctx.beginPath();
-          ctx.arc(x, y + lift * gap * 0.28, size, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.stroke();
         }
-      }
+      };
+
+      drawWaveFamily(1);
+      drawWaveFamily(-1);
 
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(frame);
