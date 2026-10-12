@@ -987,10 +987,10 @@ html{
   z-index:1;
   left:0;
   top:42px;
-  width:560px;
+  width:clamp(420px,44vw,560px);
   height:auto;
   opacity:1;
-  transform:translate3d(calc(var(--shipping-progress) * 420px),0,0);
+  transform:translate3d(calc(var(--shipping-progress) * 65vw),0,0);
   transform-origin:left center;
   transition:none;
 }
@@ -1097,7 +1097,7 @@ html{
   .shipping-flight-plane{
     left:0;
     top:36px;
-    width:540px;
+    width:min(540px,78vw);
   }
   .shipping-flight-product-1{left:53%;top:78%;width:82px}
   .shipping-flight-product-2{left:79%;top:68%;width:100px}
@@ -1112,7 +1112,7 @@ html{
   .shipping-flight-plane{
     left:-18px;
     top:28px;
-    width:420px;
+    width:78vw;
   }
   .shipping-flight-product-1{left:52%;top:79%;width:65px}
   .shipping-flight-product-2{left:78%;top:69%;width:78px}
