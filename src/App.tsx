@@ -94,48 +94,17 @@ export default function App() {
 
 
   useEffect(() => {
-    const section = document.querySelector<HTMLElement>(".eternal-fits");
-    const stage = document.querySelector<HTMLElement>(".eternal-fits-stage");
     const track = document.querySelector<HTMLElement>(".eternal-fits-track");
-    if (!section || !stage || !track || !eternalFits.length) return;
+    if (!track || !eternalFits.length) return;
 
-    let raf = 0;
-    const getTop = () => window.innerWidth <= 600 ? 80 : window.innerWidth <= 900 ? 88 : 96;
-
-    const measure = () => {
-      const distance = Math.max(0, track.scrollWidth - stage.clientWidth);
-      const stageTop = stage.offsetTop;
-      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-      const start = sectionTop + stageTop - getTop();
-      section.style.height = `${stageTop + stage.offsetHeight + distance}px`;
-      return { distance, start };
-    };
-
-    const render = () => {
-      raf = 0;
-      const { distance, start } = measure();
-      const progress = distance > 0
-        ? Math.min(1, Math.max(0, (window.scrollY - start) / distance))
-        : 0;
-      stage.style.setProperty("--eternal-shift", `${-distance * progress}px`);
-    };
-
-    const requestRender = () => {
-      if (!raf) raf = requestAnimationFrame(render);
-    };
-
-    render();
-    window.addEventListener("scroll", requestRender, { passive: true });
-    window.addEventListener("resize", requestRender);
+    // The CSS animation is intentionally continuous; duplicate content makes
+    // the loop seamless instead of snapping back to the first image.
+    track.style.setProperty("--eternal-count", String(eternalFits.length));
 
     return () => {
-      window.removeEventListener("scroll", requestRender);
-      window.removeEventListener("resize", requestRender);
-      if (raf) cancelAnimationFrame(raf);
-      section.style.height = "";
-      stage.style.removeProperty("--eternal-shift");
+      track.style.removeProperty("--eternal-count");
     };
-  }, [eternalFits.length, shopOpen, selectedProduct, checkoutOpen]);
+  }, [eternalFits.length]);
 
   const openShop = () => {
     setMenuOpen(false);
