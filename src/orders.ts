@@ -1,0 +1,59 @@
+export type OrderStatus = "PLACED" | "CONFIRMED" | "PACKED" | "SHIPPED" | "OUT FOR DELIVERY" | "DELIVERED" | "CANCELLED";
+
+export type Order = {
+  id: string;
+  createdAt: string;
+  status: OrderStatus;
+  payment: "razorpay" | "cod";
+  paymentId?: string;
+  total: number;
+  shipping: number;
+  customer: {
+    email: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    address: string;
+    apartment?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  items: Array<{ productId: number; name: string; kind: string; image: string; price: number; size: number }>;
+  timeline: Array<{ status: OrderStatus; at: string }>;
+};
+
+const KEY = "noirknull:orders:v1";
+
+export function loadOrders(): Order[] {
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function saveOrders(orders: Order[]) {
+  localStorage.setItem(KEY, JSON.stringify(orders));
+  window.dispatchEvent(new Event("noirknull:orders"));
+}
+
+export function createOrder(input: Omit<Order, "id" | "createdAt" | "timeline" | "status">): Order {
+  const order: Order = {
+    ...input,
+    id: "NK" + Date.now().toString(36).toUpperCase(),
+    createdAt: new Date().toISOString(),
+    status: "PLACED",
+    timeline: [{ status: "PLACED", at: new Date().toISOString() }],
+  };
+  saveOrders([order, ...loadOrders()]);
+  return order;
+}
+
+export function updateOrderStatus(id: string, status: OrderStatus) {
+  const orders = loadOrders();
+  const updated = orders.map(order => order.id === id
+    ? { ...order, status, timeline: [...order.timeline, { status, at: new Date().toISOString() }] }
+    : order);
+  saveOrders(updated);
+  return updated.find(order => order.id === id);
+}
