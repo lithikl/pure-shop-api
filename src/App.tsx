@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts } from "./store";
@@ -44,7 +44,6 @@ export default function App() {
   const [shippingMethod, setShippingMethod] = useState<"standard" | "express">("standard");
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("upi");
   const [checkoutData, setCheckoutData] = useState({ email: "", phone: "", firstName: "", lastName: "", address: "", apartment: "", city: "Chennai", state: "Tamil Nadu", pincode: "" });
-  const [menuOpen, setMenuOpen] = useState(false);
   const [added, setAdded] = useState<number | null>(null);
 
   useEffect(() => {
@@ -108,13 +107,13 @@ export default function App() {
   }, [eternalFits.length]);
 
   const openShop = () => {
-    setMenuOpen(false);
+    
     setSelectedProduct(null);
     setShopOpen(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const goTo = (id: string) => {
-    setMenuOpen(false);
+    
     setSelectedProduct(null);
     setShopOpen(false);
     requestAnimationFrame(() => {
@@ -163,12 +162,11 @@ export default function App() {
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
     <header className="noir-header liquid-glass-header">
-      <button className="mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
-      <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
-        <button className="nav-primary" onClick={openShop}>SHOP <span>↗</span></button>
-        <button className="nav-primary" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
+      <nav className="nav-links">
+        <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
+        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
       </nav>
-      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); setMenuOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
