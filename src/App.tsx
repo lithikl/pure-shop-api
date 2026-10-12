@@ -92,21 +92,34 @@ export default function App() {
     let frame = 0;
     let current = 0;
     let target = 0;
+    let lastScrollY = window.scrollY;
+
     const update = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
       target = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + section.offsetHeight)));
-      current += (target - current) * 0.045;
+
+      const goingDown = window.scrollY >= lastScrollY;
+      const easing = goingDown ? 0.08 : 0.022;
+      current += (target - current) * easing;
+
       if (Math.abs(target - current) < 0.0005) current = target;
       section.style.setProperty("--shipping-progress", current.toFixed(4));
-      if (Math.abs(target - current) > 0.0005) frame = requestAnimationFrame(update);
+
+      if (Math.abs(target - current) > 0.0005) {
+        frame = requestAnimationFrame(update);
+      }
+      lastScrollY = window.scrollY;
     };
+
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", update);
@@ -169,13 +182,13 @@ export default function App() {
 
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
-    <header className={shopOpen || selectedProduct || checkoutOpen ? "noir-header" : "noir-header liquid-glass-header"}>
+    <header className="noir-header liquid-glass-header">
       <button className="mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
       </nav>
-      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); setMenuOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="Noirknull home">noirknull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); setMenuOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
@@ -313,7 +326,7 @@ export default function App() {
       <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>
     </main>}
 
-    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>noirknull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
 
     }
 
