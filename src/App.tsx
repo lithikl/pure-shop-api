@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { Shoe, loadFeatured, loadProducts } from "./store";
+import { EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts } from "./store";
 
 type CartItem = { shoe: Shoe; size: number };
 
@@ -28,6 +28,7 @@ export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
+  const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
   const [shopOpen, setShopOpen] = useState(false);
@@ -48,15 +49,20 @@ export default function App() {
   useEffect(() => {
     const syncProducts = () => setProducts(loadProducts());
     const syncFeatured = () => setFeaturedIds(loadFeatured());
+    const syncEternalFits = () => setEternalFits(loadEternalFits());
     window.addEventListener("noirknull:products", syncProducts);
     window.addEventListener("noirknull:featured", syncFeatured);
+    window.addEventListener("noirknull:eternal-fits", syncEternalFits);
     window.addEventListener("storage", syncProducts);
     window.addEventListener("storage", syncFeatured);
+    window.addEventListener("storage", syncEternalFits);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
+      window.removeEventListener("noirknull:eternal-fits", syncEternalFits);
       window.removeEventListener("storage", syncProducts);
       window.removeEventListener("storage", syncFeatured);
+      window.removeEventListener("storage", syncEternalFits);
     };
   }, []);
 
@@ -86,30 +92,24 @@ export default function App() {
     return () => observer.disconnect();
   }, [shopOpen, selectedProduct, checkoutOpen]);
 
-  useEffect(() => {
-    const section = document.querySelector<HTMLElement>(".shipping-flight-section");
-    if (!section) return;
-    let frame = 0;
-    let current = 0;
-    let target = 0;
-    let lastScrollY = window.scrollY;
 
+  useEffect(() => {
+    const section = document.querySelector<HTMLElement>(".eternal-fits");
+    const stage = document.querySelector<HTMLElement>(".eternal-fits-stage");
+    const track = document.querySelector<HTMLElement>(".eternal-fits-track");
+    if (!section || !stage || !track || !eternalFits.length) return;
+
+    let frame = 0;
     const update = () => {
       frame = 0;
+      const horizontalDistance = Math.max(0, track.scrollWidth - stage.clientWidth);
+      const stageHeight = stage.clientHeight;
+      section.style.height = `${stageHeight + horizontalDistance}px`;
+
+      const scrollRange = Math.max(1, section.offsetHeight - stageHeight);
       const rect = section.getBoundingClientRect();
-      target = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + section.offsetHeight)));
-
-      const goingDown = window.scrollY >= lastScrollY;
-      const easing = goingDown ? 0.08 : 0.022;
-      current += (target - current) * easing;
-
-      if (Math.abs(target - current) < 0.0005) current = target;
-      section.style.setProperty("--shipping-progress", current.toFixed(4));
-
-      if (Math.abs(target - current) > 0.0005) {
-        frame = requestAnimationFrame(update);
-      }
-      lastScrollY = window.scrollY;
+      const progress = Math.min(1, Math.max(0, -rect.top / scrollRange));
+      stage.style.setProperty("--eternal-shift", `${-(horizontalDistance * progress).toFixed(2)}px`);
     };
 
     const onScroll = () => {
@@ -125,7 +125,7 @@ export default function App() {
       window.removeEventListener("resize", update);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [shopOpen, selectedProduct, checkoutOpen, products.length]);
+  }, [eternalFits.length, shopOpen, selectedProduct, checkoutOpen]);
 
   const openShop = () => {
     setMenuOpen(false);
@@ -299,25 +299,40 @@ export default function App() {
         <div className="best-sellers-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
       </section>
 
-      <section className="shipping-flight-section" aria-label="All India shipping">
-        <div className="shipping-flight-plane" aria-hidden="true">
-          <img src="/assets/flight.png" alt="" />
+      <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
+        <div className="eternal-fits-heading reveal">
+          <div>
+            <p className="kicker">02 / THE CAMPAIGN</p>
+            <h2>Eternal<br/><em>fits.</em></h2>
+          </div>
+          <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Scroll to move through the campaign.</p>
         </div>
-        <div className="shipping-flight-boxes" aria-hidden="true">
-          {[1, 2].map((i) => (
-            <div className={"shipping-drop-box shipping-drop-box-" + i} key={"shipping-box-" + i}>
-              <img src="/assets/box.png" alt="" />
-            </div>
-          ))}
+        <div className="eternal-fits-stage">
+          <div className="eternal-fits-track">
+            {eternalFits.map((fit, index) => (
+              <article className="eternal-fit-card" key={fit.id}>
+                <div className="eternal-fit-image">
+                  <img src={fit.image} alt={fit.title}/>
+                  <div className="eternal-fit-glass">
+                    <span>{fit.meta || `0${index + 1} / ${String(eternalFits.length).padStart(2, "0")}`}</span>
+                    <strong>{fit.title}</strong>
+                    {fit.caption && <small>{fit.caption}</small>}
+                  </div>
+                  <span className="eternal-fit-mark">N/K</span>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
+        <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
       </section>
 
       <section className="manifesto" id="manifesto">
         <div className="manifesto-image"><img src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=1400&q=90" alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
-        <div className="manifesto-copy reveal"><p className="kicker">02 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button><span className="manifesto-mark">N/K</span></div>
+        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button><span className="manifesto-mark">N/K</span></div>
       </section>
 
-      <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">03 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
+      <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
         <div className="detail-row reveal"><span>01</span><h3>Everyday comfort</h3><p>Easy-wearing silhouettes made to keep pace with your day.</p><ArrowUpRight size={18}/></div>
         <div className="detail-row reveal"><span>02</span><h3>Quiet statement</h3><p>Distinct shape, restrained details, nothing there by accident.</p><ArrowUpRight size={18}/></div>
         <div className="detail-row reveal"><span>03</span><h3>Your own direction</h3><p>Not here to tell you where to go. Just what to go in.</p><ArrowUpRight size={18}/></div>
