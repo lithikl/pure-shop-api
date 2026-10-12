@@ -65,7 +65,8 @@ export default function Admin() {
   const [editing, setEditing] = useState<Shoe | null>(null);
   const [editingFit, setEditingFit] = useState<EternalFit | null>(null);
   const [saved, setSaved] = useState(false);
-  const [tab, setTab] = useState<"products" | "homepage" | "eternal" | "settings">("products");
+  const [orders, setOrders] = useState<Order[]>(loadOrders);
+  const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
 
   const categories = useMemo(() => Array.from(new Set(products.map(p => p.category?.trim() || "Essentials").filter(Boolean))).sort(), [products]);
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
@@ -144,7 +145,7 @@ export default function Admin() {
     <aside className="admin-sidebar">
       <div className="admin-brand"><span>N/K</span><div><strong>NOIRKNULL</strong><small>CONTROL ROOM</small></div></div>
       <nav>
-        <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
+        <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}><Settings2 size={16}/> ORDERS</button>\n        <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
         <button className={tab === "homepage" ? "active" : ""} onClick={() => setTab("homepage")}><Eye size={16}/> HOMEPAGE</button>
         <button className={tab === "eternal" ? "active" : ""} onClick={() => setTab("eternal")}><Eye size={16}/> ETERNAL FITS</button>
         <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={16}/> SETTINGS</button>
@@ -157,6 +158,17 @@ export default function Admin() {
         <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
         <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div>
       </header>
+
+      {tab === "orders" && <section className="admin-section">
+        <div className="admin-section-head"><div><span>00 / ORDER CONTROL</span><h2>Every order, in one place.</h2><p>Review customer details, payment method, products and delivery status. Update the status and the customer tracking page follows it.</p></div><div className="admin-status">{orders.length} ORDERS</div></div>
+        <div className="admin-orders-list">
+          {orders.length === 0 ? <div className="admin-empty-state"><strong>No orders yet.</strong><span>Completed checkout orders will appear here.</span></div> : orders.map(order => <article className="admin-order-card" key={order.id}>
+            <div className="admin-order-head"><div><span>{order.id}</span><h3>{order.customer.firstName} {order.customer.lastName}</h3><small>{new Date(order.createdAt).toLocaleString("en-IN")} · {order.payment.toUpperCase()}</small></div><strong>₹{order.total.toLocaleString("en-IN")}</strong></div>
+            <div className="admin-order-grid"><div><small>CONTACT</small><p>{order.customer.email}<br/>{order.customer.phone}</p></div><div><small>DELIVERY</small><p>{order.customer.address}{order.customer.apartment ? ", "+order.customer.apartment : ""}<br/>{order.customer.city}, {order.customer.state} — {order.customer.pincode}</p></div><div><small>ITEMS</small>{order.items.map(item => <p key={item.productId+"-"+item.size}>{item.name} · SIZE {item.size} · ₹{item.price.toLocaleString("en-IN")}</p>)}</div></div>
+            <div className="admin-order-footer"><label><span>ORDER STATUS</span><select value={order.status} onChange={e => setOrders(loadOrders().map(x => x.id === order.id ? updateOrderStatus(order.id, e.target.value as OrderStatus)! : x))}>{["PLACED","CONFIRMED","PACKED","SHIPPED","OUT FOR DELIVERY","DELIVERED","CANCELLED"].map(status => <option key={status}>{status}</option>)}</select></label><a href={"/track-order?order="+encodeURIComponent(order.id)} target="_blank" rel="noreferrer">OPEN TRACKING ↗</a></div>
+          </article>)}
+        </div>
+      </section>
 
       {tab === "products" && <section className="admin-section">
         <div className="admin-section-head">
