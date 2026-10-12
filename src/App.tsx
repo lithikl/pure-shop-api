@@ -3,6 +3,7 @@ import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Menu, ShoppingBag,
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts } from "./store";
+import PatternWaves from "./PatternWaves";
 
 type CartItem = { shoe: Shoe; size: number };
 
@@ -279,12 +280,13 @@ export default function App() {
       </section>
 
       <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
+        <PatternWaves color="#171512" opacity={0.18} speed={0.28} spacing={13} depth={0.85} interactive={true} />
         <div className="eternal-fits-heading reveal">
           <div>
             <p className="kicker">02 / THE CAMPAIGN</p>
             <h2>Eternal<br/><em>fits.</em></h2>
           </div>
-          <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Scroll to move through the campaign.</p>
+          <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Watch the pattern move behind the campaign.</p>
         </div>
         <div className="eternal-fits-stage">
           <div className="eternal-fits-track">
