@@ -12,6 +12,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
   const [shipping, setShipping] = useState<"standard" | "express">("standard");
   const [payment, setPayment] = useState<"cod" | "razorpay">("razorpay");
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
+  const [confirmedTrackingNumber, setConfirmedTrackingNumber] = useState("");
   const [data, setData] = useState({ email:"", phone:"", firstName:"", lastName:"", address:"", apartment:"", city:"Chennai", state:"Tamil Nadu", pincode:"" });
   const subtotal = cart.reduce((sum, item) => sum + item.shoe.price, 0);
   const shippingCost = cart.length === 0 ? 0 : shipping === "express" ? 199 : subtotal >= 5000 ? 0 : 99;
@@ -35,7 +36,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
 
   if (step === "success") return <main className="checkout-page"><section className="checkout-success">
     <div className="checkout-success-mark">✓</div><p className="kicker">NOIRKNULL / ORDER CONFIRMED</p><h1>You are<br/><em>all set.</em></h1>
-    <p>Your order has been placed successfully. A confirmation will be sent to {data.email || "your email"}.</p>{confirmedOrderId && <div className="checkout-order-number"><span>ORDER NUMBER</span><strong>{confirmedOrderId}</strong><a href={"/track-order?order="+encodeURIComponent(confirmedOrderId)}>TRACK THIS ORDER ↗</a></div>}
+    <p>Your order has been placed successfully. A confirmation will be sent to {data.email || "your email"}.</p>{confirmedOrderId && <div className="checkout-order-number"><span>ORDER NUMBER</span><strong>{confirmedOrderId}</strong><span>TRACKING NUMBER</span><strong>{confirmedTrackingNumber}</strong><a href={"/track-order?tracking="+encodeURIComponent(confirmedTrackingNumber)}>TRACK THIS ORDER ↗</a></div>}
     <div className="checkout-success-meta"><span>ORDER CONFIRMED</span><span>NOIRKNULL® — 2026</span></div>
     <button className="checkout-primary" onClick={() => onComplete()}>RETURN HOME <ArrowUpRight size={16}/></button>
   </section></main>;
@@ -53,7 +54,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">DELIVERY</p><h2>{shipping==="standard"?"Standard":"Express"} delivery</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{shipping==="standard"?"3–7 business days":"1–3 business days"}</p></div>
       <div className="review-card"><div className="review-card-head"><div><p className="kicker">PAYMENT</p><h2>{payment==="razorpay"?"Razorpay":"Cash on delivery"}</h2></div><button onClick={()=>setStep("details")}>EDIT</button></div><p>{payment==="cod"?"Pay when your order arrives.":"You will complete payment securely through Razorpay after confirming this order."}</p></div>
       <button className="checkout-primary" onClick={async()=>{ 
-        if (payment === "cod") { const order = saveOrder(); setConfirmedOrderId(order.id); setStep("success"); return; }
+        if (payment === "cod") { const order = saveOrder(); setConfirmedOrderId(order.id); setConfirmedTrackingNumber(order.trackingNumber); setStep("success"); return; }
         try {
           const orderResponse = await fetch("/api/create-order", {
             method: "POST", headers: {"Content-Type":"application/json"},
@@ -82,7 +83,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
                 const verifyResponse = await fetch("/api/verify-payment", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(response) });
                 const verified = await readJsonResponse(verifyResponse);
                 if (!verifyResponse.ok || !verified.verified) throw new Error(verified.error || "Payment verification failed.");
-                const saved = saveOrder(response.razorpay_payment_id); setConfirmedOrderId(saved.id); setStep("success");
+                const saved = saveOrder(response.razorpay_payment_id); setConfirmedOrderId(saved.id); setConfirmedTrackingNumber(saved.trackingNumber); setStep("success");
               } catch (error) { alert(error instanceof Error ? error.message : "Payment verification failed."); }
             }
           });
