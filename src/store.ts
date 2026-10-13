@@ -40,7 +40,7 @@ type CloudStore = {
   categories?: string[];
 };
 
-let cloudSyncTimer: number | null = null;
+const cloudSyncTimers = new Map<string, number>();
 
 export async function getCloudStore(): Promise<CloudStore | null> {
   try {
@@ -74,8 +74,10 @@ export async function hydrateFromCloud(): Promise<boolean> {
 }
 
 export function publishCloudSection(section: keyof CloudStore, value: unknown) {
-  if (cloudSyncTimer) window.clearTimeout(cloudSyncTimer);
-  cloudSyncTimer = window.setTimeout(async () => {
+  const previous = cloudSyncTimers.get(String(section));
+  if (previous) window.clearTimeout(previous);
+  const timer = window.setTimeout(async () => {
+    cloudSyncTimers.delete(String(section));
     try {
       await fetch("/api/store", {
         method: "POST",
@@ -86,6 +88,7 @@ export function publishCloudSection(section: keyof CloudStore, value: unknown) {
       // Local storage remains available during temporary network failures.
     }
   }, 120);
+  cloudSyncTimers.set(String(section), timer);
 }
 
 export type HomepageSettings = {
