@@ -135,10 +135,13 @@ export function loadProducts(): Shoe[] {
 
 export function saveProducts(products: Shoe[]) {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  localStorage.setItem(PRODUCTS_KEY + ":updated", String(Date.now()));
   const categories = Array.from(new Set(products.map((p) => p.category?.trim()).filter(Boolean) as string[]));
   const existing = (() => { try { const raw = localStorage.getItem(CATEGORIES_KEY); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; } catch { return []; } })();
   localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Array.from(new Set([...existing, ...categories])).sort()));
   window.dispatchEvent(new Event("noirknull:products"));
+  try { window.dispatchEvent(new StorageEvent("storage", { key: PRODUCTS_KEY })); } catch {}
+  try { new BroadcastChannel("noirknull-store").postMessage({ type: "products" }); } catch {}
   window.dispatchEvent(new Event("noirknull:categories"));
 }
 
