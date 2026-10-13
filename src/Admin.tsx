@@ -82,14 +82,21 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
 
   const applyCrop = () => {
     if (!value) return;
+
+    // Keep the crop frame and storefront frame identical, but NEVER force the
+    // source image to fill the frame. At zoom 1 the entire source image fits
+    // inside the frame; only zooming past 1 intentionally crops it.
     const safeRatio = Math.max(0.55, Math.min(2.2, aspectRatio));
     const width = 1600;
     const height = Math.round(width / safeRatio);
-    const base = Math.max(width, height);
-    const imageSize = base * zoom;
-    const x = (width - imageSize) / 2 + (offsetX / 80) * width * 0.45;
-    const y = (height - imageSize) / 2 + (offsetY / 80) * height * 0.45;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="#f2efe7"/><image href="${value}" x="${x}" y="${y}" width="${imageSize}" height="${imageSize}" preserveAspectRatio="xMidYMid slice"/></svg>`;
+    const imageWidth = width * zoom;
+    const imageHeight = height * zoom;
+    const x = (width - imageWidth) / 2 + (offsetX / 80) * width * 0.45;
+    const y = (height - imageHeight) / 2 + (offsetY / 80) * height * 0.45;
+
+    // No background rect: transparent PNGs stay transparent.
+    // "meet" keeps the complete image visible inside the crop frame.
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><image href="${value}" x="${x}" y="${y}" width="${imageWidth}" height="${imageHeight}" preserveAspectRatio="xMidYMid meet"/></svg>`;
     onChange("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg));
     setEditingCrop(false);
   };
