@@ -168,7 +168,7 @@ export default function Admin() {
             <div className="admin-order-footer"><label><span>ORDER STATUS</span><select value={order.status} onChange={e => setOrders(loadOrders().map(x => x.id === order.id ? updateOrderStatus(order.id, e.target.value as OrderStatus)! : x))}>{["PLACED","CONFIRMED","PACKED","SHIPPED","OUT FOR DELIVERY","DELIVERED","CANCELLED"].map(status => <option key={status}>{status}</option>)}</select></label><a href={"/track-order?order="+encodeURIComponent(order.id)} target="_blank" rel="noreferrer">OPEN TRACKING ↗</a></div>
           </article>)}
         </div>
-      </section>
+      </section>}
 
       {tab === "products" && <section className="admin-section">
         <div className="admin-section-head">
