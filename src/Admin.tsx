@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
+import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
   DEFAULT_ETERNAL_FITS,
   DEFAULT_HOMEPAGE,
@@ -145,7 +146,8 @@ export default function Admin() {
     <aside className="admin-sidebar">
       <div className="admin-brand"><span>N/K</span><div><strong>NOIRKNULL</strong><small>CONTROL ROOM</small></div></div>
       <nav>
-        <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}><Settings2 size={16}/> ORDERS</button>\n        <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
+        <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}><Settings2 size={16}/> ORDERS</button>
+        <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
         <button className={tab === "homepage" ? "active" : ""} onClick={() => setTab("homepage")}><Eye size={16}/> HOMEPAGE</button>
         <button className={tab === "eternal" ? "active" : ""} onClick={() => setTab("eternal")}><Eye size={16}/> ETERNAL FITS</button>
         <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={16}/> SETTINGS</button>
@@ -155,7 +157,7 @@ export default function Admin() {
 
     <main className="admin-main">
       <header className="admin-topbar">
-        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
+        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "orders" ? "Orders." : tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
         <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div>
       </header>
 
