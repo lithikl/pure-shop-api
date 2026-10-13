@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts } from "./store";
+import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories } from "./store";
 import PatternWaves from "./PatternWaves";
 import TrackOrder from "./TrackOrder";
 
@@ -30,6 +30,7 @@ export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const isTrackOrder = window.location.pathname === "/track-order";
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
+  const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
   const [homepage, setHomepage] = useState<HomepageSettings>(loadHomepageSettings);
@@ -54,10 +55,12 @@ export default function App() {
     const syncFeatured = () => setFeaturedIds(loadFeatured());
     const syncEternalFits = () => setEternalFits(loadEternalFits());
     const syncHomepage = () => setHomepage(loadHomepageSettings());
+    const syncCategories = () => setSavedCategories(loadCategories());
     window.addEventListener("noirknull:products", syncProducts);
     window.addEventListener("noirknull:featured", syncFeatured);
     window.addEventListener("noirknull:eternal-fits", syncEternalFits);
     window.addEventListener("noirknull:homepage", syncHomepage);
+    window.addEventListener("noirknull:categories", syncCategories);
     window.addEventListener("storage", syncProducts);
     window.addEventListener("storage", syncFeatured);
     window.addEventListener("storage", syncEternalFits);
@@ -67,6 +70,7 @@ export default function App() {
       window.removeEventListener("noirknull:featured", syncFeatured);
       window.removeEventListener("noirknull:eternal-fits", syncEternalFits);
       window.removeEventListener("noirknull:homepage", syncHomepage);
+      window.removeEventListener("noirknull:categories", syncCategories);
       window.removeEventListener("storage", syncProducts);
       window.removeEventListener("storage", syncFeatured);
       window.removeEventListener("storage", syncEternalFits);
@@ -136,7 +140,7 @@ export default function App() {
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedSize(null); };
   const categoryName = (shoe: Shoe) => (shoe.category?.trim() || (shoe.kind === "Everyday Runner" ? "Runners" : shoe.kind === "Street Low" ? "Street" : shoe.kind === "Retro Court" ? "Court" : "Essentials"));
-  const categories = ["ALL", ...Array.from(new Set(products.map(categoryName))).sort()];
+  const categories = ["ALL", ...Array.from(new Set([...savedCategories, ...products.map(categoryName)])).sort()];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
   const homeCollection = homepageShoes.length ? homepageShoes : products;
   const visibleShoes = products.filter((shoe) => {
