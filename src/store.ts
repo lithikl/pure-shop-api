@@ -29,6 +29,7 @@ const PRODUCTS_KEY = "noirknull:products:v1";
 const FEATURED_KEY = "noirknull:featured:v1";
 const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
 const HOMEPAGE_KEY = "noirknull:homepage:v1";
+const CATEGORIES_KEY = "noirknull:categories:v1";
 
 export type HomepageSettings = {
   heroImage: string;
@@ -107,6 +108,20 @@ export const DEFAULT_ETERNAL_FITS: EternalFit[] = [
   },
 ];
 
+export function loadCategories(): string[] {
+  try {
+    const raw = localStorage.getItem(CATEGORIES_KEY);
+    const saved = raw ? JSON.parse(raw) : [];
+    const productCategories = loadProducts().map((p) => p.category?.trim()).filter(Boolean) as string[];
+    return Array.from(new Set([...(Array.isArray(saved) ? saved : []), ...productCategories])).sort();
+  } catch { return Array.from(new Set(DEFAULT_SHOES.map((p) => p.category).filter(Boolean) as string[])).sort(); }
+}
+
+export function saveCategories(categories: string[]) {
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean))).sort()));
+  window.dispatchEvent(new Event("noirknull:categories"));
+}
+
 export function loadProducts(): Shoe[] {
   try {
     const raw = localStorage.getItem(PRODUCTS_KEY);
@@ -118,7 +133,11 @@ export function loadProducts(): Shoe[] {
 
 export function saveProducts(products: Shoe[]) {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  const categories = Array.from(new Set(products.map((p) => p.category?.trim()).filter(Boolean) as string[]));
+  const existing = (() => { try { const raw = localStorage.getItem(CATEGORIES_KEY); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; } catch { return []; } })();
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Array.from(new Set([...existing, ...categories])).sort()));
   window.dispatchEvent(new Event("noirknull:products"));
+  window.dispatchEvent(new Event("noirknull:categories"));
 }
 
 export function loadFeatured(): number[] {
