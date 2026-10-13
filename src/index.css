@@ -1062,7 +1062,7 @@ textarea:focus-visible{
 .admin-video-actions{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center}
 .admin-adjust-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:9px 11px;border:1px solid #cbc6ba;background:#efebe2;font:8px var(--mono);letter-spacing:.05em}
 .admin-crop-editor{margin-top:12px;padding:12px;border:1px solid #d2cec3;background:#ebe7de;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:14px}
-.admin-crop-stage{position:relative;aspect-ratio:1;overflow:hidden;background:#f7f4ec;border:1px solid #cbc6ba;display:grid;place-items:center}
+.admin-crop-stage{position:relative;aspect-ratio:var(--crop-ratio,1);overflow:hidden;background:#f7f4ec;border:1px solid #cbc6ba;display:grid;place-items:center}
 .admin-crop-stage:after{content:"";position:absolute;inset:10%;border:1px dashed rgba(23,21,18,.35);pointer-events:none}
 .admin-crop-stage img{width:100%;height:100%;object-fit:contain;transform-origin:center;transition:transform .08s linear}
 .admin-crop-controls{display:grid;align-content:center;gap:12px}
