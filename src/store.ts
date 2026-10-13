@@ -32,6 +32,62 @@ const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
 const HOMEPAGE_KEY = "noirknull:homepage:v1";
 const CATEGORIES_KEY = "noirknull:categories:v1";
 
+type CloudStore = {
+  products?: Shoe[];
+  featured?: number[];
+  eternalFits?: EternalFit[];
+  homepage?: HomepageSettings;
+  categories?: string[];
+};
+
+let cloudSyncTimer: number | null = null;
+
+export async function getCloudStore(): Promise<CloudStore | null> {
+  try {
+    const response = await fetch("/api/store", { cache: "no-store" });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload?.data && typeof payload.data === "object" ? payload.data as CloudStore : null;
+  } catch {
+    return null;
+  }
+}
+
+function applyCloudStore(data: CloudStore) {
+  if (Array.isArray(data.products)) localStorage.setItem(PRODUCTS_KEY, JSON.stringify(data.products));
+  if (Array.isArray(data.featured)) localStorage.setItem(FEATURED_KEY, JSON.stringify(data.featured));
+  if (Array.isArray(data.eternalFits)) localStorage.setItem(ETERNAL_FITS_KEY, JSON.stringify(data.eternalFits));
+  if (data.homepage && typeof data.homepage === "object") localStorage.setItem(HOMEPAGE_KEY, JSON.stringify(data.homepage));
+  if (Array.isArray(data.categories)) localStorage.setItem(CATEGORIES_KEY, JSON.stringify(data.categories));
+  window.dispatchEvent(new Event("noirknull:products"));
+  window.dispatchEvent(new Event("noirknull:featured"));
+  window.dispatchEvent(new Event("noirknull:eternal-fits"));
+  window.dispatchEvent(new Event("noirknull:homepage"));
+  window.dispatchEvent(new Event("noirknull:categories"));
+}
+
+export async function hydrateFromCloud(): Promise<boolean> {
+  const data = await getCloudStore();
+  if (!data) return false;
+  applyCloudStore(data);
+  return true;
+}
+
+export function publishCloudSection(section: keyof CloudStore, value: unknown) {
+  if (cloudSyncTimer) window.clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = window.setTimeout(async () => {
+    try {
+      await fetch("/api/store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ section, value }),
+      });
+    } catch {
+      // Local storage remains available during temporary network failures.
+    }
+  }, 120);
+}
+
 export type HomepageSettings = {
   heroImage: string;
   heroVideo: string;
@@ -119,8 +175,10 @@ export function loadCategories(): string[] {
 }
 
 export function saveCategories(categories: string[]) {
-  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean))).sort()));
+  const normalized = Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean))).sort();
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(normalized));
   window.dispatchEvent(new Event("noirknull:categories"));
+  publishCloudSection("categories", normalized);
 }
 
 export function loadProducts(): Shoe[] {
@@ -138,11 +196,14 @@ export function saveProducts(products: Shoe[]) {
   localStorage.setItem(PRODUCTS_KEY + ":updated", String(Date.now()));
   const categories = Array.from(new Set(products.map((p) => p.category?.trim()).filter(Boolean) as string[]));
   const existing = (() => { try { const raw = localStorage.getItem(CATEGORIES_KEY); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; } catch { return []; } })();
-  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Array.from(new Set([...existing, ...categories])).sort()));
+  const mergedCategories = Array.from(new Set([...existing, ...categories])).sort();
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(mergedCategories));
   window.dispatchEvent(new Event("noirknull:products"));
   try { window.dispatchEvent(new StorageEvent("storage", { key: PRODUCTS_KEY })); } catch {}
   try { new BroadcastChannel("noirknull-store").postMessage({ type: "products" }); } catch {}
   window.dispatchEvent(new Event("noirknull:categories"));
+  publishCloudSection("products", products);
+  publishCloudSection("categories", mergedCategories);
 }
 
 export function loadFeatured(): number[] {
@@ -157,6 +218,7 @@ export function loadFeatured(): number[] {
 export function saveFeatured(ids: number[]) {
   localStorage.setItem(FEATURED_KEY, JSON.stringify(ids));
   window.dispatchEvent(new Event("noirknull:featured"));
+  publishCloudSection("featured", ids);
 }
 
 
@@ -172,6 +234,7 @@ export function loadEternalFits(): EternalFit[] {
 export function saveEternalFits(fits: EternalFit[]) {
   localStorage.setItem(ETERNAL_FITS_KEY, JSON.stringify(fits));
   window.dispatchEvent(new Event("noirknull:eternal-fits"));
+  publishCloudSection("eternalFits", fits);
 }
 
 
@@ -192,4 +255,5 @@ export function loadHomepageSettings(): HomepageSettings {
 export function saveHomepageSettings(settings: HomepageSettings) {
   localStorage.setItem(HOMEPAGE_KEY, JSON.stringify(settings));
   window.dispatchEvent(new Event("noirknull:homepage"));
+  publishCloudSection("homepage", settings);
 }
