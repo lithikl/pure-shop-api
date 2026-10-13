@@ -1,98 +1,121 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X } from "lucide-react";
-import { DEFAULT_SHOES, DEFAULT_ETERNAL_FITS, EternalFit, Shoe, loadEternalFits, loadFeatured, loadProducts, saveEternalFits, saveFeatured, saveProducts } from "./store";
+import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
+import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
+import {
+  DEFAULT_ETERNAL_FITS,
+  DEFAULT_HOMEPAGE,
+  DEFAULT_SHOES,
+  EternalFit,
+  HomepageSettings,
+  Shoe,
+  loadEternalFits,
+  loadFeatured,
+  loadHomepageSettings,
+  loadProducts,
+  saveEternalFits,
+  saveFeatured,
+  saveHomepageSettings,
+  saveProducts,
+} from "./store";
+
+const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
 const emptyProduct = (): Shoe => ({
   id: Date.now(),
   name: "",
   kind: "Everyday Runner",
+  category: "Runners",
   price: 0,
   image: "",
   tone: "",
   tag: "",
-  glassTint: ""
+  glassTint: "",
 });
 
-const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+const emptyEternalFit = (): EternalFit => ({ id: Date.now(), image: "", title: "", meta: "", caption: "" });
 
-const emptyEternalFit = (): EternalFit => ({
-  id: Date.now(),
-  image: "",
-  title: "",
-  meta: "",
-  caption: "",
+const readImage = (file: File) => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(String(reader.result));
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(file);
 });
+
+function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: string; onChange: (value: string) => void; label?: string }) {
+  const [busy, setBusy] = useState(false);
+  const upload = async (file?: File) => {
+    if (!file) return;
+    setBusy(true);
+    try { onChange(await readImage(file)); } finally { setBusy(false); }
+  };
+  return <div className="admin-image-picker">
+    <div className="admin-image-preview">{value ? <img src={value} alt="Preview" /> : <span>NO IMAGE</span>}</div>
+    <div className="admin-image-picker-actions">
+      <label className="admin-upload-button"><Upload size={14} /> {busy ? "READING..." : label}<input type="file" accept="image/*" onChange={e => upload(e.target.files?.[0])} hidden /></label>
+      <input value={value.startsWith("data:") ? "" : value} onChange={e => onChange(e.target.value)} placeholder="or paste image URL..." />
+    </div>
+    {value.startsWith("data:") && <small>Uploaded locally in this browser.</small>}
+  </div>;
+}
 
 export default function Admin() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [featured, setFeatured] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
+  const [homepage, setHomepage] = useState<HomepageSettings>(loadHomepageSettings);
   const [editing, setEditing] = useState<Shoe | null>(null);
   const [editingFit, setEditingFit] = useState<EternalFit | null>(null);
   const [saved, setSaved] = useState(false);
-  const [tab, setTab] = useState<"products" | "homepage" | "eternal" | "settings">("products");
+  const [orders, setOrders] = useState<Order[]>(loadOrders);
+  const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
 
+  const categories = useMemo(() => Array.from(new Set(products.map(p => p.category?.trim() || "Essentials").filter(Boolean))).sort(), [products]);
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
-  const persistProducts = (next: Shoe[]) => {
-    setProducts(next);
-    saveProducts(next);
-    flash();
-  };
-  const persistFeatured = (next: number[]) => {
-    setFeatured(next);
-    saveFeatured(next);
-    flash();
-  };
   const flash = () => { setSaved(true); window.setTimeout(() => setSaved(false), 1400); };
+  const persistProducts = (next: Shoe[]) => { setProducts(next); saveProducts(next); flash(); };
+  const persistFeatured = (next: number[]) => { setFeatured(next); saveFeatured(next); flash(); };
+  const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
+  const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
 
   const saveProduct = () => {
     if (!editing?.name.trim() || !editing.kind.trim() || !editing.image.trim() || editing.price <= 0) return;
+    const normalized = {
+      ...editing,
+      name: editing.name.trim(),
+      kind: editing.kind.trim(),
+      category: (editing.category?.trim() || "Essentials"),
+      image: editing.image.trim(),
+      tone: editing.tone.trim(),
+      tag: editing.tag?.trim(),
+    };
     const exists = products.some(p => p.id === editing.id);
-    const next = exists ? products.map(p => p.id === editing.id ? { ...editing, name: editing.name.trim(), image: editing.image.trim(), tone: editing.tone.trim() } : p) : [...products, editing];
-    persistProducts(next);
+    persistProducts(exists ? products.map(p => p.id === editing.id ? normalized : p) : [...products, normalized]);
     setEditing(null);
   };
 
   const deleteProduct = (id: number) => {
-    const next = products.filter(p => p.id !== id);
-    persistProducts(next);
+    persistProducts(products.filter(p => p.id !== id));
     persistFeatured(featured.filter(x => x !== id));
     if (editing?.id === id) setEditing(null);
   };
 
-  const toggleFeatured = (id: number) => {
-    persistFeatured(featured.includes(id) ? featured.filter(x => x !== id) : [...featured, id]);
-  };
+  const toggleFeatured = (id: number) => persistFeatured(featured.includes(id) ? featured.filter(x => x !== id) : [...featured, id]);
 
   const moveFeatured = (id: number, direction: -1 | 1) => {
     const index = featured.indexOf(id);
-    if (index < 0) return;
     const target = index + direction;
-    if (target < 0 || target >= featured.length) return;
+    if (index < 0 || target < 0 || target >= featured.length) return;
     const next = [...featured];
     [next[index], next[target]] = [next[target], next[index]];
     persistFeatured(next);
   };
 
-  const persistEternalFits = (next: EternalFit[]) => {
-    setEternalFits(next);
-    saveEternalFits(next);
-    flash();
-  };
-
   const saveEternalFit = () => {
     if (!editingFit?.image.trim() || !editingFit.title.trim()) return;
+    const normalized = { ...editingFit, image: editingFit.image.trim(), title: editingFit.title.trim(), meta: editingFit.meta?.trim(), caption: editingFit.caption?.trim() };
     const exists = eternalFits.some(fit => fit.id === editingFit.id);
-    const normalized = {
-      ...editingFit,
-      image: editingFit.image.trim(),
-      title: editingFit.title.trim(),
-      meta: editingFit.meta?.trim(),
-      caption: editingFit.caption?.trim(),
-    };
-    const next = exists ? eternalFits.map(fit => fit.id === editingFit.id ? normalized : fit) : [...eternalFits, normalized];
-    persistEternalFits(next);
+    persistEternalFits(exists ? eternalFits.map(fit => fit.id === editingFit.id ? normalized : fit) : [...eternalFits, normalized]);
     setEditingFit(null);
   };
 
@@ -103,18 +126,18 @@ export default function Admin() {
 
   const moveEternalFit = (id: number, direction: -1 | 1) => {
     const index = eternalFits.findIndex(fit => fit.id === id);
-    if (index < 0) return;
     const target = index + direction;
-    if (target < 0 || target >= eternalFits.length) return;
+    if (index < 0 || target < 0 || target >= eternalFits.length) return;
     const next = [...eternalFits];
     [next[index], next[target]] = [next[target], next[index]];
     persistEternalFits(next);
   };
 
-  const reset = () => {
+  const resetAll = () => {
     persistProducts(DEFAULT_SHOES);
     persistFeatured(DEFAULT_SHOES.map(p => p.id));
     persistEternalFits(DEFAULT_ETERNAL_FITS);
+    persistHomepage(DEFAULT_HOMEPAGE);
     setEditing(null);
     setEditingFit(null);
   };
@@ -123,6 +146,7 @@ export default function Admin() {
     <aside className="admin-sidebar">
       <div className="admin-brand"><span>N/K</span><div><strong>NOIRKNULL</strong><small>CONTROL ROOM</small></div></div>
       <nav>
+        <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}><Settings2 size={16}/> ORDERS</button>
         <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
         <button className={tab === "homepage" ? "active" : ""} onClick={() => setTab("homepage")}><Eye size={16}/> HOMEPAGE</button>
         <button className={tab === "eternal" ? "active" : ""} onClick={() => setTab("eternal")}><Eye size={16}/> ETERNAL FITS</button>
@@ -133,63 +157,124 @@ export default function Admin() {
 
     <main className="admin-main">
       <header className="admin-topbar">
-        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
-        <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "LOCAL CONTROL"}</div>
+        <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "orders" ? "Orders." : tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
+        <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div>
       </header>
 
+      {tab === "orders" && <section className="admin-section">
+        <div className="admin-section-head"><div><span>00 / ORDER CONTROL</span><h2>Every order, in one place.</h2><p>Review customer details, payment method, products and delivery status. Update the status and the customer tracking page follows it.</p></div><div className="admin-status">{orders.length} ORDERS</div></div>
+        <div className="admin-orders-list">
+          {orders.length === 0 ? <div className="admin-empty-state"><strong>No orders yet.</strong><span>Completed checkout orders will appear here.</span></div> : orders.map(order => <article className="admin-order-card" key={order.id}>
+            <div className="admin-order-head"><div><span>{order.id}</span><h3>{order.customer.firstName} {order.customer.lastName}</h3><small>{new Date(order.createdAt).toLocaleString("en-IN")} · {order.payment.toUpperCase()}</small></div><strong>₹{order.total.toLocaleString("en-IN")}</strong></div>
+            <div className="admin-order-grid"><div><small>CONTACT</small><p>{order.customer.email}<br/>{order.customer.phone}</p></div><div><small>DELIVERY</small><p>{order.customer.address}{order.customer.apartment ? ", "+order.customer.apartment : ""}<br/>{order.customer.city}, {order.customer.state} — {order.customer.pincode}</p></div><div><small>ITEMS</small>{order.items.map(item => <p key={item.productId+"-"+item.size}>{item.name} · SIZE {item.size} · ₹{item.price.toLocaleString("en-IN")}</p>)}</div></div>
+            <div className="admin-order-footer"><label><span>ORDER STATUS</span><select value={order.status} onChange={e => setOrders(loadOrders().map(x => x.id === order.id ? updateOrderStatus(order.id, e.target.value as OrderStatus)! : x))}>{["PLACED","CONFIRMED","PACKED","SHIPPED","OUT FOR DELIVERY","DELIVERED","CANCELLED"].map(status => <option key={status}>{status}</option>)}</select></label><a href={"/track-order?order="+encodeURIComponent(order.id)} target="_blank" rel="noreferrer">OPEN TRACKING ↗</a></div>
+          </article>)}
+        </div>
+      </section>}
+
       {tab === "products" && <section className="admin-section">
-        <div className="admin-section-head"><div><span>01 / CATALOGUE</span><h2>Manage every product.</h2><p>Add, edit, delete and control the product details shown across the store.</p></div><button className="admin-primary" onClick={() => setEditing(emptyProduct())}><Plus size={16}/> ADD PRODUCT</button></div>
+        <div className="admin-section-head">
+          <div><span>01 / CATALOGUE</span><h2>Full product control.</h2><p>Upload product photos, set prices, create categories automatically, choose homepage products and control every product detail.</p></div>
+          <button className="admin-primary" onClick={() => setEditing(emptyProduct())}><Plus size={16}/> ADD PRODUCT</button>
+        </div>
+        <div className="admin-category-strip"><span>CATEGORIES</span>{categories.map(category => <b key={category}>{category}</b>)}<small>New categories appear automatically when you save a product.</small></div>
         <div className="admin-product-grid">
           {products.map(product => <article className="admin-product-card" key={product.id}>
             <div className="admin-product-image"><img src={product.image} alt={product.kind}/>{featured.includes(product.id) && <span>ON HOMEPAGE</span>}</div>
-            <div className="admin-product-body"><div><small>{product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
+            <div className="admin-product-body"><div><small>{product.category || "Essentials"} · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
             <div className="admin-card-actions"><button onClick={() => setEditing(product)}><Pencil size={14}/> EDIT</button><button onClick={() => toggleFeatured(product.id)}>{featured.includes(product.id) ? <EyeOff size={14}/> : <Eye size={14}/>} {featured.includes(product.id) ? "HIDE HOME" : "SHOW HOME"}</button><button className="danger" onClick={() => deleteProduct(product.id)}><Trash2 size={14}/> DELETE</button></div>
           </article>)}
         </div>
       </section>}
 
       {tab === "homepage" && <section className="admin-section">
-        <div className="admin-section-head"><div><span>02 / HOMEPAGE CONTROL</span><h2>Choose what appears first.</h2><p>Toggle products into the homepage collection and arrange their order. Changes are saved immediately in this browser.</p></div></div>
-        <div className="featured-manager">
-          <div className="featured-list">{featuredProducts.length ? featuredProducts.map((product, index) => <div className="featured-row" key={product.id}><b>0{index + 1}</b><img src={product.image} alt=""/><div><strong>{product.name}</strong><span>{product.kind} · {money(product.price)}</span></div><button disabled={index === 0} onClick={() => moveFeatured(product.id, -1)}>↑</button><button disabled={index === featuredProducts.length - 1} onClick={() => moveFeatured(product.id, 1)}>↓</button><button className="danger-icon" onClick={() => toggleFeatured(product.id)}><EyeOff size={15}/></button></div>) : <div className="admin-empty">No products selected for the homepage.</div>}</div>
-          <div className="homepage-available"><h3>Available products</h3>{products.filter(p => !featured.includes(p.id)).map(product => <button key={product.id} onClick={() => toggleFeatured(product.id)}><Plus size={15}/><img src={product.image} alt=""/><span>{product.name}<small>{product.kind}</small></span></button>)}</div>
+        <div className="admin-section-head"><div><span>02 / HOMEPAGE CONTROL</span><h2>Control the visual direction.</h2><p>Change the homepage photography, turn sections on/off and control the Eternal Fits wave treatment. Uploading a photo here changes the storefront immediately in this browser.</p></div></div>
+
+        <div className="admin-home-grid">
+          <div className="admin-control-card admin-home-hero-card">
+            <div className="admin-control-card-head"><span>HERO / 01</span><strong>Main sneaker image</strong></div>
+            <ImagePicker value={homepage.heroImage} onChange={value => persistHomepage({...homepage, heroImage: value})} />
+          </div>
+
+          <div className="admin-control-card">
+            <div className="admin-control-card-head"><span>WORLD / 02</span><strong>Manifesto photo</strong></div>
+            <ImagePicker value={homepage.manifestoImage} onChange={value => persistHomepage({...homepage, manifestoImage: value})} />
+          </div>
+
+          <div className="admin-control-card admin-home-wide">
+            <div className="admin-control-card-head"><span>FIT PICKS / SHOP</span><strong>Three moodboard images</strong></div>
+            <div className="admin-three-images">{homepage.fitPickImages.map((image, index) => <div key={index}><span>0{index + 1}</span><ImagePicker value={image} onChange={value => { const next = [...homepage.fitPickImages] as [string,string,string]; next[index] = value; persistHomepage({...homepage, fitPickImages: next}); }} /></div>)}</div>
+          </div>
+
+          <div className="admin-control-card admin-home-wide">
+            <div className="admin-control-card-head"><span>EDITORIAL / SHOP</span><strong>Editorial composition images</strong></div>
+            <div className="admin-two-images">
+              <div><span>MAIN</span><ImagePicker value={homepage.editorialMainImage} onChange={value => persistHomepage({...homepage, editorialMainImage: value})} /></div>
+              {homepage.editorialAccessoryImages.map((image, index) => <div key={index}><span>ACCESSORY 0{index + 1}</span><ImagePicker value={image} onChange={value => { const next = [...homepage.editorialAccessoryImages] as [string,string]; next[index] = value; persistHomepage({...homepage, editorialAccessoryImages: next}); }} /></div>)}
+            </div>
+          </div>
+
+          <div className="admin-control-card admin-home-wide">
+            <div className="admin-control-card-head"><span>LAYOUT / VISIBILITY</span><strong>Switch homepage sections</strong></div>
+            <div className="admin-toggle-grid">
+              {([
+                ["showBestSellers", "BEST SELLERS", "Main product composition"],
+                ["showEternalFits", "ETERNAL FITS", "Infinite campaign gallery"],
+                ["showManifesto", "OUR WORLD", "Brand manifesto"],
+                ["showDetails", "DETAILS", "Feature detail rows"],
+                ["showClosingBanner", "CLOSING BANNER", "Final CTA"],
+                ["patternWaves", "PATTERN WAVES", "Eternal Fits background"],
+              ] as const).map(([key, label, desc]) => <button key={key} className={homepage[key] ? "admin-toggle active" : "admin-toggle"} onClick={() => persistHomepage({...homepage, [key]: !homepage[key]})}><span>{homepage[key] ? <Eye size={15}/> : <EyeOff size={15}/>}</span><div><strong>{label}</strong><small>{desc}</small></div><b>{homepage[key] ? "ON" : "OFF"}</b></button>)}
+            </div>
+            <label className="admin-range"><span>PATTERN WAVE OPACITY <b>{Math.round(homepage.patternOpacity * 100)}%</b></span><input type="range" min="0" max="1" step="0.01" value={homepage.patternOpacity} onChange={e => persistHomepage({...homepage, patternOpacity: Number(e.target.value)})}/></label>
+          </div>
+
+          <div className="admin-home-actions admin-home-wide"><button onClick={() => persistHomepage(DEFAULT_HOMEPAGE)}><RotateCcw size={15}/> RESET HOMEPAGE DESIGN</button></div>
+        </div>
+      </section>}
+
+      {tab === "eternal" && <section className="admin-section">
+        <div className="admin-section-head"><div><span>03 / CAMPAIGN</span><h2>Build Eternal Fits.</h2><p>Add, upload, edit, reorder and delete every campaign image. The gallery loops automatically on the storefront.</p></div><button className="admin-primary" onClick={() => setEditingFit(emptyEternalFit())}><Plus size={16}/> ADD FIT</button></div>
+        <div className="admin-eternal-list">
+          {eternalFits.map((fit, index) => <div className="admin-eternal-row" key={fit.id}>
+            <b>0{index + 1}</b><img src={fit.image} alt={fit.title}/><div className="admin-eternal-copy"><strong>{fit.title}</strong><span>{fit.meta}</span><small>{fit.caption}</small></div>
+            <div className="admin-eternal-actions"><button disabled={index === 0} onClick={() => moveEternalFit(fit.id, -1)}>↑</button><button disabled={index === eternalFits.length - 1} onClick={() => moveEternalFit(fit.id, 1)}>↓</button><button onClick={() => setEditingFit(fit)}><Pencil size={14}/> EDIT</button><button className="danger" onClick={() => deleteEternalFit(fit.id)}><Trash2 size={14}/> DELETE</button></div>
+          </div>)}
         </div>
       </section>}
 
       {tab === "settings" && <section className="admin-section">
-        <div className="admin-section-head"><div><span>04 / STORE SETTINGS</span><h2>Control the storefront.</h2><p>Product and homepage controls are active. The controls below are intentionally lightweight until a real database/auth layer is connected.</p></div></div>
-        <div className="admin-warning"><strong>Important</strong><p>This admin currently stores catalogue and homepage choices in <code>localStorage</code>. That means it is perfect for controlling the site in the same browser, but it is <b>not a secure multi-device production admin</b>. For real customer-facing management, the next step is a database + authenticated admin API.</p></div>
-        <button className="admin-reset" onClick={reset}>RESET CATALOGUE TO ORIGINAL PRODUCTS</button>
+        <div className="admin-section-head"><div><span>04 / STORE CONTROL</span><h2>Everything in one place.</h2><p>Use this control room to manage products, categories, homepage imagery, campaign photography and section visibility.</p></div></div>
+        <div className="admin-warning"><strong>Current storage mode</strong><p>This version stores changes in <code>localStorage</code>. Photo uploads are converted into browser-local image data. It is great for controlling the store from the same browser, but it is <b>not yet a secure online multi-device admin</b>. A production version needs authenticated admin access plus a database and image storage.</p></div>
+        <div className="admin-settings-grid"><div><span>PRODUCTS</span><strong>{products.length}</strong></div><div><span>CATEGORIES</span><strong>{categories.length}</strong></div><div><span>HOMEPAGE PICKS</span><strong>{featured.length}</strong></div><div><span>ETERNAL FITS</span><strong>{eternalFits.length}</strong></div></div>
+        <button className="admin-reset" onClick={resetAll}>RESET EVERYTHING TO ORIGINAL STORE</button>
       </section>}
 
-
-      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal" onClick={e => e.stopPropagation()}>
+      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{eternalFits.some(fit => fit.id === editingFit.id) ? "EDIT ETERNAL FIT" : "NEW ETERNAL FIT"}</p><h2>{editingFit.title || "Create campaign image"}</h2></div><button onClick={() => setEditingFit(null)}><X size={18}/></button></div>
+        <ImagePicker value={editingFit.image} onChange={value => setEditingFit({...editingFit,image:value})} label="UPLOAD CAMPAIGN PHOTO" />
         <div className="admin-form-grid">
-          <label className="wide"><span>MODEL IMAGE URL</span><input value={editingFit.image} onChange={e => setEditingFit({...editingFit,image:e.target.value})} placeholder="https://..."/></label>
           <label><span>FIT TITLE</span><input value={editingFit.title} onChange={e => setEditingFit({...editingFit,title:e.target.value})} placeholder="THE OFF-DUTY FIT"/></label>
           <label><span>META / LOCATION</span><input value={editingFit.meta || ""} onChange={e => setEditingFit({...editingFit,meta:e.target.value})} placeholder="01 / 05 · CHENNAI"/></label>
           <label className="wide"><span>CAPTION</span><input value={editingFit.caption || ""} onChange={e => setEditingFit({...editingFit,caption:e.target.value})} placeholder="Quiet layers. Strong silhouette."/></label>
         </div>
-        <div className="admin-preview">{editingFit.image ? <img src={editingFit.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editingFit.title || "Eternal fit"}</strong><span>{editingFit.meta || "Campaign metadata"}</span></div></div>
         <div className="admin-modal-actions"><button onClick={() => setEditingFit(null)}>CANCEL</button><button className="admin-primary" onClick={saveEternalFit}><Save size={15}/> SAVE FIT</button></div>
       </div></div>}
 
-      {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal" onClick={e => e.stopPropagation()}>
+      {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{products.some(p => p.id === editing.id) ? "EDIT PRODUCT" : "NEW PRODUCT"}</p><h2>{editing.name || "Create product"}</h2></div><button onClick={() => setEditing(null)}><X size={18}/></button></div>
+        <ImagePicker value={editing.image} onChange={value => setEditing({...editing,image:value})} label="UPLOAD PRODUCT PHOTO" />
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
-          <label><span>CATEGORY / TYPE</span><select value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})}><option>Everyday Runner</option><option>Street Low</option><option>Retro Court</option><option>Daily Essential</option><option>High Top</option><option>Slip-On</option></select></label>
+          <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
+          <label><span>CATEGORY / CREATE NEW</span><input list="product-categories" value={editing.category || ""} onChange={e => setEditing({...editing,category:e.target.value})} placeholder="e.g. Runners"/><datalist id="product-categories">{categories.map(category => <option key={category} value={category}/>)}</datalist></label>
           <label><span>PRICE (₹)</span><input type="number" min="1" value={editing.price || ""} onChange={e => setEditing({...editing,price:Number(e.target.value)})}/></label>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
-          <label className="wide"><span>IMAGE URL</span><input value={editing.image} onChange={e => setEditing({...editing,image:e.target.value})} placeholder="https://..."/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
           <label className="wide"><span>PRODUCT PAGE LIQUID GLASS TINT</span><div className="admin-color-field"><input type="color" value={editing.glassTint || "#d72d28"} onChange={e => setEditing({...editing,glassTint:e.target.value})}/><input value={editing.glassTint || ""} onChange={e => setEditing({...editing,glassTint:e.target.value})} placeholder="Auto from product colour"/></div></label>
-          <label className="wide"><span>PRODUCT PAGE LIQUID GLASS TINT</span><div className="admin-color-field"><input type="color" value={editing.glassTint || "#d72d28"} onChange={e => setEditing({...editing,glassTint:e.target.value})}/><input value={editing.glassTint || ""} onChange={e => setEditing({...editing,glassTint:e.target.value})} placeholder="Auto from product colour"/></div></label>
         </div>
-        <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone. Set your own HEX colour to override it.</div>
-        <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone. Set your own HEX colour to override it.</div>
-        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.kind} · {editing.tone || "Tone"}</span></div></div>
+        <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone.</div>
+        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.category || "Category"} · {editing.kind}</span></div></div>
         <div className="admin-modal-actions"><button onClick={() => setEditing(null)}>CANCEL</button><button className="admin-primary" onClick={saveProduct}><Save size={15}/> SAVE PRODUCT</button></div>
       </div></div>}
     </main>

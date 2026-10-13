@@ -2,6 +2,7 @@ export type Shoe = {
   id: number;
   name: string;
   kind: string;
+  category?: string;
   price: number;
   image: string;
   tone: string;
@@ -18,15 +19,53 @@ export type EternalFit = {
 };
 
 export const DEFAULT_SHOES: Shoe[] = [
-  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", price: 4290, image: "/assets/output-onlinepngtools.png", tone: "Crimson / Chalk", tag: "BESTSELLER" },
-  { id: 2, name: "NULL / 02", kind: "Street Low", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", tone: "Cloud / Ink", tag: "NEW DROP" },
-  { id: 3, name: "FORM / 03", kind: "Retro Court", price: 4590, image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", tone: "Stone / Bone" },
-  { id: 4, name: "AFTER / 04", kind: "Daily Essential", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", tone: "Mono / Grey" },
+  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", tone: "Crimson / Chalk", tag: "BESTSELLER" },
+  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", tone: "Cloud / Ink", tag: "NEW DROP" },
+  { id: 3, name: "FORM / 03", kind: "Retro Court", category: "Court", price: 4590, image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", tone: "Stone / Bone" },
+  { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", tone: "Mono / Grey" },
 ];
 
 const PRODUCTS_KEY = "noirknull:products:v1";
 const FEATURED_KEY = "noirknull:featured:v1";
 const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
+const HOMEPAGE_KEY = "noirknull:homepage:v1";
+
+export type HomepageSettings = {
+  heroImage: string;
+  manifestoImage: string;
+  fitPickImages: [string, string, string];
+  editorialMainImage: string;
+  editorialAccessoryImages: [string, string];
+  showBestSellers: boolean;
+  showEternalFits: boolean;
+  showManifesto: boolean;
+  showDetails: boolean;
+  showClosingBanner: boolean;
+  patternWaves: boolean;
+  patternOpacity: number;
+};
+
+export const DEFAULT_HOMEPAGE: HomepageSettings = {
+  heroImage: "/assets/output-onlinepngtools.png",
+  manifestoImage: "https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=1400&q=90",
+  fitPickImages: [
+    "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=650&q=85",
+    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=650&q=85",
+  ],
+  editorialMainImage: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=90",
+  editorialAccessoryImages: [
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=420&q=85",
+    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=420&q=85",
+  ],
+  showBestSellers: true,
+  showEternalFits: true,
+  showManifesto: true,
+  showDetails: true,
+  showClosingBanner: true,
+  patternWaves: true,
+  patternOpacity: 0.68,
+};
 
 export const DEFAULT_ETERNAL_FITS: EternalFit[] = [
   {
@@ -107,4 +146,24 @@ export function loadEternalFits(): EternalFit[] {
 export function saveEternalFits(fits: EternalFit[]) {
   localStorage.setItem(ETERNAL_FITS_KEY, JSON.stringify(fits));
   window.dispatchEvent(new Event("noirknull:eternal-fits"));
+}
+
+
+export function loadHomepageSettings(): HomepageSettings {
+  try {
+    const raw = localStorage.getItem(HOMEPAGE_KEY);
+    if (!raw) return DEFAULT_HOMEPAGE;
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_HOMEPAGE,
+      ...parsed,
+      fitPickImages: Array.isArray(parsed.fitPickImages) ? parsed.fitPickImages.slice(0, 3) : DEFAULT_HOMEPAGE.fitPickImages,
+      editorialAccessoryImages: Array.isArray(parsed.editorialAccessoryImages) ? parsed.editorialAccessoryImages.slice(0, 2) : DEFAULT_HOMEPAGE.editorialAccessoryImages,
+    };
+  } catch { return DEFAULT_HOMEPAGE; }
+}
+
+export function saveHomepageSettings(settings: HomepageSettings) {
+  localStorage.setItem(HOMEPAGE_KEY, JSON.stringify(settings));
+  window.dispatchEvent(new Event("noirknull:homepage"));
 }
