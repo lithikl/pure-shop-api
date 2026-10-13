@@ -24,7 +24,7 @@ const emptyProduct = (): Shoe => ({
   id: Date.now(),
   name: "",
   kind: "Everyday Runner",
-  category: "Runners",
+  category: "SHOES",
   price: 0,
   image: "",
   images: [""],
@@ -240,7 +240,7 @@ export default function Admin() {
         <div className="admin-product-grid">
           {products.map(product => <article className="admin-product-card" key={product.id}>
             <div className="admin-product-image"><img src={product.image} alt={product.kind}/>{featured.includes(product.id) && <span>ON HOMEPAGE</span>}</div>
-            <div className="admin-product-body"><div><small>{product.category || "Essentials"} · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
+            <div className="admin-product-body"><div><small>SHOES · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
             <div className="admin-card-actions"><button onClick={() => setEditing(product)}><Pencil size={14}/> EDIT</button><button onClick={() => toggleFeatured(product.id)}>{featured.includes(product.id) ? <EyeOff size={14}/> : <Eye size={14}/>} {featured.includes(product.id) ? "HIDE HOME" : "SHOW HOME"}</button><button className="danger" onClick={() => deleteProduct(product.id)}><Trash2 size={14}/> DELETE</button></div>
           </article>)}
         </div>
