@@ -99,25 +99,53 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
     } finally { setBusy(false); }
   };
 
-  const applyCrop = () => {
+  const applyCrop = async () => {
     if (!value) return;
+    setBusy(true);
+    try {
+      const safeRatio = Math.max(0.55, Math.min(2.2, aspectRatio));
+      const width = 1600;
+      const height = Math.round(width / safeRatio);
+      const image = new Image();
+      if (!value.startsWith("data:")) image.crossOrigin = "anonymous";
+      image.src = value;
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error("Unable to read image for cropping"));
+      });
 
-    // Keep the crop frame and storefront frame identical, but NEVER force the
-    // source image to fill the frame. At zoom 1 the entire source image fits
-    // inside the frame; only zooming past 1 intentionally crops it.
-    const safeRatio = Math.max(0.55, Math.min(2.2, aspectRatio));
-    const width = 1600;
-    const height = Math.round(width / safeRatio);
-    const imageWidth = width * zoom;
-    const imageHeight = height * zoom;
-    const x = (width - imageWidth) / 2 + (offsetX / 80) * width * 0.45;
-    const y = (height - imageHeight) / 2 + (offsetY / 80) * height * 0.45;
+      const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight) * zoom;
+      const drawWidth = image.naturalWidth * scale;
+      const drawHeight = image.naturalHeight * scale;
+      const x = (width - drawWidth) / 2 + (offsetX / 80) * width * 0.45;
+      const y = (height - drawHeight) / 2 + (offsetY / 80) * height * 0.45;
 
-    // No background rect: transparent PNGs stay transparent.
-    // "meet" keeps the complete image visible inside the crop frame.
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><image href="${value}" x="${x}" y="${y}" width="${imageWidth}" height="${imageHeight}" preserveAspectRatio="xMidYMid meet"/></svg>`;
-    onChange("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg));
-    setEditingCrop(false);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Canvas is unavailable");
+      context.clearRect(0, 0, width, height);
+      context.drawImage(image, x, y, drawWidth, drawHeight);
+
+      const cropped = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Unable to create cropped image")), "image/png");
+      });
+      const file = new File([cropped], "noirknull-cropped.png", { type: "image/png" });
+      try {
+        const cloudUrl = await uploadMedia(file);
+        onChange(cloudUrl);
+      } catch {
+        onChange(URL.createObjectURL(cropped));
+        alert("The crop was created locally, but cloud upload is unavailable right now. Save again after the site is deployed.");
+      }
+      setEditingCrop(false);
+    } catch (error) {
+      console.error(error);
+      alert("Could not apply the crop. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return <div className="admin-image-picker">
