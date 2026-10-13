@@ -2,6 +2,7 @@ export type OrderStatus = "PLACED" | "CONFIRMED" | "PACKED" | "SHIPPED" | "OUT F
 
 export type Order = {
   id: string;
+  trackingNumber: string;
   createdAt: string;
   status: OrderStatus;
   payment: "razorpay" | "cod";
@@ -41,6 +42,7 @@ export function createOrder(input: Omit<Order, "id" | "createdAt" | "timeline" |
   const order: Order = {
     ...input,
     id: "NK" + Date.now().toString(36).toUpperCase(),
+    trackingNumber: "NKT" + Math.random().toString(36).slice(2, 8).toUpperCase() + Date.now().toString().slice(-4),
     createdAt: new Date().toISOString(),
     status: "PLACED",
     timeline: [{ status: "PLACED", at: new Date().toISOString() }],
