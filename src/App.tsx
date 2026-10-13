@@ -175,6 +175,7 @@ export default function App() {
       <nav className="nav-links">
         <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
+        <a className="nav-primary header-track-link" href="/track-order">TRACK ORDER</a>
       </nav>
       <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
@@ -193,7 +194,7 @@ export default function App() {
       </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
-      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}<div className="filter-note"><span>N/K — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
+      <div className="shop-body"><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}<div className="filter-note"><span>NOIRKNULL — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
       <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.kind}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
       <section className="shop-editorial reveal">
@@ -210,7 +211,7 @@ export default function App() {
           <img className="editorial-main-sneaker" src={homepage.editorialMainImage} alt="Red sneaker styled for the Noirknull collection"/>
           <div className="editorial-float-card editorial-accessory-one"><img src={homepage.editorialAccessoryImages[0]} alt="Minimal everyday watch accessory"/><span>THE DAILY DETAIL <b>01</b></span></div>
           <div className="editorial-float-card editorial-accessory-two"><img src={homepage.editorialAccessoryImages[1]} alt="Minimal streetwear backpack"/><span>CARRY YOUR WORLD <b>02</b></span></div>
-          <div className="editorial-art-stamp">N/K<small>STYLE STUDY 001</small></div>
+          <div className="editorial-art-stamp">STYLE<small>STUDY 001</small></div>
           <span className="editorial-orbit-label">EVERYDAY / UNCOMMON ↗</span>
         </div>
       </section>
@@ -219,7 +220,7 @@ export default function App() {
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
       <div className="product-layout">
         <div className="product-gallery">
-          <div className="product-main-image"><img src={selectedProduct.image} alt={selectedProduct.kind}/><div className="product-glass-product-label"><span>{selectedProduct.kind}</span><strong>{selectedProduct.name}</strong></div><span className="product-image-index">N/K — OBJECT {String(selectedProduct.id).padStart(2, "0")}</span></div>
+          <div className="product-main-image"><img src={selectedProduct.image} alt={selectedProduct.kind}/><div className="product-glass-product-label"><span>{selectedProduct.kind}</span><strong>{selectedProduct.name}</strong></div><span className="product-image-index">OBJECT {String(selectedProduct.id).padStart(2, "0")}</span></div>
           <div className="product-gallery-note"><span>FORM FOLLOWS FEELING.</span><span>DESIGNED FOR EVERYDAY MOTION ↗</span></div>
         </div>
         <div className="product-information">
@@ -255,8 +256,8 @@ export default function App() {
         </div>
         <div className="hero-art" aria-label="Featured sneaker">
           <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
-          <div className="hero-stamp">N/K<br/><small>OBJECTS IN MOTION</small></div>
-          <div className="floating-video-shell"><div className="floating-video-media"><video className="floating-video" src="/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4" autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /></div><div className="floating-video-copy"><span>CAMPAIGN EDIT / 01</span><strong>MOVE<br/>DIFFERENT.</strong><small>NOIRKNULL® — 2026<br/>BUILT FOR YOUR PACE.</small></div><span className="floating-video-mark">N/K</span></div>
+          <div className="hero-stamp">OBJECTS<br/><small>IN MOTION</small></div>
+          <div className="floating-video-shell"><div className="floating-video-media"><video className="floating-video" src={homepage.heroVideo} autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /></div><div className="floating-video-copy"><span>CAMPAIGN EDIT / 01</span><strong>MOVE<br/>DIFFERENT.</strong><small>NOIRKNULL® — 2026<br/>BUILT FOR YOUR PACE.</small></div></div>
           <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
         </div>
         <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>
@@ -307,7 +308,7 @@ export default function App() {
                     <strong>{fit.title}</strong>
                     {fit.caption && <small>{fit.caption}</small>}
                   </div>
-                  <span className="eternal-fit-mark">N/K</span>
+                  
                 </div>
               </article>
             ))}
@@ -318,7 +319,7 @@ export default function App() {
 
       {homepage.showManifesto && <section className="manifesto" id="manifesto">
         <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
-        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button><span className="manifesto-mark">N/K</span></div>
+        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button></div>
       </section>}
 
       {homepage.showDetails && <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
@@ -327,7 +328,7 @@ export default function App() {
         <div className="detail-row reveal"><span>03</span><h3>Your own direction</h3><p>Not here to tell you where to go. Just what to go in.</p><ArrowUpRight size={18}/></div>
       </div></section>}
 
-      {homepage.showClosingBanner && <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button><span className="closing-symbol">N/K</span></section>}
+      {homepage.showClosingBanner && <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button></section>}
     </main>}
 
     {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="/track-order">TRACK ORDER ↗</a><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
