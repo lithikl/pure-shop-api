@@ -41,6 +41,14 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
+function VideoPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  return <div className="admin-video-picker">
+    <div className="admin-video-preview">{value ? <video src={value} controls muted playsInline /> : <span>NO VIDEO</span>}</div>
+    <input value={value} onChange={e => onChange(e.target.value)} placeholder="/assets/your-video.mp4 or video URL..." />
+    <small>Paste a hosted MP4 URL or a path to a video inside public/assets. The storefront updates in this browser.</small>
+  </div>;
+}
+
 function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: string; onChange: (value: string) => void; label?: string }) {
   const [busy, setBusy] = useState(false);
   const upload = async (file?: File) => {
@@ -144,7 +152,7 @@ export default function Admin() {
 
   return <div className="admin-page">
     <aside className="admin-sidebar">
-      <div className="admin-brand"><span>N/K</span><div><strong>NOIRKNULL</strong><small>CONTROL ROOM</small></div></div>
+      <div className="admin-brand"><div><strong>NOIRKNULL</strong><small>CONTROL ROOM</small></div></div>
       <nav>
         <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}><Settings2 size={16}/> ORDERS</button>
         <button className={tab === "products" ? "active" : ""} onClick={() => setTab("products")}><Settings2 size={16}/> PRODUCTS</button>
@@ -194,6 +202,11 @@ export default function Admin() {
           <div className="admin-control-card admin-home-hero-card">
             <div className="admin-control-card-head"><span>HERO / 01</span><strong>Main sneaker image</strong></div>
             <ImagePicker value={homepage.heroImage} onChange={value => persistHomepage({...homepage, heroImage: value})} />
+          </div>
+
+          <div className="admin-control-card admin-home-hero-card">
+            <div className="admin-control-card-head"><span>HERO / VIDEO</span><strong>Campaign video</strong></div>
+            <VideoPicker value={homepage.heroVideo} onChange={value => persistHomepage({...homepage, heroVideo: value})} />
           </div>
 
           <div className="admin-control-card">
