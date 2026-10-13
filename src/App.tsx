@@ -68,6 +68,9 @@ export default function App() {
     window.addEventListener("storage", syncFeatured);
     window.addEventListener("storage", syncEternalFits);
     window.addEventListener("storage", syncHomepage);
+    const channel = (() => { try { return new BroadcastChannel("noirknull-store"); } catch { return null; } })();
+    channel?.addEventListener("message", syncProducts);
+    const poll = window.setInterval(syncProducts, 1200);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
@@ -78,6 +81,9 @@ export default function App() {
       window.removeEventListener("storage", syncFeatured);
       window.removeEventListener("storage", syncEternalFits);
       window.removeEventListener("storage", syncHomepage);
+      channel?.removeEventListener("message", syncProducts);
+      channel?.close();
+      window.clearInterval(poll);
     };
   }, []);
 
