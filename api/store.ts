@@ -17,7 +17,7 @@ function allowedOrigin(request: Request) {
 
 async function readStore(): Promise<StoreData | null> {
   try {
-    const result = await get(PATH, { access: "public", useCache: false });
+    const result = await get(PATH, { access: "private", useCache: false });
     if (!result) return null;
     const text = await new Response(result.stream).text();
     return JSON.parse(text);
@@ -28,7 +28,7 @@ async function readStore(): Promise<StoreData | null> {
 
 async function writeStore(data: StoreData) {
   await put(PATH, JSON.stringify(data), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
