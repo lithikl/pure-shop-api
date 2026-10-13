@@ -1515,3 +1515,13 @@ textarea:focus-visible{
   .noir-header .mobile-menu-toggle{width:32px;height:32px;}
   .noir-header .bag-button{width:34px;min-width:34px;height:34px;}
 }
+
+
+/* PRODUCT IMAGE CONSISTENCY */
+.admin-product-gallery-item .admin-image-picker .admin-image-preview,
+.admin-product-card .admin-product-image,
+.shop-product-card .shop-product-image{aspect-ratio:1 / 1;overflow:hidden}
+.admin-product-gallery-item .admin-image-picker .admin-image-preview img,
+.admin-product-card .admin-product-image img,
+.shop-product-card .shop-product-image img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
+.admin-product-gallery-item .admin-crop-stage{aspect-ratio:1 / 1}
