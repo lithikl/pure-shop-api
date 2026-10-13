@@ -45,6 +45,7 @@ export default function App() {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>("description");
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<"details" | "review" | "success">("details");
   const [shippingMethod, setShippingMethod] = useState<"standard" | "express">("standard");
@@ -124,12 +125,14 @@ export default function App() {
     
     setSelectedProduct(null);
     setShopOpen(true);
+    setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const goTo = (id: string) => {
     
     setSelectedProduct(null);
     setShopOpen(false);
+    setMobileMenuOpen(false);
     requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -142,8 +145,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedImageIndex(0); setSelectedSize(null); };
-  const categoryName = (shoe: Shoe) => (shoe.category?.trim() || (shoe.kind === "Everyday Runner" ? "Runners" : shoe.kind === "Street Low" ? "Street" : shoe.kind === "Retro Court" ? "Court" : "Essentials"));
-  const categories = ["ALL", ...Array.from(new Set([...savedCategories, ...products.map(categoryName)])).sort()];
+  const categoryName = (_shoe: Shoe) => "SHOES";
+  const categories = ["ALL", "SHOES"];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
   const homeCollection = homepageShoes.length ? homepageShoes : products;
   const selectedProductImages = selectedProduct?.images?.length ? selectedProduct.images : selectedProduct ? [selectedProduct.image] : [];
@@ -180,12 +183,13 @@ export default function App() {
   return <div className="noir-site">
     <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
     <header className="noir-header liquid-glass-header">
-      <nav className="nav-links">
+      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label="Open menu" aria-expanded={mobileMenuOpen}>☰</button>
+      <nav className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
-        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); }}>OUR WORLD</button>
-        <a className="nav-primary header-track-link" href="/track-order">TRACK ORDER</a>
+        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); setMobileMenuOpen(false); }}>ABOUT US</button>
+        <a className="nav-primary header-track-link" href="/track-order" onClick={() => setMobileMenuOpen(false)}>TRACK ORDER</a>
       </nav>
-      <button className="noir-logo" onClick={() => { closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
