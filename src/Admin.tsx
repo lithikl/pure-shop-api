@@ -29,6 +29,7 @@ const emptyProduct = (): Shoe => ({
   category: "Runners",
   price: 0,
   image: "",
+  images: [""],
   tone: "",
   tag: "",
   glassTint: "",
@@ -144,6 +145,7 @@ export default function Admin() {
       kind: editing.kind.trim(),
       category: (editing.category?.trim() || "Essentials"),
       image: editing.image.trim(),
+      images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
       tone: editing.tone.trim(),
       tag: editing.tag?.trim(),
     };
@@ -328,7 +330,16 @@ export default function Admin() {
 
       {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{products.some(p => p.id === editing.id) ? "EDIT PRODUCT" : "NEW PRODUCT"}</p><h2>{editing.name || "Create product"}</h2></div><button onClick={() => setEditing(null)}><X size={18}/></button></div>
-        <ImagePicker value={editing.image} aspectRatio={0.78} onChange={value => setEditing({...editing,image:value})} label="UPLOAD PRODUCT PHOTO" />
+        <div className="admin-product-gallery-editor">
+          <div className="admin-gallery-editor-head"><div><span>PRODUCT GALLERY</span><strong>{(editing.images?.length || 1)} IMAGE{(editing.images?.length || 1) === 1 ? "" : "S"}</strong></div><button type="button" onClick={() => setEditing({...editing, images: [...(editing.images?.length ? editing.images : [editing.image]), ""]})}><Plus size={14}/> ADD IMAGE</button></div>
+          <div className="admin-product-gallery-grid">
+            {(editing.images?.length ? editing.images : [editing.image]).map((image, index) => <div className="admin-product-gallery-item" key={index}>
+              <div className="admin-gallery-item-head"><span>{index === 0 ? "MAIN IMAGE" : `IMAGE 0${index + 1}`}</span>{index > 0 && <button type="button" onClick={() => { const next = [...(editing.images || [editing.image])]; next.splice(index, 1); setEditing({...editing, images: next}); }}><Trash2 size={13}/></button>}</div>
+              <ImagePicker value={image} aspectRatio={0.78} label={index === 0 ? "UPLOAD MAIN PHOTO" : `UPLOAD IMAGE 0${index + 1}`} onChange={value => { const next = [...(editing.images || [editing.image])]; next[index] = value; setEditing({...editing, image: next[0] || "", images: next}); }} />
+            </div>)}
+          </div>
+          <small className="admin-gallery-help">Add multiple views of the same product. The first image is the main image; customers can swipe through the gallery on the product page.</small>
+        </div>
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
           <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
