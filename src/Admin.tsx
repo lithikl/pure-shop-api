@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
@@ -16,6 +16,8 @@ import {
   saveFeatured,
   saveHomepageSettings,
   saveProducts,
+  hydrateFromCloud,
+  publishCloudSection,
 } from "./store";
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -42,17 +44,27 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
+async function uploadMedia(file: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await fetch("/api/upload", { method: "POST", body: form });
+  if (!response.ok) throw new Error("Cloud upload failed");
+  const payload = await response.json();
+  if (!payload?.url) throw new Error("Cloud upload returned no URL");
+  return payload.url;
+}
+
 function VideoPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const [busy, setBusy] = useState(false);
   const upload = async (file?: File) => {
     if (!file) return;
     setBusy(true);
     try {
-      const data = await readImage(file);
       try {
-        onChange(data);
+        onChange(await uploadMedia(file));
       } catch {
-        alert("This video is too large for browser storage. Use an MP4 path from /public/assets or a hosted video URL.");
+        onChange(await readImage(file));
+        alert("Cloud upload was unavailable, so this upload is temporarily stored in this browser.");
       }
     } finally { setBusy(false); }
   };
@@ -76,8 +88,15 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
   const upload = async (file?: File) => {
     if (!file) return;
     setBusy(true);
-    try { onChange(await readImage(file)); setZoom(1); setOffsetX(0); setOffsetY(0); setEditingCrop(true); }
-    finally { setBusy(false); }
+    try {
+      try {
+        onChange(await uploadMedia(file));
+      } catch {
+        onChange(await readImage(file));
+        alert("Cloud upload was unavailable, so this image is temporarily stored in this browser.");
+      }
+      setZoom(1); setOffsetX(0); setOffsetY(0); setEditingCrop(true);
+    } finally { setBusy(false); }
   };
 
   const applyCrop = () => {
@@ -132,6 +151,27 @@ export default function Admin() {
   const [saved, setSaved] = useState(false);
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const hasCloudStore = await hydrateFromCloud();
+      if (!mounted) return;
+      if (hasCloudStore) {
+        setProducts(loadProducts());
+        setFeatured(loadFeatured());
+        setEternalFits(loadEternalFits());
+        setHomepage(loadHomepageSettings());
+      } else {
+        publishCloudSection("products", products);
+        publishCloudSection("featured", featured);
+        publishCloudSection("eternalFits", eternalFits);
+        publishCloudSection("homepage", homepage);
+        publishCloudSection("categories", ["SHOES"]);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   const categories = ["SHOES"];
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
