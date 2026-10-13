@@ -65,7 +65,7 @@ function VideoPicker({ value, onChange }: { value: string; onChange: (value: str
   </div>;
 }
 
-function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: string; onChange: (value: string) => void; label?: string }) {
+function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 }: { value: string; onChange: (value: string) => void; label?: string; aspectRatio?: number }) {
   const [busy, setBusy] = useState(false);
   const [editingCrop, setEditingCrop] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -81,7 +81,14 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: strin
 
   const applyCrop = () => {
     if (!value) return;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1200" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f2efe7"/><image href="${value}" x="${600 - 600 * zoom + offsetX * 6}" y="${600 - 600 * zoom + offsetY * 6}" width="${1200 * zoom}" height="${1200 * zoom}" preserveAspectRatio="xMidYMid slice"/></svg>`;
+    const safeRatio = Math.max(0.55, Math.min(2.2, aspectRatio));
+    const width = 1600;
+    const height = Math.round(width / safeRatio);
+    const base = Math.max(width, height);
+    const imageSize = base * zoom;
+    const x = (width - imageSize) / 2 + (offsetX / 80) * width * 0.45;
+    const y = (height - imageSize) / 2 + (offsetY / 80) * height * 0.45;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="#f2efe7"/><image href="${value}" x="${x}" y="${y}" width="${imageSize}" height="${imageSize}" preserveAspectRatio="none"/></svg>`;
     onChange("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg));
     setEditingCrop(false);
   };
@@ -93,7 +100,7 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: strin
       <input value={value.startsWith("data:") ? "" : value} onChange={e => onChange(e.target.value)} placeholder="or paste image URL..." />
       {value && <button type="button" className="admin-adjust-button" onClick={() => setEditingCrop(true)}><Pencil size={13}/> ADJUST IMAGE</button>}
     </div>
-    {editingCrop && value && <div className="admin-crop-editor">
+    {editingCrop && value && <div className="admin-crop-editor" style={{ "--crop-ratio": String(aspectRatio) } as React.CSSProperties}>
       <div className="admin-crop-stage"><img src={value} alt="Adjust" style={{ transform: `translate(${offsetX}px,${offsetY}px) scale(${zoom})` }} /></div>
       <div className="admin-crop-controls">
         <label>ZOOM <input type="range" min="0.6" max="2.5" step="0.01" value={zoom} onChange={e => setZoom(Number(e.target.value))}/></label>
@@ -242,7 +249,7 @@ export default function Admin() {
         <div className="admin-home-grid">
           <div className="admin-control-card admin-home-hero-card">
             <div className="admin-control-card-head"><span>HERO / 01</span><strong>Main sneaker image</strong></div>
-            <ImagePicker value={homepage.heroImage} onChange={value => persistHomepage({...homepage, heroImage: value})} />
+            <ImagePicker value={homepage.heroImage} aspectRatio={1} onChange={value => persistHomepage({...homepage, heroImage: value})} />
           </div>
 
           <div className="admin-control-card admin-home-hero-card">
@@ -252,19 +259,19 @@ export default function Admin() {
 
           <div className="admin-control-card">
             <div className="admin-control-card-head"><span>WORLD / 02</span><strong>Manifesto photo</strong></div>
-            <ImagePicker value={homepage.manifestoImage} onChange={value => persistHomepage({...homepage, manifestoImage: value})} />
+            <ImagePicker value={homepage.manifestoImage} aspectRatio={1} onChange={value => persistHomepage({...homepage, manifestoImage: value})} />
           </div>
 
           <div className="admin-control-card admin-home-wide">
             <div className="admin-control-card-head"><span>FIT PICKS / SHOP</span><strong>Three moodboard images</strong></div>
-            <div className="admin-three-images">{homepage.fitPickImages.map((image, index) => <div key={index}><span>0{index + 1}</span><ImagePicker value={image} onChange={value => { const next = [...homepage.fitPickImages] as [string,string,string]; next[index] = value; persistHomepage({...homepage, fitPickImages: next}); }} /></div>)}</div>
+            <div className="admin-three-images">{homepage.fitPickImages.map((image, index) => <div key={index}><span>0{index + 1}</span><ImagePicker value={image} aspectRatio={1.25} onChange={value => { const next = [...homepage.fitPickImages] as [string,string,string]; next[index] = value; persistHomepage({...homepage, fitPickImages: next}); }} /></div>)}</div>
           </div>
 
           <div className="admin-control-card admin-home-wide">
             <div className="admin-control-card-head"><span>EDITORIAL / SHOP</span><strong>Editorial composition images</strong></div>
             <div className="admin-two-images">
-              <div><span>MAIN</span><ImagePicker value={homepage.editorialMainImage} onChange={value => persistHomepage({...homepage, editorialMainImage: value})} /></div>
-              {homepage.editorialAccessoryImages.map((image, index) => <div key={index}><span>ACCESSORY 0{index + 1}</span><ImagePicker value={image} onChange={value => { const next = [...homepage.editorialAccessoryImages] as [string,string]; next[index] = value; persistHomepage({...homepage, editorialAccessoryImages: next}); }} /></div>)}
+              <div><span>MAIN</span><ImagePicker value={homepage.editorialMainImage} aspectRatio={1} onChange={value => persistHomepage({...homepage, editorialMainImage: value})} /></div>
+              {homepage.editorialAccessoryImages.map((image, index) => <div key={index}><span>ACCESSORY 0{index + 1}</span><ImagePicker value={image} aspectRatio={1} onChange={value => { const next = [...homepage.editorialAccessoryImages] as [string,string]; next[index] = value; persistHomepage({...homepage, editorialAccessoryImages: next}); }} /></div>)}
             </div>
           </div>
 
@@ -306,7 +313,7 @@ export default function Admin() {
 
       {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{eternalFits.some(fit => fit.id === editingFit.id) ? "EDIT ETERNAL FIT" : "NEW ETERNAL FIT"}</p><h2>{editingFit.title || "Create campaign image"}</h2></div><button onClick={() => setEditingFit(null)}><X size={18}/></button></div>
-        <ImagePicker value={editingFit.image} onChange={value => setEditingFit({...editingFit,image:value})} label="UPLOAD CAMPAIGN PHOTO" />
+        <ImagePicker value={editingFit.image} aspectRatio={0.82} onChange={value => setEditingFit({...editingFit,image:value})} label="UPLOAD CAMPAIGN PHOTO" />
         <div className="admin-form-grid">
           <label><span>FIT TITLE</span><input value={editingFit.title} onChange={e => setEditingFit({...editingFit,title:e.target.value})} placeholder="THE OFF-DUTY FIT"/></label>
           <label><span>META / LOCATION</span><input value={editingFit.meta || ""} onChange={e => setEditingFit({...editingFit,meta:e.target.value})} placeholder="01 / 05 · CHENNAI"/></label>
@@ -317,7 +324,7 @@ export default function Admin() {
 
       {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{products.some(p => p.id === editing.id) ? "EDIT PRODUCT" : "NEW PRODUCT"}</p><h2>{editing.name || "Create product"}</h2></div><button onClick={() => setEditing(null)}><X size={18}/></button></div>
-        <ImagePicker value={editing.image} onChange={value => setEditing({...editing,image:value})} label="UPLOAD PRODUCT PHOTO" />
+        <ImagePicker value={editing.image} aspectRatio={0.78} onChange={value => setEditing({...editing,image:value})} label="UPLOAD PRODUCT PHOTO" />
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
           <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
