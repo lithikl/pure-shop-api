@@ -12,8 +12,6 @@ import {
   loadFeatured,
   loadHomepageSettings,
   loadProducts,
-  loadCategories,
-  saveCategories,
   saveEternalFits,
   saveFeatured,
   saveHomepageSettings,
