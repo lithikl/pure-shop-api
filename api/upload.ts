@@ -17,12 +17,12 @@ export default async function handler(request: Request) {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-120) || "upload";
     const pathname = `noirknull/media/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
     const blob = await put(pathname, file, {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
       contentType: file.type || "application/octet-stream",
     });
 
-    return Response.json({ ok: true, url: blob.url });
+    return Response.json({ ok: true, url: `/api/media?path=${encodeURIComponent(blob.pathname)}` });
   } catch (error) {
     console.error(error);
     return Response.json({ ok: false, error: "Upload failed" }, { status: 500 });
