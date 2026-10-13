@@ -29,7 +29,9 @@ const KEY = "noirknull:orders:v1";
 export function loadOrders(): Order[] {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const orders = JSON.parse(raw) as Order[];
+    return orders.map(order => order.trackingNumber ? order : { ...order, trackingNumber: "NKT" + order.id.replace(/^NK/, "").slice(-8) });
   } catch { return []; }
 }
 
