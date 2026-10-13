@@ -81,7 +81,7 @@ export const DEFAULT_ETERNAL_FITS: EternalFit[] = [
     id: 2,
     image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1500&q=88",
     title: "THE EVERYDAY FORM",
-    meta: "02 / 05 · N/K STUDIO",
+    meta: "02 / 05 · NOIRKNULL STUDIO",
     caption: "Built around movement.",
   },
   {
