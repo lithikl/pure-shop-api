@@ -256,7 +256,7 @@ export default function App() {
         <div className="hero-art" aria-label="Featured sneaker">
           <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
           <div className="hero-stamp">N/K<br/><small>OBJECTS IN MOTION</small></div>
-          <video className="floating-video" src="/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4" autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" />
+          <div className="floating-video-shell"><video className="floating-video" src="/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4" autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /><span className="floating-video-label">CAMPAIGN EDIT / 01</span><span className="floating-video-mark">N/K</span></div>
           <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
         </div>
         <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>
