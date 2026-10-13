@@ -42,27 +42,67 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
 });
 
 function VideoPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const upload = async (file?: File) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const data = await readImage(file);
+      try {
+        onChange(data);
+      } catch {
+        alert("This video is too large for browser storage. Use an MP4 path from /public/assets or a hosted video URL.");
+      }
+    } finally { setBusy(false); }
+  };
   return <div className="admin-video-picker">
     <div className="admin-video-preview">{value ? <video src={value} controls muted playsInline /> : <span>NO VIDEO</span>}</div>
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder="/assets/your-video.mp4 or video URL..." />
-    <small>Paste a hosted MP4 URL or a path to a video inside public/assets. The storefront updates in this browser.</small>
+    <div className="admin-video-actions">
+      <label className="admin-upload-button"><Upload size={14}/> {busy ? "READING..." : "UPLOAD VIDEO"}<input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={e => upload(e.target.files?.[0])} hidden /></label>
+      <input value={value.startsWith("data:") ? "" : value} onChange={e => onChange(e.target.value)} placeholder="/assets/your-video.mp4 or video URL..." />
+    </div>
+    <small>Upload an MP4 for same-browser control, or paste a public video URL / /assets/... path. Large videos may exceed browser localStorage limits.</small>
   </div>;
 }
 
 function ImagePicker({ value, onChange, label = "UPLOAD PHOTO" }: { value: string; onChange: (value: string) => void; label?: string }) {
   const [busy, setBusy] = useState(false);
+  const [editingCrop, setEditingCrop] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+
   const upload = async (file?: File) => {
     if (!file) return;
     setBusy(true);
-    try { onChange(await readImage(file)); } finally { setBusy(false); }
+    try { onChange(await readImage(file)); setZoom(1); setOffsetX(0); setOffsetY(0); setEditingCrop(true); }
+    finally { setBusy(false); }
   };
+
+  const applyCrop = () => {
+    if (!value) return;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1200" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f2efe7"/><image href="${value}" x="${600 - 600 * zoom + offsetX * 6}" y="${600 - 600 * zoom + offsetY * 6}" width="${1200 * zoom}" height="${1200 * zoom}" preserveAspectRatio="xMidYMid slice"/></svg>`;
+    onChange("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg));
+    setEditingCrop(false);
+  };
+
   return <div className="admin-image-picker">
     <div className="admin-image-preview">{value ? <img src={value} alt="Preview" /> : <span>NO IMAGE</span>}</div>
     <div className="admin-image-picker-actions">
       <label className="admin-upload-button"><Upload size={14} /> {busy ? "READING..." : label}<input type="file" accept="image/*" onChange={e => upload(e.target.files?.[0])} hidden /></label>
       <input value={value.startsWith("data:") ? "" : value} onChange={e => onChange(e.target.value)} placeholder="or paste image URL..." />
+      {value && <button type="button" className="admin-adjust-button" onClick={() => setEditingCrop(true)}><Pencil size={13}/> ADJUST IMAGE</button>}
     </div>
-    {value.startsWith("data:") && <small>Uploaded locally in this browser.</small>}
+    {editingCrop && value && <div className="admin-crop-editor">
+      <div className="admin-crop-stage"><img src={value} alt="Adjust" style={{ transform: `translate(${offsetX}px,${offsetY}px) scale(${zoom})` }} /></div>
+      <div className="admin-crop-controls">
+        <label>ZOOM <input type="range" min="0.6" max="2.5" step="0.01" value={zoom} onChange={e => setZoom(Number(e.target.value))}/></label>
+        <label>LEFT / RIGHT <input type="range" min="-80" max="80" step="1" value={offsetX} onChange={e => setOffsetX(Number(e.target.value))}/></label>
+        <label>UP / DOWN <input type="range" min="-80" max="80" step="1" value={offsetY} onChange={e => setOffsetY(Number(e.target.value))}/></label>
+        <div><button type="button" onClick={() => {setZoom(1);setOffsetX(0);setOffsetY(0)}}>RESET</button><button type="button" className="admin-primary" onClick={applyCrop}><Check size={14}/> APPLY</button></div>
+      </div>
+    </div>}
+    {value.startsWith("data:") && <small>Image is stored locally. Use ADJUST IMAGE to manually control zoom and position before applying.</small>}
   </div>;
 }
 
