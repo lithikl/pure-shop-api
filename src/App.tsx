@@ -36,6 +36,8 @@ export default function App() {
   const [homepage, setHomepage] = useState<HomepageSettings>(loadHomepageSettings);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [galleryTouchStart, setGalleryTouchStart] = useState<number | null>(null);
   const [shopOpen, setShopOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("ALL");
@@ -134,15 +136,17 @@ export default function App() {
   };
   const openProduct = (shoe: Shoe) => {
     setSelectedProduct(shoe);
+    setSelectedImageIndex(0);
     setSelectedSize(null);
     setOpenDetail("description");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const closeProduct = () => { setSelectedProduct(null); setSelectedSize(null); };
+  const closeProduct = () => { setSelectedProduct(null); setSelectedImageIndex(0); setSelectedSize(null); };
   const categoryName = (shoe: Shoe) => (shoe.category?.trim() || (shoe.kind === "Everyday Runner" ? "Runners" : shoe.kind === "Street Low" ? "Street" : shoe.kind === "Retro Court" ? "Court" : "Essentials"));
   const categories = ["ALL", ...Array.from(new Set([...savedCategories, ...products.map(categoryName)])).sort()];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
   const homeCollection = homepageShoes.length ? homepageShoes : products;
+  const selectedProductImages = selectedProduct?.images?.length ? selectedProduct.images : selectedProduct ? [selectedProduct.image] : [];
   const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
     const category = categoryName(shoe);
@@ -224,8 +228,24 @@ export default function App() {
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
       <div className="product-layout">
         <div className="product-gallery">
-          <div className="product-main-image"><img src={selectedProduct.image} alt={selectedProduct.kind}/><div className="product-glass-product-label"><span>{selectedProduct.kind}</span><strong>{selectedProduct.name}</strong></div><span className="product-image-index">OBJECT {String(selectedProduct.id).padStart(2, "0")}</span></div>
-          <div className="product-gallery-note"><span>FORM FOLLOWS FEELING.</span><span>DESIGNED FOR EVERYDAY MOTION ↗</span></div>
+          <div className="product-gallery-stage" onTouchStart={e => setGalleryTouchStart(e.touches[0].clientX)} onTouchEnd={e => {
+            if (galleryTouchStart === null || selectedProductImages.length < 2) return;
+            const delta = e.changedTouches[0].clientX - galleryTouchStart;
+            if (Math.abs(delta) > 45) setSelectedImageIndex(index => delta < 0 ? (index + 1) % selectedProductImages.length : (index - 1 + selectedProductImages.length) % selectedProductImages.length);
+            setGalleryTouchStart(null);
+          }}>
+            <div className="product-main-image">
+              <img key={selectedImageIndex} className="product-gallery-slide" src={selectedProductImages[selectedImageIndex] || selectedProduct.image} alt={selectedProduct.kind}/>
+              {selectedProductImages.length > 1 && <>
+                <button className="product-gallery-arrow product-gallery-arrow-prev" onClick={() => setSelectedImageIndex(index => (index - 1 + selectedProductImages.length) % selectedProductImages.length)} aria-label="Previous product image">←</button>
+                <button className="product-gallery-arrow product-gallery-arrow-next" onClick={() => setSelectedImageIndex(index => (index + 1) % selectedProductImages.length)} aria-label="Next product image">→</button>
+              </>}
+              <div className="product-glass-product-label"><span>{selectedProduct.kind}</span><strong>{selectedProduct.name}</strong></div>
+              <span className="product-image-index">{String(selectedImageIndex + 1).padStart(2, "0")} / {String(selectedProductImages.length).padStart(2, "0")}</span>
+            </div>
+            {selectedProductImages.length > 1 && <div className="product-gallery-thumbs">{selectedProductImages.map((image, index) => <button key={index} className={index === selectedImageIndex ? "active" : ""} onClick={() => setSelectedImageIndex(index)} aria-label={`View product image ${index + 1}`}><img src={image} alt="" /></button>)}</div>}
+          </div>
+          <div className="product-gallery-note"><span>SWIPE TO EXPLORE.</span><span>FORM FOLLOWS FEELING ↗</span></div>
         </div>
         <div className="product-information">
           <p className="kicker"><i/> {selectedProduct.tag || "THE FIRST DROP"}</p>
