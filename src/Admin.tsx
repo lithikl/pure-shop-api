@@ -100,7 +100,7 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
       <input value={value.startsWith("data:") ? "" : value} onChange={e => onChange(e.target.value)} placeholder="or paste image URL..." />
       {value && <button type="button" className="admin-adjust-button" onClick={() => setEditingCrop(true)}><Pencil size={13}/> ADJUST IMAGE</button>}
     </div>
-    {editingCrop && value && <div className="admin-crop-editor" style={{ "--crop-ratio": String(aspectRatio) } as React.CSSProperties}>
+    {editingCrop && value && <div className="admin-crop-editor" style={{ "--crop-ratio": String(aspectRatio) } as Record<string, string>}>
       <div className="admin-crop-stage"><img src={value} alt="Adjust" style={{ transform: `translate(${offsetX}px,${offsetY}px) scale(${zoom})` }} /></div>
       <div className="admin-crop-controls">
         <label>ZOOM <input type="range" min="0.6" max="2.5" step="0.01" value={zoom} onChange={e => setZoom(Number(e.target.value))}/></label>
