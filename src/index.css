@@ -1385,19 +1385,24 @@ textarea:focus-visible{
 @media(max-width:600px){.cart-drawer .bag-bottom>button,.empty-bag>button,.checkout-page .checkout-primary{width:100%;justify-content:center}.checkout-page .checkout-option{min-height:68px}}
 
 
-/* FINAL MOBILE HEADER FIX — one stable layout, no overlap */
-@media (max-width: 600px){
+/* FINAL MOBILE HEADER FIX — centered glass bar + reliable menu */
+@media (max-width:600px){
   .noir-header.liquid-glass-header{
-    position:sticky;
-    top:0;
+    position:fixed;
+    top:8px;
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
     z-index:100;
     display:grid;
-    grid-template-columns:44px minmax(0,1fr) 44px;
+    grid-template-columns:42px minmax(0,1fr) 42px;
     align-items:center;
-    width:100%;
-    height:66px;
-    min-height:66px;
-    padding:0 12px;
+    width:calc(100% - 20px);
+    max-width:none;
+    height:62px;
+    min-height:62px;
+    margin:0;
+    padding:0 10px;
     overflow:visible;
   }
 
@@ -1411,7 +1416,6 @@ textarea:focus-visible{
     z-index:102;
   }
 
-  /* Closed menu takes zero layout space, so the logo stays exactly centered. */
   .noir-header .nav-links{
     display:none !important;
   }
@@ -1419,10 +1423,11 @@ textarea:focus-visible{
   .noir-header .nav-links.nav-open{
     display:flex !important;
     position:absolute;
-    top:calc(100% + 10px);
-    left:10px;
-    right:10px;
-    width:auto;
+    top:calc(100% + 9px);
+    left:0;
+    right:0;
+    width:100%;
+    max-width:none;
     grid-column:auto;
     grid-row:auto;
     flex-direction:column;
@@ -1457,9 +1462,9 @@ textarea:focus-visible{
     box-sizing:border-box;
   }
 
+  .noir-header .nav-links.nav-open .header-shop-link,
   .noir-header .nav-links.nav-open .header-world-link,
-  .noir-header .nav-links.nav-open .header-track-link,
-  .noir-header .nav-links.nav-open .header-shop-link{
+  .noir-header .nav-links.nav-open .header-track-link{
     display:flex !important;
   }
 
@@ -1474,9 +1479,10 @@ textarea:focus-visible{
     max-width:100%;
     margin:0;
     padding:0;
-    font-size:23px;
+    font-size:22px;
     line-height:1;
     white-space:nowrap;
+    overflow:visible;
   }
 
   .noir-header .bag-button{
@@ -1484,9 +1490,9 @@ textarea:focus-visible{
     grid-row:1;
     justify-self:end;
     z-index:102;
-    width:40px;
-    min-width:40px;
-    height:40px;
+    width:38px;
+    min-width:38px;
+    height:38px;
     padding:0;
     margin:0;
     display:flex;
@@ -1499,9 +1505,13 @@ textarea:focus-visible{
   .noir-header .bag-button b{font-size:8px;}
 }
 
-@media (max-width: 380px){
-  .noir-header.liquid-glass-header{grid-template-columns:40px minmax(0,1fr) 40px;padding:0 9px;}
-  .noir-header .noir-logo{font-size:21px;}
+@media(max-width:380px){
+  .noir-header.liquid-glass-header{
+    width:calc(100% - 16px);
+    grid-template-columns:38px minmax(0,1fr) 38px;
+    padding:0 8px;
+  }
+  .noir-header .noir-logo{font-size:20px;}
   .noir-header .mobile-menu-toggle{width:32px;height:32px;}
-  .noir-header .bag-button{width:36px;min-width:36px;height:36px;}
+  .noir-header .bag-button{width:34px;min-width:34px;height:34px;}
 }
