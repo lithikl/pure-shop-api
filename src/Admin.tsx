@@ -332,7 +332,7 @@ export default function Admin() {
           <div className="admin-product-gallery-grid">
             {(editing.images?.length ? editing.images : [editing.image]).map((image, index) => <div className="admin-product-gallery-item" key={index}>
               <div className="admin-gallery-item-head"><span>{index === 0 ? "MAIN IMAGE" : `IMAGE 0${index + 1}`}</span>{index > 0 && <button type="button" onClick={() => { const next = [...(editing.images || [editing.image])]; next.splice(index, 1); setEditing({...editing, images: next}); }}><Trash2 size={13}/></button>}</div>
-              <ImagePicker value={image} aspectRatio={0.78} label={index === 0 ? "UPLOAD MAIN PHOTO" : `UPLOAD IMAGE 0${index + 1}`} onChange={value => { const next = [...(editing.images || [editing.image])]; next[index] = value; setEditing({...editing, image: next[0] || "", images: next}); }} />
+              <ImagePicker value={image} aspectRatio={1} label={index === 0 ? "UPLOAD MAIN PHOTO" : `UPLOAD IMAGE 0${index + 1}`} onChange={value => { const next = [...(editing.images || [editing.image])]; next[index] = value; setEditing({...editing, image: next[0] || "", images: next}); }} />
             </div>)}
           </div>
           <small className="admin-gallery-help">Add multiple views of the same product. The first image is the main image; customers can swipe through the gallery on the product page.</small>
