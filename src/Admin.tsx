@@ -118,7 +118,7 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
 
 export default function Admin() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
-  const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
+
   const [featured, setFeatured] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
   const [homepage, setHomepage] = useState<HomepageSettings>(loadHomepageSettings);
@@ -128,11 +128,11 @@ export default function Admin() {
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
 
-  const categories = useMemo(() => Array.from(new Set([...savedCategories, ...products.map(p => p.category?.trim() || "Essentials").filter(Boolean)])).sort(), [savedCategories, products]);
+  const categories = ["SHOES"];
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
   const flash = () => { setSaved(true); window.setTimeout(() => setSaved(false), 1400); };
-  const persistProducts = (next: Shoe[]) => { setProducts(next); saveProducts(next); setSavedCategories(loadCategories()); flash(); };
+  const persistProducts = (next: Shoe[]) => { const normalized = next.map(product => ({...product, category: "SHOES"})); setProducts(normalized); saveProducts(normalized); flash(); };
   const persistFeatured = (next: number[]) => { setFeatured(next); saveFeatured(next); flash(); };
   const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
   const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
@@ -143,7 +143,7 @@ export default function Admin() {
       ...editing,
       name: editing.name.trim(),
       kind: editing.kind.trim(),
-      category: (editing.category?.trim() || "Essentials"),
+      category: "SHOES",
       image: editing.image.trim(),
       images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
       tone: editing.tone.trim(),
@@ -160,7 +160,6 @@ export default function Admin() {
     if (editing?.id === id) setEditing(null);
   };
 
-  const addCategory = (name: string) => { const clean = name.trim(); if (!clean) return; const next = Array.from(new Set([...savedCategories, clean])).sort(); setSavedCategories(next); saveCategories(next); flash(); };
   const toggleFeatured = (id: number) => persistFeatured(featured.includes(id) ? featured.filter(x => x !== id) : [...featured, id]);
 
   const moveFeatured = (id: number, direction: -1 | 1) => {
@@ -239,7 +238,7 @@ export default function Admin() {
           <div><span>01 / CATALOGUE</span><h2>Full product control.</h2><p>Upload product photos, set prices, create categories automatically, choose homepage products and control every product detail.</p></div>
           <button className="admin-primary" onClick={() => setEditing(emptyProduct())}><Plus size={16}/> ADD PRODUCT</button>
         </div>
-        <div className="admin-category-strip"><span>CATEGORIES</span>{categories.map(category => <b key={category}>{category}</b>)}<form onSubmit={e => { e.preventDefault(); const input = e.currentTarget.elements.namedItem("newCategory") as HTMLInputElement; addCategory(input.value); input.value = ""; }}><input name="newCategory" placeholder="NEW CATEGORY" /><button type="submit">ADD</button></form><small>New categories appear here immediately and are available when creating/editing products.</small></div>
+        <div className="admin-category-strip"><span>CATEGORY</span><b>SHOES</b><small>For now, all products are listed under Shoes. Additional categories are disabled.</small></div>
         <div className="admin-product-grid">
           {products.map(product => <article className="admin-product-card" key={product.id}>
             <div className="admin-product-image"><img src={product.image} alt={product.kind}/>{featured.includes(product.id) && <span>ON HOMEPAGE</span>}</div>
@@ -343,7 +342,7 @@ export default function Admin() {
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
           <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
-          <label><span>CATEGORY</span><input list="product-categories" value={editing.category || ""} onChange={e => setEditing({...editing,category:e.target.value})} placeholder="e.g. Runners"/><datalist id="product-categories">{categories.map(category => <option key={category} value={category}/>)}</datalist></label>
+          <label><span>CATEGORY</span><input value="SHOES" readOnly aria-label="Product category"/></label>
           <label><span>PRICE (₹)</span><input type="number" min="1" value={editing.price || ""} onChange={e => setEditing({...editing,price:Number(e.target.value)})}/></label>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
