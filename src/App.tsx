@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories } from "./store";
+import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
 import PatternWaves from "./PatternWaves";
 import TrackOrder from "./TrackOrder";
 
@@ -52,6 +52,10 @@ export default function App() {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("upi");
   const [checkoutData, setCheckoutData] = useState({ email: "", phone: "", firstName: "", lastName: "", address: "", apartment: "", city: "Chennai", state: "Tamil Nadu", pincode: "" });
   const [added, setAdded] = useState<number | null>(null);
+
+  useEffect(() => {
+    void hydrateFromCloud();
+  }, []);
 
   useEffect(() => {
     const syncProducts = () => setProducts(loadProducts());
