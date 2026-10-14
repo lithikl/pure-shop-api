@@ -36,4 +36,5 @@ jobs:
 
 # Trigger Cloudflare deployment for every main branch update.
 # CORS compatibility update.
+# Product rails and category controls.
 # Secrets configured for automated Cloudflare deployment.
