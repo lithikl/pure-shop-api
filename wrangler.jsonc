@@ -5,6 +5,9 @@
   "compatibility_date": "2026-10-14",
   "upload_source_maps": true,
   "workers_dev": true,
+  "vars": {
+    "RAZORPAY_KEY_ID": "rzp_live_TnQj6JwZEoSi6t"
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
