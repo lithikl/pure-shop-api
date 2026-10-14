@@ -39,7 +39,16 @@ function blobToken() {
 }
 
 async function readStore(): Promise<StoreData | null> {
-  const result = await get(PATH, { access: "private", token: blobToken(), useCache: false });
+  console.log("STORE: starting blob get", PATH);
+
+  const result = await get(PATH, {
+    access: "private",
+    token: blobToken(),
+    useCache: false,
+  });
+
+  console.log("STORE: blob get completed", Boolean(result));
+
   if (!result) return null;
   return JSON.parse(await new Response(result.stream).text()) as StoreData;
 }
