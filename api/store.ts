@@ -10,21 +10,22 @@ type StoreData = {
 
 const PATH = "noirknull/data/store.json";
 
+function header(request: Request, name: string) {
+  const headers = request.headers as Headers | Record<string, string | string[] | undefined>;
+  if (headers instanceof Headers) return headers.get(name) || "";
+  const value = headers[name.toLowerCase()];
+  return Array.isArray(value) ? value[0] || "" : value || "";
+}
+
 function allowedOrigin(request: Request) {
-  const origin = request.headers.get("origin") || "";
+  const origin = header(request, "origin");
   if (!origin) return true;
   try {
     const hostname = new URL(origin).hostname;
-    return (
-      origin === "https://noirknull.in" ||
-      origin === "https://www.noirknull.in" ||
-      origin.startsWith("http://localhost:") ||
-      origin.startsWith("http://127.0.0.1:") ||
-      hostname.endsWith(".vercel.app")
-    );
-  } catch {
-    return false;
-  }
+    return origin === "https://noirknull.in" || origin === "https://www.noirknull.in" ||
+      origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:") ||
+      hostname.endsWith(".vercel.app");
+  } catch { return false; }
 }
 
 function blobToken() {
@@ -35,14 +36,9 @@ function blobToken() {
 
 async function readStore(): Promise<StoreData | null> {
   try {
-    const result = await get(PATH, {
-      access: "private",
-      token: blobToken(),
-      useCache: false,
-    });
+    const result = await get(PATH, { access: "private", token: blobToken(), useCache: false });
     if (!result) return null;
-    const text = await new Response(result.stream).text();
-    return JSON.parse(text) as StoreData;
+    return JSON.parse(await new Response(result.stream).text()) as StoreData;
   } catch (error) {
     console.error("STORE_READ_FAILED", error);
     return null;
@@ -51,59 +47,30 @@ async function readStore(): Promise<StoreData | null> {
 
 async function writeStore(data: StoreData) {
   await put(PATH, JSON.stringify(data), {
-    access: "private",
-    token: blobToken(),
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
+    access: "private", token: blobToken(), addRandomSuffix: false,
+    allowOverwrite: true, contentType: "application/json",
   });
 }
 
 export default async function handler(request: Request) {
   if (request.method === "GET") {
     const data = await readStore();
-    return Response.json(
-      { ok: true, exists: Boolean(data), data },
-      { headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" } },
-    );
+    return Response.json({ ok: true, exists: Boolean(data), data },
+      { headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" } });
   }
-
-  if (request.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
-  }
-
-  if (!allowedOrigin(request)) {
-    return Response.json({ ok: false, error: "Origin not allowed" }, { status: 403 });
-  }
+  if (request.method !== "POST") return new Response("Method Not Allowed", { status: 405 });
+  if (!allowedOrigin(request)) return Response.json({ ok: false, error: "Origin not allowed" }, { status: 403 });
 
   try {
-    const body = await request.json() as {
-      section?: keyof StoreData;
-      value?: unknown;
-      data?: StoreData;
-    };
-
+    const body = await request.json() as { section?: keyof StoreData; value?: unknown; data?: StoreData };
     const current = (await readStore()) || {};
-    const next = body.data
-      ? { ...current, ...body.data }
-      : body.section
-        ? { ...current, [body.section]: body.value }
-        : null;
-
-    if (!next) {
-      return Response.json({ ok: false, error: "Invalid payload" }, { status: 400 });
-    }
-
+    const next = body.data ? { ...current, ...body.data } :
+      body.section ? { ...current, [body.section]: body.value } : null;
+    if (!next) return Response.json({ ok: false, error: "Invalid payload" }, { status: 400 });
     await writeStore(next);
-    return Response.json(
-      { ok: true, data: next },
-      { headers: { "Cache-Control": "no-store, max-age=0" } },
-    );
+    return Response.json({ ok: true, data: next }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     console.error("STORE_WRITE_FAILED", error);
-    return Response.json(
-      { ok: false, error: "Unable to save store data" },
-      { status: 500 },
-    );
+    return Response.json({ ok: false, error: "Unable to save store data" }, { status: 500 });
   }
 }
