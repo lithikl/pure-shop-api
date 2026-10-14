@@ -23,7 +23,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
   const readJsonResponse = async (response: Response) => {
     const raw = await response.text();
     if (!raw.trim()) {
-      throw new Error(`Payment server returned an empty response (HTTP ${response.status}). If you are testing locally with Vite, use the deployed Vercel site or \`vercel dev\` so /api routes are available.`);
+      throw new Error(`Payment server returned an empty response (HTTP ${response.status}). Please try again.`);
     }
     try {
       return JSON.parse(raw);
@@ -71,7 +71,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
           });
           if (!(await loadRazorpay())) throw new Error("Razorpay Checkout could not be loaded.");
           const Razorpay = (window as any).Razorpay;
-          const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
+          const key = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TnQj6JwZEoSi6t";
           if (!key) throw new Error("Razorpay key is not configured.");
           const razorpay = new Razorpay({
             key, amount: order.amount, currency: order.currency, order_id: order.id,
