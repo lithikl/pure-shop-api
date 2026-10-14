@@ -183,14 +183,14 @@ export default function Admin() {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const hasCloudStore = await hydrateFromCloud();
+      const cloudState = await hydrateFromCloud();
       if (!mounted) return;
-      if (hasCloudStore) {
+      if (cloudState === "synced") {
         setProducts(loadProducts());
         setFeatured(loadFeatured());
         setEternalFits(loadEternalFits());
         setHomepage(loadHomepageSettings());
-      } else {
+      } else if (cloudState === "empty") {
         publishCloudSection("products", products);
         publishCloudSection("featured", featured);
         publishCloudSection("eternalFits", eternalFits);
@@ -384,7 +384,7 @@ export default function Admin() {
 
       {tab === "settings" && <section className="admin-section">
         <div className="admin-section-head"><div><span>04 / STORE CONTROL</span><h2>Everything in one place.</h2><p>Use this control room to manage products, categories, homepage imagery, campaign photography and section visibility.</p></div></div>
-        <div className="admin-warning"><strong>Current storage mode</strong><p>This version stores changes in <code>localStorage</code>. Photo uploads are converted into browser-local image data. It is great for controlling the store from the same browser, but it is <b>not yet a secure online multi-device admin</b>. A production version needs authenticated admin access plus a database and image storage.</p></div>
+        <div className="admin-warning"><strong>Cloud storage</strong><p>Catalogue, homepage, featured products and Eternal Fits are synchronized through the shared cloud store, so changes made here can appear on other devices. Browser storage is used only as a fast local cache. Admin authentication should still be added before public launch.</p></div>
         <div className="admin-settings-grid"><div><span>PRODUCTS</span><strong>{products.length}</strong></div><div><span>CATEGORIES</span><strong>{categories.length}</strong></div><div><span>HOMEPAGE PICKS</span><strong>{featured.length}</strong></div><div><span>ETERNAL FITS</span><strong>{eternalFits.length}</strong></div></div>
         <button className="admin-reset" onClick={resetAll}>RESET EVERYTHING TO ORIGINAL STORE</button>
       </section>}
