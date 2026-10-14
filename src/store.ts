@@ -40,17 +40,36 @@ type CloudStore = {
   categories?: string[];
 };
 
-const cloudSyncTimers = new Map<string, number>();
+export type CloudStoreResult = {
+  ok: boolean;
+  exists: boolean;
+  data: CloudStore | null;
+};
 
-export async function getCloudStore(): Promise<CloudStore | null> {
+const cloudSyncTimers = new Map<string, number>();
+let cloudWriteQueue: Promise<void> = Promise.resolve();
+
+export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   try {
     const response = await fetch("/api/store", { cache: "no-store" });
-    if (!response.ok) return null;
-    const payload = await response.json();
-    return payload?.data && typeof payload.data === "object" ? payload.data as CloudStore : null;
+    let payload: any = null;
+    try { payload = await response.json(); } catch { payload = null; }
+    if (!response.ok || !payload?.ok) {
+      return { ok: false, exists: false, data: null };
+    }
+    return {
+      ok: true,
+      exists: Boolean(payload.exists),
+      data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
+    };
   } catch {
-    return null;
+    return { ok: false, exists: false, data: null };
   }
+}
+
+export async function getCloudStore(): Promise<CloudStore | null> {
+  const result = await getCloudStoreResult();
+  return result.ok && result.exists ? result.data : null;
 }
 
 function applyCloudStore(data: CloudStore) {
@@ -66,29 +85,48 @@ function applyCloudStore(data: CloudStore) {
   window.dispatchEvent(new Event("noirknull:categories"));
 }
 
-export async function hydrateFromCloud(): Promise<boolean> {
-  const data = await getCloudStore();
-  if (!data) return false;
-  applyCloudStore(data);
-  return true;
+export async function hydrateFromCloud(): Promise<"synced" | "empty" | "unavailable"> {
+  const result = await getCloudStoreResult();
+  if (!result.ok) return "unavailable";
+  if (!result.exists || !result.data) return "empty";
+  applyCloudStore(result.data);
+  return "synced";
+}
+
+async function writeCloudSection(section: keyof CloudStore, value: unknown) {
+  cloudWriteQueue = cloudWriteQueue.then(async () => {
+    let lastError: Error | null = null;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      try {
+        const response = await fetch("/api/store", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+          body: JSON.stringify({ section, value }),
+        });
+        if (response.ok) return;
+        const detail = await response.text().catch(() => "");
+        lastError = new Error(`Cloud store save failed (${response.status})${detail ? `: ${detail.slice(0, 180)}` : ""}`);
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error("Cloud store save failed");
+      }
+      await new Promise(resolve => window.setTimeout(resolve, attempt * 300));
+    }
+    console.error(lastError || new Error("Cloud store save failed"));
+  });
+  return cloudWriteQueue;
 }
 
 export function publishCloudSection(section: keyof CloudStore, value: unknown) {
-  const previous = cloudSyncTimers.get(String(section));
+  const key = String(section);
+  const previous = cloudSyncTimers.get(key);
   if (previous) window.clearTimeout(previous);
-  const timer = window.setTimeout(async () => {
-    cloudSyncTimers.delete(String(section));
-    try {
-      await fetch("/api/store", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ section, value }),
-      });
-    } catch {
-      // Local storage remains available during temporary network failures.
-    }
+
+  const timer = window.setTimeout(() => {
+    cloudSyncTimers.delete(key);
+    void writeCloudSection(section, value);
   }, 120);
-  cloudSyncTimers.set(String(section), timer);
+
+  cloudSyncTimers.set(key, timer);
 }
 
 export type HomepageSettings = {
