@@ -103,7 +103,10 @@ async function writeStoreApi(request: Request, env: Env) {
   } catch (error) {
     console.error("STORE_WRITE_FAILED", error);
     return json(
-      { ok: false, error: "Unable to save store data" },
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
