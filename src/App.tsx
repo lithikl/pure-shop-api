@@ -56,8 +56,8 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const synced = await hydrateFromCloud();
-      if (!mounted || !synced) return;
+      const state = await hydrateFromCloud();
+      if (!mounted || state !== "synced") return;
       setProducts(loadProducts());
       setSavedCategories(loadCategories());
       setFeaturedIds(loadFeatured());
@@ -73,6 +73,15 @@ export default function App() {
     const syncEternalFits = () => setEternalFits(loadEternalFits());
     const syncHomepage = () => setHomepage(loadHomepageSettings());
     const syncCategories = () => setSavedCategories(loadCategories());
+    const syncCloud = async () => {
+      const state = await hydrateFromCloud();
+      if (state !== "synced") return;
+      setProducts(loadProducts());
+      setSavedCategories(loadCategories());
+      setFeaturedIds(loadFeatured());
+      setEternalFits(loadEternalFits());
+      setHomepage(loadHomepageSettings());
+    };
     window.addEventListener("noirknull:products", syncProducts);
     window.addEventListener("noirknull:featured", syncFeatured);
     window.addEventListener("noirknull:eternal-fits", syncEternalFits);
@@ -84,7 +93,7 @@ export default function App() {
     window.addEventListener("storage", syncHomepage);
     const channel = (() => { try { return new BroadcastChannel("noirknull-store"); } catch { return null; } })();
     channel?.addEventListener("message", syncProducts);
-    const poll = window.setInterval(syncProducts, 1200);
+    const poll = window.setInterval(() => { void syncCloud(); }, 5000);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
