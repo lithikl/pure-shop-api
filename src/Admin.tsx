@@ -441,7 +441,7 @@ export default function Admin() {
         <button className="admin-reset" onClick={resetAll}>RESET EVERYTHING TO ORIGINAL STORE</button>
       </section>}
 
-      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large admin-product-modal" onClick={e => e.stopPropagation()}>
+      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{eternalFits.some(fit => fit.id === editingFit.id) ? "EDIT ETERNAL FIT" : "NEW ETERNAL FIT"}</p><h2>{editingFit.title || "Create campaign image"}</h2></div><button onClick={() => setEditingFit(null)}><X size={18}/></button></div>
         <ImagePicker value={editingFit.image} aspectRatio={0.82} onChange={value => setEditingFit({...editingFit,image:value})} label="UPLOAD CAMPAIGN PHOTO" />
         <div className="admin-form-grid">
@@ -452,7 +452,7 @@ export default function Admin() {
         <div className="admin-modal-actions"><button onClick={() => setEditingFit(null)}>CANCEL</button><button className="admin-primary" onClick={saveEternalFit}><Save size={15}/> SAVE FIT</button></div>
       </div></div>}
 
-      {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
+      {editing && <div className="admin-modal-backdrop" onClick={() => setEditing(null)}><div className="admin-modal admin-modal-large admin-product-modal" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{products.some(p => p.id === editing.id) ? "EDIT PRODUCT" : "NEW PRODUCT"}</p><h2>{editing.name || "Create product"}</h2></div><button onClick={() => setEditing(null)}><X size={18}/></button></div>
         <div className="admin-product-gallery-editor">
           <div className="admin-gallery-editor-head"><div><span>PRODUCT GALLERY</span><strong>{(editing.images?.length || 1)} IMAGE{(editing.images?.length || 1) === 1 ? "" : "S"}</strong></div><button type="button" onClick={() => setEditing({...editing, images: [...(editing.images?.length ? editing.images : [editing.image]), ""]})}><Plus size={14}/> ADD IMAGE</button></div>
