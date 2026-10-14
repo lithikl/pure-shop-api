@@ -21,6 +21,9 @@ function json(data: unknown, init: ResponseInit = {}) {
     ...init,
     headers: {
       "Cache-Control": "no-store, max-age=0, must-revalidate",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
       ...(init.headers || {}),
     },
   });
@@ -297,6 +300,18 @@ async function migrateFromVercel(request: Request, env: Env) {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
 
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({ ok: true, platform: "cloudflare" });
