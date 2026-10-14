@@ -11,6 +11,8 @@ type Env = {
   ASSETS: any;
   NOIRKNULL_BUCKET: any;
   MIGRATION_TOKEN?: string;
+  RAZORPAY_KEY_ID?: string;
+  RAZORPAY_KEY_SECRET?: string;
 };
 
 const STORE_KEY = "noirknull/data/store.json";
@@ -204,6 +206,179 @@ function collectMediaReferences(
   return output;
 }
 
+
+
+async function createRazorpayOrder(request: Request, env: Env) {
+  if (request.method !== "POST") {
+    return json({ ok: false, error: "Method not allowed" }, { status: 405 });
+  }
+
+  if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) {
+    return json({ ok: false, error: "Razorpay server keys are not configured." }, { status: 500 });
+  }
+
+  try {
+    const body = (await request.json()) as {
+      amount?: number;
+      currency?: string;
+      receipt?: string;
+      customer?: { name?: string; email?: string; phone?: string };
+    };
+
+    const parsedAmount = Number(body.amount);
+    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
+      return json({ ok: false, error: "Invalid amount." }, { status: 400 });
+    }
+
+    const credentials = btoa(
+      `${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`,
+    );
+
+    const response = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: parsedAmount * 100,
+        currency: body.currency || "INR",
+        receipt: String(body.receipt || `noir-${Date.now()}`).slice(0, 40),
+        notes: {
+          customer_name: String(body.customer?.name || "").slice(0, 100),
+          customer_email: String(body.customer?.email || "").slice(0, 100),
+          customer_phone: String(body.customer?.phone || "").slice(0, 30),
+        },
+      }),
+    });
+
+    const raw = await response.text();
+    let data: any = {};
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      return json(
+        {
+          ok: false,
+          error:
+            data?.error?.description ||
+            data?.error?.code ||
+            raw ||
+            "Razorpay order creation failed.",
+        },
+        { status: response.status },
+      );
+    }
+
+    return json({
+      ok: true,
+      id: data.id,
+      amount: data.amount,
+      currency: data.currency,
+    });
+  } catch (error) {
+    console.error("RAZORPAY_ORDER_FAILED", error);
+    return json(
+      {
+        ok: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to create Razorpay order.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+function hex(bytes: ArrayBuffer) {
+  return [...new Uint8Array(bytes)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function safeEqual(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+async function verifyRazorpayPayment(request: Request, env: Env) {
+  if (request.method !== "POST") {
+    return json({ verified: false, error: "Method not allowed" }, { status: 405 });
+  }
+
+  if (!env.RAZORPAY_KEY_SECRET) {
+    return json(
+      { verified: false, error: "Razorpay server secret is not configured." },
+      { status: 500 },
+    );
+  }
+
+  try {
+    const body = (await request.json()) as {
+      razorpay_order_id?: string;
+      razorpay_payment_id?: string;
+      razorpay_signature?: string;
+    };
+
+    const orderId = body.razorpay_order_id;
+    const paymentId = body.razorpay_payment_id;
+    const signature = body.razorpay_signature;
+
+    if (!orderId || !paymentId || !signature) {
+      return json(
+        {
+          verified: false,
+          error: "Incomplete payment verification data.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(env.RAZORPAY_KEY_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
+
+    const digest = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      new TextEncoder().encode(`${orderId}|${paymentId}`),
+    );
+
+    const expected = hex(digest);
+    if (!safeEqual(expected, signature)) {
+      return json(
+        { verified: false, error: "Invalid payment signature." },
+        { status: 400 },
+      );
+    }
+
+    return json({
+      verified: true,
+      payment_id: paymentId,
+      order_id: orderId,
+    });
+  } catch (error) {
+    console.error("RAZORPAY_VERIFY_FAILED", error);
+    return json(
+      { verified: false, error: "Unable to verify payment." },
+      { status: 500 },
+    );
+  }
+}
+
 async function migrateFromVercel(request: Request, env: Env) {
   const expected = env.MIGRATION_TOKEN;
   const provided = request.headers
@@ -307,7 +482,7 @@ export default {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization, Cache-Control, Accept",
           "Access-Control-Max-Age": "86400",
         },
       });
@@ -315,6 +490,14 @@ export default {
 
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({ ok: true, platform: "cloudflare" });
+    }
+
+    if (url.pathname === "/api/create-order") {
+      return createRazorpayOrder(request, env);
+    }
+
+    if (url.pathname === "/api/verify-payment") {
+      return verifyRazorpayPayment(request, env);
     }
 
     if (url.pathname === "/api/store") {
