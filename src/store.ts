@@ -55,7 +55,7 @@ let cloudWriteQueue: Promise<void> = Promise.resolve();
 
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   try {
-    const response = await fetch(cloudApi("/api/store"), { cache: "no-store" });
+    const response = await fetch(cloudApi(`/api/store?ts=${Date.now()}`), {\n      cache: "no-store",\n      headers: { Accept: "application/json", "Cache-Control": "no-cache" },\n    });
     let payload: any = null;
     try { payload = await response.json(); } catch { payload = null; }
     if (!response.ok || !payload?.ok) {
