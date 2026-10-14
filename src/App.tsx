@@ -393,7 +393,7 @@ export default function App() {
         </div>
       </section>
 
-      {homepage.showEternalFits && <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
+      {homepage.showEternalFits && (<section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
         {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
         <div className="eternal-fits-heading reveal">
           <div>
@@ -420,7 +420,7 @@ export default function App() {
           </div>
         </div>
         <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
-      </section>}
+      </section>)}
 
       {homepage.showManifesto && <section className="manifesto" id="manifesto">
         <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
