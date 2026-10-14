@@ -441,7 +441,7 @@ export default function Admin() {
         <button className="admin-reset" onClick={resetAll}>RESET EVERYTHING TO ORIGINAL STORE</button>
       </section>}
 
-      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large" onClick={e => e.stopPropagation()}>
+      {editingFit && <div className="admin-modal-backdrop" onClick={() => setEditingFit(null)}><div className="admin-modal admin-modal-large admin-product-modal" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-head"><div><p className="kicker">{eternalFits.some(fit => fit.id === editingFit.id) ? "EDIT ETERNAL FIT" : "NEW ETERNAL FIT"}</p><h2>{editingFit.title || "Create campaign image"}</h2></div><button onClick={() => setEditingFit(null)}><X size={18}/></button></div>
         <ImagePicker value={editingFit.image} aspectRatio={0.82} onChange={value => setEditingFit({...editingFit,image:value})} label="UPLOAD CAMPAIGN PHOTO" />
         <div className="admin-form-grid">
