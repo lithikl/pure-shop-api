@@ -17,7 +17,7 @@ npm run build
 npx wrangler deploy
 ```
 
-The Wrangler configuration declares `noirknull.in` as a Custom Domain.
+The first deployment is intentionally on the Cloudflare `workers.dev` hostname so the existing `noirknull.in` site stays untouched during migration.
 
 ## 3. Set the one-time migration secret
 
@@ -38,9 +38,9 @@ curl -X POST https://noirknull.in/api/migrate-from-vercel \
 
 This pulls the existing shared store from the current Vercel deployment and copies all referenced `/api/media` objects into R2. The existing relative media URLs remain unchanged, so the storefront does not need a data rewrite.
 
-## 5. Verify
+## 5. Verify before cutover
 
-Check:
+Use the `workers.dev` URL shown by `npx wrangler deploy` and check:
 
 - `/api/health`
 - `/api/store`
@@ -48,9 +48,15 @@ Check:
 - `/admin`
 - a product edit from one device appearing on another device
 
-Do not delete the Vercel deployment until these checks pass.
+Do not delete or change the Vercel domain until these checks pass.
 
-## 6. Automatic GitHub deployments
+## 6. Final domain cutover
+
+After the Cloudflare version is verified, edit `wrangler.jsonc` and uncomment the final `noirknull.in` Custom Domain configuration. Deploy again. Cloudflare Custom Domains can manage the hostname and certificates for the Worker.
+
+Only after `https://noirknull.in` is serving the Cloudflare Worker successfully should you retire the Vercel deployment.
+
+## 7. Automatic GitHub deployments
 
 A GitHub Actions workflow is included. Add repository secrets named:
 
