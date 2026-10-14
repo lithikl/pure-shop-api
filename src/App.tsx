@@ -135,20 +135,6 @@ export default function App() {
   }, [shopOpen, selectedProduct, checkoutOpen]);
 
   useEffect(() => {
-    const stage = document.querySelector(".best-sellers-stage");
-    if (!stage) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        stage.classList.add("best-sellers-active");
-        observer.disconnect();
-      }
-    }, { threshold: 0.12 });
-    observer.observe(stage);
-    return () => observer.disconnect();
-  }, [shopOpen, selectedProduct, checkoutOpen]);
-
-
-  useEffect(() => {
     const track = document.querySelector<HTMLElement>(".eternal-fits-track");
     if (!track || !eternalFits.length) return;
 
@@ -185,10 +171,15 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedImageIndex(0); setSelectedSize(null); };
-  const categoryName = (_shoe: Shoe) => "SHOES";
-  const categories = ["ALL", "SHOES"];
+  const categoryName = (shoe: Shoe) => shoe.category?.trim() || "SHOES";
+  const categories = ["ALL", ...savedCategories.filter(category => category && category.toUpperCase() !== "ALL")];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
-  const homeCollection = homepageShoes.length ? homepageShoes : products;
+  const legacyHomeCollection = homepageShoes.length ? homepageShoes : products;
+  const bestSellerProducts = products.filter((shoe) => Boolean(shoe.isBestSeller));
+  const bestSellers = (bestSellerProducts.length ? bestSellerProducts : legacyHomeCollection).slice(0, 10);
+  const bestSellerIds = new Set(bestSellers.map(shoe => shoe.id));
+  const taggedNewDrops = products.filter((shoe) => Boolean(shoe.isNewDrop) || shoe.tag?.trim().toUpperCase() === "NEW DROP");
+  const newDrops = (taggedNewDrops.length ? taggedNewDrops : products.filter(shoe => !bestSellerIds.has(shoe.id))).slice(0, 10);
   const selectedProductImages = selectedProduct?.images?.length ? selectedProduct.images : selectedProduct ? [selectedProduct.image] : [];
   const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
@@ -292,8 +283,14 @@ export default function App() {
           <div className="product-gallery-note"><span>SWIPE TO EXPLORE.</span><span>FORM FOLLOWS FEELING ↗</span></div>
         </div>
         <div className="product-information">
-          <p className="kicker"><i/> {selectedProduct.tag || "THE FIRST DROP"}</p>
-          <p className="product-category">{selectedProduct.kind}</p>
+          <div className="product-status-row">
+            <p className="kicker"><i/> {selectedProduct.tag || "THE FIRST DROP"}</p>
+            <div className="product-status-badges">
+              {selectedProduct.isBestSeller && <span>BEST SELLER</span>}
+              {selectedProduct.isNewDrop && <span>NEW DROP</span>}
+            </div>
+          </div>
+          <p className="product-category">{selectedProduct.category || selectedProduct.kind}</p>
           <h1>{selectedProduct.name}</h1>
           <div className="product-price-line"><strong>{money(selectedProduct.price)}</strong><span>INCLUSIVE OF TAXES</span></div>
           <p className="product-tone">{selectedProduct.tone}</p>
@@ -333,28 +330,68 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      {homepage.showBestSellers && <section className="best-sellers section-wrap" id="collection">
-        <div className="best-sellers-heading reveal">
-          <div><p className="kicker">01 / THE MOST WANTED</p><h2>Best<br/><em>sellers.</em></h2></div>
-          <p className="section-intro">The pairs people keep coming back for.<br/>Tap any object to explore it.</p>
+      {homepage.showBestSellers && (bestSellers.length > 0 || newDrops.length > 0) && <section className="product-rails-section section-wrap" id="collection" aria-label="Best Sellers and New Drop">
+        <div className="product-rails-heading reveal">
+          <div>
+            <p className="kicker">01 / THE EDIT</p>
+            <h2>Pick your<br/><em>next move.</em></h2>
+          </div>
+          <p className="section-intro">Two moving edits. Best sellers that keep earning their place, and the newest drop as it lands.<br/>Hover to pause. Open any pair and choose your size.</p>
         </div>
-        <div className="best-sellers-stage">
-          {Array.from({ length: 5 }, (_, i) => homeCollection[i % homeCollection.length]).map((shoe, i) => (
-            <article className={"best-seller-item best-seller-" + (i + 1)} key={shoe.id} style={{ animationDelay: (i * 110) + "ms" }}>
-              <button className="best-seller-product" onClick={() => openProduct(shoe)} aria-label={"View " + shoe.name + " details"}>
-                <div className="best-seller-glass">
-                  <span>{shoe.kind}</span>
-                  <strong>{shoe.name}</strong>
-                </div>
-                <img src={shoe.image} alt={shoe.kind}/>
-                {shoe.tag && <span className="best-seller-tag">{shoe.tag}</span>}
-                <span className="best-seller-price">{money(shoe.price)}</span>
-              </button>
-            </article>
-          ))}
+        <div className="product-rails-grid">
+          {bestSellers.length > 0 && <section className="product-rail-panel product-rail-best">
+            <div className="product-rail-panel-head">
+              <div><p className="kicker">01 / THE MOST WANTED</p><h3>Best<br/><em>sellers.</em></h3></div>
+              <span>{bestSellers.length} OBJECTS <b>↗</b></span>
+            </div>
+            <div className="product-rail-shell">
+              <div className="product-rail-edge product-rail-edge-left"/>
+              <div className="product-rail-track">
+                {[...bestSellers, ...bestSellers].map((shoe, index) => <article className="product-rail-card" key={`best-${shoe.id}-${index}`}>
+                  <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
+                    <img src={shoe.image} alt={shoe.kind}/>
+                    <div className="product-rail-status"><span>BEST SELLER</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
+                    <span className="product-rail-index">{String((index % bestSellers.length) + 1).padStart(2, "0")} / {String(bestSellers.length).padStart(2, "0")}</span>
+                  </button>
+                  <div className="product-rail-info">
+                    <div><span>{shoe.category || "SHOES"} · {shoe.kind}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
+                    <strong>{money(shoe.price)}</strong>
+                  </div>
+                  <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
+                </article>)}
+              </div>
+              <div className="product-rail-edge product-rail-edge-right"/>
+            </div>
+            <div className="product-rail-footer"><span>AUTOPLAY / HOVER TO PAUSE</span><button onClick={openShop}>VIEW ALL SHOES <ArrowRight size={14}/></button></div>
+          </section>}
+
+          {newDrops.length > 0 && <section className="product-rail-panel product-rail-new">
+            <div className="product-rail-panel-head">
+              <div><p className="kicker">02 / JUST LANDED</p><h3>New<br/><em>drop.</em></h3></div>
+              <span>NEW IN <b>↗</b></span>
+            </div>
+            <div className="product-rail-shell">
+              <div className="product-rail-edge product-rail-edge-left"/>
+              <div className="product-rail-track product-rail-track-reverse">
+                {[...newDrops, ...newDrops].map((shoe, index) => <article className="product-rail-card" key={`new-${shoe.id}-${index}`}>
+                  <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
+                    <img src={shoe.image} alt={shoe.kind}/>
+                    <div className="product-rail-status product-rail-status-new"><span>NEW DROP</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
+                    <span className="product-rail-index">{String((index % newDrops.length) + 1).padStart(2, "0")} / {String(newDrops.length).padStart(2, "0")}</span>
+                  </button>
+                  <div className="product-rail-info">
+                    <div><span>{shoe.category || "SHOES"} · {shoe.kind}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
+                    <strong>{money(shoe.price)}</strong>
+                  </div>
+                  <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
+                </article>)}
+              </div>
+              <div className="product-rail-edge product-rail-edge-right"/>
+            </div>
+            <div className="product-rail-footer"><span>FRESH FROM THE STUDIO</span><button onClick={openShop}>SHOP THE DROP <ArrowRight size={14}/></button></div>
+          </section>}
         </div>
-        <div className="best-sellers-bottom"><span>DESIGNED WITH INTENTION. WORN WITHOUT RULES.</span><button onClick={() => goTo("manifesto")}>GET TO KNOW US <ArrowUpRight size={15}/></button></div>
-      </section>}
+      </section>
 
       {homepage.showEternalFits && <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
         {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
