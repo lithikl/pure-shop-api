@@ -148,6 +148,7 @@ export type HomepageSettings = {
   editorialMainImage: string;
   editorialAccessoryImages: [string, string];
   showBestSellers: boolean;
+  showNewDrops: boolean;
   showEternalFits: boolean;
   showManifesto: boolean;
   showDetails: boolean;
@@ -171,6 +172,7 @@ export const DEFAULT_HOMEPAGE: HomepageSettings = {
     "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=420&q=85",
   ],
   showBestSellers: true,
+  showNewDrops: true,
   showEternalFits: true,
   showManifesto: true,
   showDetails: true,
