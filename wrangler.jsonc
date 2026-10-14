@@ -4,13 +4,7 @@
   "main": "./worker/index.ts",
   "compatibility_date": "2026-10-14",
   "upload_source_maps": true,
-  "workers_dev": false,
-  "routes": [
-    {
-      "pattern": "noirknull.in",
-      "custom_domain": true
-    }
-  ],
+  "workers_dev": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
@@ -25,4 +19,15 @@
       "bucket_name": "noirknull-prod"
     }
   ]
+
+  // CUTOVER STEP:
+  // Before the final production cutover, add:
+  //
+  // "workers_dev": false,
+  // "routes": [
+  //   {
+  //     "pattern": "noirknull.in",
+  //     "custom_domain": true
+  //   }
+  // ]
 }
