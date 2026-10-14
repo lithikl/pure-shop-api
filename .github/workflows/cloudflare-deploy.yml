@@ -35,4 +35,5 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
 # Trigger Cloudflare deployment for every main branch update.
+# CORS compatibility update.
 # Secrets configured for automated Cloudflare deployment.
