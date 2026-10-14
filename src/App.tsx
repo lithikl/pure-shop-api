@@ -73,14 +73,21 @@ export default function App() {
     const syncEternalFits = () => setEternalFits(loadEternalFits());
     const syncHomepage = () => setHomepage(loadHomepageSettings());
     const syncCategories = () => setSavedCategories(loadCategories());
+    let syncingCloud = false;
     const syncCloud = async () => {
-      const state = await hydrateFromCloud();
-      if (state !== "synced") return;
-      setProducts(loadProducts());
-      setSavedCategories(loadCategories());
-      setFeaturedIds(loadFeatured());
-      setEternalFits(loadEternalFits());
-      setHomepage(loadHomepageSettings());
+      if (syncingCloud || document.visibilityState === "hidden") return;
+      syncingCloud = true;
+      try {
+        const state = await hydrateFromCloud();
+        if (state !== "synced") return;
+        setProducts(loadProducts());
+        setSavedCategories(loadCategories());
+        setFeaturedIds(loadFeatured());
+        setEternalFits(loadEternalFits());
+        setHomepage(loadHomepageSettings());
+      } finally {
+        syncingCloud = false;
+      }
     };
     window.addEventListener("noirknull:products", syncProducts);
     window.addEventListener("noirknull:featured", syncFeatured);
@@ -93,7 +100,9 @@ export default function App() {
     window.addEventListener("storage", syncHomepage);
     const channel = (() => { try { return new BroadcastChannel("noirknull-store"); } catch { return null; } })();
     channel?.addEventListener("message", syncProducts);
-    const poll = window.setInterval(() => { void syncCloud(); }, 5000);
+    const poll = window.setInterval(() => { void syncCloud(); }, 2000);
+    window.addEventListener("focus", syncCloud);
+    document.addEventListener("visibilitychange", syncCloud);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
@@ -107,6 +116,8 @@ export default function App() {
       channel?.removeEventListener("message", syncProducts);
       channel?.close();
       window.clearInterval(poll);
+      window.removeEventListener("focus", syncCloud);
+      document.removeEventListener("visibilitychange", syncCloud);
     };
   }, []);
 
