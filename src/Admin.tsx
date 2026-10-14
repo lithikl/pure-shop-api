@@ -47,7 +47,7 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
 async function uploadMedia(file: File): Promise<string> {
   const form = new FormData();
   form.append("file", file);
-  const response = await fetch("/api/upload", { method: "POST", body: form });
+  const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/upload", { method: "POST", body: form });
   if (!response.ok) throw new Error("Cloud upload failed");
   const payload = await response.json();
   if (!payload?.url) throw new Error("Cloud upload returned no URL");
