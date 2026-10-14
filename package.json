@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:worker": "npx wrangler dev",
+    "build:cloudflare": "vite build",
+    "deploy:cloudflare": "npx wrangler deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
