@@ -8,8 +8,8 @@ type StoreData = {
 };
 
 type Env = {
-  ASSETS: Fetcher;
-  NOIRKNULL_BUCKET: R2Bucket;
+  ASSETS: any;
+  NOIRKNULL_BUCKET: any;
   MIGRATION_TOKEN?: string;
 };
 
