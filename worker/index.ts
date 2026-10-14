@@ -23,7 +23,7 @@ function json(data: unknown, init: ResponseInit = {}) {
       "Cache-Control": "no-store, max-age=0, must-revalidate",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, Cache-Control, Accept",
       ...(init.headers || {}),
     },
   });
