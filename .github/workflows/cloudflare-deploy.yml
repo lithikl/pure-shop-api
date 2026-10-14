@@ -35,3 +35,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
 # Trigger deployment for the latest main branch changes.
+# Secrets configured for automated Cloudflare deployment.
