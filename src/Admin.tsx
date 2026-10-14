@@ -27,7 +27,7 @@ const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency",
 const emptyProduct = (): Shoe => ({
   id: Date.now(),
   name: "",
-  kind: "Everyday Runner",
+  kind: "SHOES",
   category: "SHOES",
   price: 0,
   image: "",
@@ -176,6 +176,7 @@ export default function Admin() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [categories, setCategories] = useState<string[]>(loadCategories);
   const [newCategory, setNewCategory] = useState("");
+  const [categoryComposerOpen, setCategoryComposerOpen] = useState(false);
 
   const [featured, setFeatured] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
@@ -227,7 +228,7 @@ export default function Admin() {
   const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
   const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
 
-  const addCategory = () => {
+  const addCategory = (useForCurrentProduct = false) => {
     const normalized = newCategory.trim().replace(/\s+/g, " ");
     if (!normalized) return;
     const exists = categories.some(category => category.toLowerCase() === normalized.toLowerCase());
@@ -239,16 +240,18 @@ export default function Admin() {
     setCategories(next);
     saveCategories(next);
     publishCloudSection("categories", next);
+    if (useForCurrentProduct) setEditing(current => current ? { ...current, category: normalized, kind: current.kind?.trim() || normalized } : current);
     setNewCategory("");
+    setCategoryComposerOpen(false);
     flash();
   };
 
   const saveProduct = () => {
-    if (!editing?.name.trim() || !editing.kind.trim() || !editing.image.trim() || editing.price <= 0) return;
+    if (!editing?.name.trim() || !editing.image.trim() || editing.price <= 0) return;
     const normalized = {
       ...editing,
       name: editing.name.trim(),
-      kind: editing.kind.trim(),
+      kind: editing.kind?.trim() || editing.category?.trim() || "SHOES",
       category: editing.category?.trim() || "SHOES",
       image: editing.image.trim(),
       images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
@@ -352,12 +355,12 @@ export default function Admin() {
         <div className="admin-category-manager">
           <div className="admin-category-manager-head">
             <div><span>CATEGORIES</span><strong>{categories.length} ACTIVE</strong></div>
-            <small>Every category created here becomes available in the product form immediately.</small>
+            <small>Categories created here instantly appear in every product editor. You can also create one directly beside the category selector.</small>
           </div>
           <div className="admin-category-chips">{categories.map(category => <span key={category}>{category}</span>)}</div>
           <div className="admin-category-add">
             <input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => { if (e.key === "Enter") addCategory(); }} placeholder="New category name, e.g. Slides" aria-label="New category name"/>
-            <button type="button" className="admin-primary" onClick={addCategory}><Plus size={14}/> ADD CATEGORY</button>
+            <button type="button" className="admin-primary" onClick={() => addCategory()}><Plus size={14}/> ADD CATEGORY</button>
           </div>
         </div>
         <div className="admin-product-grid">
@@ -405,7 +408,8 @@ export default function Admin() {
             <div className="admin-control-card-head"><span>LAYOUT / VISIBILITY</span><strong>Switch homepage sections</strong></div>
             <div className="admin-toggle-grid">
               {([
-                ["showBestSellers", "BEST SELLERS", "Main product composition"],
+                ["showBestSellers", "BEST SELLERS", "Auto-scrolling best seller rail"],
+                ["showNewDrops", "NEW DROP", "Auto-scrolling latest drop rail"],
                 ["showEternalFits", "ETERNAL FITS", "Infinite campaign gallery"],
                 ["showManifesto", "OUR WORLD", "Brand manifesto"],
                 ["showDetails", "DETAILS", "Feature detail rows"],
@@ -462,8 +466,7 @@ export default function Admin() {
         </div>
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
-          <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
-          <label><span>CATEGORY</span><select value={editing.category || "SHOES"} onChange={e => setEditing({...editing,category:e.target.value})}>{categories.map(category => <option key={category} value={category}>{category}</option>)}</select></label>
+          <label><span>CATEGORY</span><div className="admin-category-field"><select value={editing.category || "SHOES"} onChange={e => setEditing({...editing,category:e.target.value})}>{categories.map(category => <option key={category} value={category}>{category}</option>)}</select><button type="button" onClick={() => setCategoryComposerOpen(value => !value)}><Plus size={13}/> NEW CATEGORY</button></div>{categoryComposerOpen && <div className="admin-category-inline"><input autoFocus value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => { if (e.key === "Enter") addCategory(true); }} placeholder="Category name"/><button type="button" className="admin-primary" onClick={() => addCategory(true)}>CREATE</button></div>}</label>
           <label><span>PRICE (₹)</span><input type="number" min="1" value={editing.price || ""} onChange={e => setEditing({...editing,price:Number(e.target.value)})}/></label>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
