@@ -54,7 +54,17 @@ export default function App() {
   const [added, setAdded] = useState<number | null>(null);
 
   useEffect(() => {
-    void hydrateFromCloud();
+    let mounted = true;
+    (async () => {
+      const synced = await hydrateFromCloud();
+      if (!mounted || !synced) return;
+      setProducts(loadProducts());
+      setSavedCategories(loadCategories());
+      setFeaturedIds(loadFeatured());
+      setEternalFits(loadEternalFits());
+      setHomepage(loadHomepageSettings());
+    })();
+    return () => { mounted = false; };
   }, []);
 
   useEffect(() => {
