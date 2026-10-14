@@ -14,7 +14,7 @@ type Env = {
 };
 
 const STORE_KEY = "noirknull/data/store.json";
-const MIGRATION_SOURCE = "https://pure-shop-api.vercel.app";
+const MIGRATION_SOURCE = "https://noirknull.in";
 
 function json(data: unknown, init: ResponseInit = {}) {
   return Response.json(data, {
