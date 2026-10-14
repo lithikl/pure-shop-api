@@ -9,6 +9,8 @@ export type Shoe = {
   tone: string;
   tag?: string;
   glassTint?: string;
+  isBestSeller?: boolean;
+  isNewDrop?: boolean;
 };
 
 export type EternalFit = {
@@ -20,8 +22,8 @@ export type EternalFit = {
 };
 
 export const DEFAULT_SHOES: Shoe[] = [
-  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER" },
-  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP" },
+  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER", isBestSeller: true },
+  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP", isNewDrop: true },
   { id: 3, name: "FORM / 03", kind: "Retro Court", category: "Court", price: 4590, image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90"], tone: "Stone / Bone" },
   { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
 ];
