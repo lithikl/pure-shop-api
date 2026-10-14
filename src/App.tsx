@@ -330,7 +330,7 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      {homepage.showBestSellers && (bestSellers.length > 0 || newDrops.length > 0) && (
+      {(homepage.showBestSellers || homepage.showNewDrops) && (bestSellers.length > 0 || newDrops.length > 0) && (
         <section className="product-rails-section section-wrap" id="collection" aria-label="Best Sellers and New Drop">
         <div className="product-rails-heading reveal">
           <div>
@@ -340,7 +340,7 @@ export default function App() {
           <p className="section-intro">Two moving edits. Best sellers that keep earning their place, and the newest drop as it lands.<br/>Hover to pause. Open any pair and choose your size.</p>
         </div>
         <div className="product-rails-grid">
-          {bestSellers.length > 0 && <section className="product-rail-panel product-rail-best">
+          {homepage.showBestSellers && bestSellers.length > 0 && <section className="product-rail-panel product-rail-best">
             <div className="product-rail-panel-head">
               <div><p className="kicker">01 / THE MOST WANTED</p><h3>Best<br/><em>sellers.</em></h3></div>
               <span>{bestSellers.length} OBJECTS <b>↗</b></span>
@@ -366,7 +366,7 @@ export default function App() {
             <div className="product-rail-footer"><span>AUTOPLAY / HOVER TO PAUSE</span><button onClick={openShop}>VIEW ALL SHOES <ArrowRight size={14}/></button></div>
           </section>}
 
-          {newDrops.length > 0 && <section className="product-rail-panel product-rail-new">
+          {homepage.showNewDrops && newDrops.length > 0 && <section className="product-rail-panel product-rail-new">
             <div className="product-rail-panel-head">
               <div><p className="kicker">02 / JUST LANDED</p><h3>New<br/><em>drop.</em></h3></div>
               <span>NEW IN <b>↗</b></span>
