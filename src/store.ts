@@ -26,6 +26,10 @@ export const DEFAULT_SHOES: Shoe[] = [
   { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
 ];
 
+const CLOUD_API_BASE = "https://noirknull.lithiksaran130510.workers.dev";
+
+const cloudApi = (path: string) => `${CLOUD_API_BASE}${path}`;
+
 const PRODUCTS_KEY = "noirknull:products:v1";
 const FEATURED_KEY = "noirknull:featured:v1";
 const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
@@ -51,7 +55,7 @@ let cloudWriteQueue: Promise<void> = Promise.resolve();
 
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   try {
-    const response = await fetch("/api/store", { cache: "no-store" });
+    const response = await fetch(cloudApi("/api/store"), { cache: "no-store" });
     let payload: any = null;
     try { payload = await response.json(); } catch { payload = null; }
     if (!response.ok || !payload?.ok) {
@@ -98,7 +102,7 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
     let lastError: Error | null = null;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
-        const response = await fetch("/api/store", {
+        const response = await fetch(cloudApi("/api/store"), {
           method: "POST",
           headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
           body: JSON.stringify({ section, value }),
