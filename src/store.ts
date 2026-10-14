@@ -59,7 +59,6 @@ export async function getCloudStoreResult(): Promise<CloudStoreResult> {
       cache: "no-store",
       headers: {
         Accept: "application/json",
-        "Cache-Control": "no-cache",
       },
     });
     let payload: any = null;
@@ -110,7 +109,7 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
       try {
         const response = await fetch(cloudApi("/api/store"), {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ section, value }),
         });
         if (response.ok) return;
