@@ -1,8 +1,21 @@
 import { put } from "@vercel/blob";
 
+function header(request: Request, name: string) {
+  const headers = request.headers as Headers | Record<string, string | string[] | undefined>;
+  if (headers instanceof Headers) return headers.get(name) || "";
+  const value = headers[name.toLowerCase()];
+  return Array.isArray(value) ? value[0] || "" : value || "";
+}
+
 function allowedOrigin(request: Request) {
-  const origin = request.headers.get("origin") || "";
-  return origin === "https://noirknull.in" || origin === "https://www.noirknull.in" || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:") || (origin && /.vercel.app$/.test(new URL(origin).hostname || ""));
+  const origin = header(request, "origin");
+  if (!origin) return false;
+  try {
+    const hostname = new URL(origin).hostname;
+    return origin === "https://noirknull.in" || origin === "https://www.noirknull.in" ||
+      origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:") ||
+      hostname.endsWith(".vercel.app");
+  } catch { return false; }
 }
 
 export default async function handler(request: Request) {
@@ -24,7 +37,7 @@ export default async function handler(request: Request) {
 
     return Response.json({ ok: true, url: `/api/media?path=${encodeURIComponent(blob.pathname)}` });
   } catch (error) {
-    console.error(error);
+    console.error("UPLOAD_FAILED", error);
     return Response.json({ ok: false, error: "Upload failed" }, { status: 500 });
   }
 }
