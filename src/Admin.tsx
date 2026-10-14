@@ -12,6 +12,8 @@ import {
   loadFeatured,
   loadHomepageSettings,
   loadProducts,
+  loadCategories,
+  saveCategories,
   saveEternalFits,
   saveFeatured,
   saveHomepageSettings,
@@ -33,6 +35,8 @@ const emptyProduct = (): Shoe => ({
   tone: "",
   tag: "",
   glassTint: "",
+  isBestSeller: false,
+  isNewDrop: false,
 });
 
 const emptyEternalFit = (): EternalFit => ({ id: Date.now(), image: "", title: "", meta: "", caption: "" });
@@ -170,6 +174,8 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
 
 export default function Admin() {
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
+  const [categories, setCategories] = useState<string[]>(loadCategories);
+  const [newCategory, setNewCategory] = useState("");
 
   const [featured, setFeatured] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
@@ -187,11 +193,13 @@ export default function Admin() {
       if (!mounted) return;
       if (cloudState === "synced") {
         setProducts(loadProducts());
+        setCategories(loadCategories());
         setFeatured(loadFeatured());
         setEternalFits(loadEternalFits());
         setHomepage(loadHomepageSettings());
       } else if (cloudState === "empty") {
         publishCloudSection("products", products);
+        publishCloudSection("categories", categories);
         publishCloudSection("featured", featured);
         publishCloudSection("eternalFits", eternalFits);
         publishCloudSection("homepage", homepage);
@@ -201,14 +209,39 @@ export default function Admin() {
     return () => { mounted = false; };
   }, []);
 
-  const categories = ["SHOES"];
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
   const flash = () => { setSaved(true); window.setTimeout(() => setSaved(false), 1400); };
-  const persistProducts = (next: Shoe[]) => { const normalized = next.map(product => ({...product, category: "SHOES"})); setProducts(normalized); saveProducts(normalized); flash(); };
+  const persistProducts = (next: Shoe[]) => {
+    const normalized = next.map(product => ({
+      ...product,
+      category: product.category?.trim() || "SHOES",
+      isBestSeller: Boolean(product.isBestSeller),
+      isNewDrop: Boolean(product.isNewDrop),
+    }));
+    setProducts(normalized);
+    saveProducts(normalized);
+    flash();
+  };
   const persistFeatured = (next: number[]) => { setFeatured(next); saveFeatured(next); flash(); };
   const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
   const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
+
+  const addCategory = () => {
+    const normalized = newCategory.trim().replace(/\s+/g, " ");
+    if (!normalized) return;
+    const exists = categories.some(category => category.toLowerCase() === normalized.toLowerCase());
+    if (exists) {
+      setNewCategory("");
+      return;
+    }
+    const next = [...categories, normalized].sort((left, right) => left.localeCompare(right));
+    setCategories(next);
+    saveCategories(next);
+    publishCloudSection("categories", next);
+    setNewCategory("");
+    flash();
+  };
 
   const saveProduct = () => {
     if (!editing?.name.trim() || !editing.kind.trim() || !editing.image.trim() || editing.price <= 0) return;
@@ -216,11 +249,13 @@ export default function Admin() {
       ...editing,
       name: editing.name.trim(),
       kind: editing.kind.trim(),
-      category: "SHOES",
+      category: editing.category?.trim() || "SHOES",
       image: editing.image.trim(),
       images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
       tone: editing.tone.trim(),
       tag: editing.tag?.trim(),
+      isBestSeller: Boolean(editing.isBestSeller),
+      isNewDrop: Boolean(editing.isNewDrop),
     };
     const exists = products.some(p => p.id === editing.id);
     persistProducts(exists ? products.map(p => p.id === editing.id ? normalized : p) : [...products, normalized]);
@@ -268,6 +303,9 @@ export default function Admin() {
 
   const resetAll = () => {
     persistProducts(DEFAULT_SHOES);
+    setCategories(["SHOES"]);
+    saveCategories(["SHOES"]);
+    publishCloudSection("categories", ["SHOES"]);
     persistFeatured(DEFAULT_SHOES.map(p => p.id));
     persistEternalFits(DEFAULT_ETERNAL_FITS);
     persistHomepage(DEFAULT_HOMEPAGE);
@@ -311,11 +349,21 @@ export default function Admin() {
           <div><span>01 / CATALOGUE</span><h2>Full product control.</h2><p>Upload product photos, set prices, create categories automatically, choose homepage products and control every product detail.</p></div>
           <button className="admin-primary" onClick={() => setEditing(emptyProduct())}><Plus size={16}/> ADD PRODUCT</button>
         </div>
-        <div className="admin-category-strip"><span>CATEGORY</span><b>SHOES</b><small>For now, all products are listed under Shoes. Additional categories are disabled.</small></div>
+        <div className="admin-category-manager">
+          <div className="admin-category-manager-head">
+            <div><span>CATEGORIES</span><strong>{categories.length} ACTIVE</strong></div>
+            <small>Every category created here becomes available in the product form immediately.</small>
+          </div>
+          <div className="admin-category-chips">{categories.map(category => <span key={category}>{category}</span>)}</div>
+          <div className="admin-category-add">
+            <input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => { if (e.key === "Enter") addCategory(); }} placeholder="New category name, e.g. Slides" aria-label="New category name"/>
+            <button type="button" className="admin-primary" onClick={addCategory}><Plus size={14}/> ADD CATEGORY</button>
+          </div>
+        </div>
         <div className="admin-product-grid">
           {products.map(product => <article className="admin-product-card" key={product.id}>
-            <div className="admin-product-image"><img src={product.image} alt={product.kind}/>{featured.includes(product.id) && <span>ON HOMEPAGE</span>}</div>
-            <div className="admin-product-body"><div><small>SHOES · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
+            <div className="admin-product-image"><img src={product.image} alt={product.kind}/><div className="admin-product-flags">{product.isBestSeller && <span>BEST SELLER</span>}{product.isNewDrop && <span>NEW DROP</span>}{featured.includes(product.id) && <span>HOME</span>}</div></div>
+            <div className="admin-product-body"><div><small>{product.category || "SHOES"} · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
             <div className="admin-card-actions"><button onClick={() => setEditing(product)}><Pencil size={14}/> EDIT</button><button onClick={() => toggleFeatured(product.id)}>{featured.includes(product.id) ? <EyeOff size={14}/> : <Eye size={14}/>} {featured.includes(product.id) ? "HIDE HOME" : "SHOW HOME"}</button><button className="danger" onClick={() => deleteProduct(product.id)}><Trash2 size={14}/> DELETE</button></div>
           </article>)}
         </div>
@@ -415,14 +463,21 @@ export default function Admin() {
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
           <label><span>PRODUCT TYPE</span><input value={editing.kind} onChange={e => setEditing({...editing,kind:e.target.value})} placeholder="Everyday Runner"/></label>
-          <label><span>CATEGORY</span><input value="SHOES" readOnly aria-label="Product category"/></label>
+          <label><span>CATEGORY</span><select value={editing.category || "SHOES"} onChange={e => setEditing({...editing,category:e.target.value})}>{categories.map(category => <option key={category} value={category}>{category}</option>)}</select></label>
           <label><span>PRICE (₹)</span><input type="number" min="1" value={editing.price || ""} onChange={e => setEditing({...editing,price:Number(e.target.value)})}/></label>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
+          <div className="admin-merch-options wide">
+            <span>STOREFRONT PLACEMENT</span>
+            <div>
+              <label className={editing.isBestSeller ? "admin-merch-option active" : "admin-merch-option"}><input type="checkbox" checked={Boolean(editing.isBestSeller)} onChange={e => setEditing({...editing,isBestSeller:e.target.checked})}/><b>BEST SELLER</b><small>Show in the Best Sellers rail.</small></label>
+              <label className={editing.isNewDrop ? "admin-merch-option active" : "admin-merch-option"}><input type="checkbox" checked={Boolean(editing.isNewDrop)} onChange={e => setEditing({...editing,isNewDrop:e.target.checked})}/><b>NEW DROP</b><small>Show in the New Drop rail.</small></label>
+            </div>
+          </div>
           <label className="wide"><span>PRODUCT PAGE LIQUID GLASS TINT</span><div className="admin-color-field"><input type="color" value={editing.glassTint || "#d72d28"} onChange={e => setEditing({...editing,glassTint:e.target.value})}/><input value={editing.glassTint || ""} onChange={e => setEditing({...editing,glassTint:e.target.value})} placeholder="Auto from product colour"/></div></label>
         </div>
         <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone.</div>
-        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.category || "Category"} · {editing.kind}</span></div></div>
+        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.category || "Category"} · {editing.kind}{editing.isBestSeller ? " · BEST SELLER" : ""}{editing.isNewDrop ? " · NEW DROP" : ""}</span></div></div>
         <div className="admin-modal-actions"><button onClick={() => setEditing(null)}>CANCEL</button><button className="admin-primary" onClick={saveProduct}><Save size={15}/> SAVE PRODUCT</button></div>
       </div></div>}
     </main>
