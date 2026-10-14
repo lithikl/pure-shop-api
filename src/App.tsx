@@ -330,7 +330,8 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      {homepage.showBestSellers && (bestSellers.length > 0 || newDrops.length > 0) && <section className="product-rails-section section-wrap" id="collection" aria-label="Best Sellers and New Drop">
+      {homepage.showBestSellers && (bestSellers.length > 0 || newDrops.length > 0) && (
+        <section className="product-rails-section section-wrap" id="collection" aria-label="Best Sellers and New Drop">
         <div className="product-rails-heading reveal">
           <div>
             <p className="kicker">01 / THE EDIT</p>
@@ -391,7 +392,8 @@ export default function App() {
             <div className="product-rail-footer"><span>FRESH FROM THE STUDIO</span><button onClick={openShop}>SHOP THE DROP <ArrowRight size={14}/></button></div>
           </section>}
         </div>
-      </section>
+        </section>
+      )}
 
       {homepage.showEternalFits && (
         <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
