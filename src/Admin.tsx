@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
@@ -226,7 +226,7 @@ export default function Admin() {
 
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
-  const loginAdmin = async (event: React.FormEvent) => {
+  const loginAdmin = async (event: FormEvent) => {
     event.preventDefault();
     setAdminBusy(true);
     setAdminError("");
