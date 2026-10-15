@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
+  ProductType,
   DEFAULT_ETERNAL_FITS,
   DEFAULT_HOMEPAGE,
   DEFAULT_SHOES,
@@ -24,11 +25,14 @@ import {
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
+const productTypeLabel = (type: ProductType | undefined) => type === "watch" ? "WATCH" : type === "apparel" ? "APPAREL" : type === "accessory" ? "ACCESSORY" : type === "other" ? "OTHER" : "SHOES";
+
 const emptyProduct = (): Shoe => ({
   id: Date.now(),
   name: "",
   kind: "SHOES",
   category: "SHOES",
+  productType: "shoes",
   price: 0,
   image: "",
   images: [""],
@@ -225,6 +229,7 @@ export default function Admin() {
       isBestSeller: Boolean(product.isBestSeller),
       isNewDrop: Boolean(product.isNewDrop),
       productType: product.productType || "shoes",
+      kind: productTypeLabel(product.productType || "shoes"),
       sizes: Array.isArray(product.sizes) ? product.sizes.map(String) : defaultSizesForProduct(product),
     }));
     setProducts(normalized);
@@ -234,6 +239,27 @@ export default function Admin() {
   const persistFeatured = (next: number[]) => { setFeatured(next); saveFeatured(next); flash(); };
   const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
   const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
+
+  const deleteCategory = (category: string) => {
+    if (category.toLowerCase() === "shoes") {
+      alert("SHOES is the default fallback category and cannot be deleted.");
+      return;
+    }
+    if (!window.confirm(`Delete the category "${category}"? Products using it will be moved to SHOES.`)) return;
+    const nextCategories = categories.filter(item => item.toLowerCase() !== category.toLowerCase());
+    const nextProducts = products.map(product => product.category?.toLowerCase() === category.toLowerCase()
+      ? { ...product, category: "SHOES" }
+      : product
+    );
+    setCategories(nextCategories);
+    saveCategories(nextCategories);
+    setProducts(nextProducts);
+    saveProducts(nextProducts);
+    if (editing?.category?.toLowerCase() === category.toLowerCase()) {
+      setEditing(current => current ? { ...current, category: "SHOES" } : current);
+    }
+    flash();
+  };
 
   const addCategory = (useForCurrentProduct = false) => {
     const normalized = newCategory.trim().replace(/\s+/g, " ");
@@ -258,7 +284,8 @@ export default function Admin() {
     const normalized = {
       ...editing,
       name: editing.name.trim(),
-      kind: editing.kind?.trim() || editing.category?.trim() || "SHOES",
+      productType: editing.productType || "shoes",
+      kind: productTypeLabel(editing.productType),
       category: editing.category?.trim() || "SHOES",
       image: editing.image.trim(),
       images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
@@ -366,7 +393,7 @@ export default function Admin() {
             <div><span>CATEGORIES</span><strong>{categories.length} ACTIVE</strong></div>
             <small>Categories created here instantly appear in every product editor. You can also create one directly beside the category selector.</small>
           </div>
-          <div className="admin-category-chips">{categories.map(category => <span key={category}>{category}</span>)}</div>
+          <div className="admin-category-chips">{categories.map(category => <span key={category} className="admin-category-chip"><span>{category}</span><button type="button" onClick={() => deleteCategory(category)} disabled={category.toLowerCase() === "shoes"} aria-label={`Delete ${category} category`} title={category.toLowerCase() === "shoes" ? "Default category cannot be deleted" : `Delete ${category}`}><Trash2 size={12}/></button></span>)}</div>
           <div className="admin-category-add">
             <input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => { if (e.key === "Enter") addCategory(); }} placeholder="New category name, e.g. Slides" aria-label="New category name"/>
             <button type="button" className="admin-primary" onClick={() => addCategory()}><Plus size={14}/> ADD CATEGORY</button>
@@ -375,7 +402,7 @@ export default function Admin() {
         <div className="admin-product-grid">
           {products.map(product => <article className="admin-product-card" key={product.id}>
             <div className="admin-product-image"><img src={product.image} alt={product.kind}/><div className="admin-product-flags">{product.isBestSeller && <span>BEST SELLER</span>}{product.isNewDrop && <span>NEW DROP</span>}{featured.includes(product.id) && <span>HOME</span>}</div></div>
-            <div className="admin-product-body"><div><small>{product.category || "SHOES"} · {product.kind}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
+            <div className="admin-product-body"><div><small>{product.category || productTypeLabel(product.productType)}</small><h3>{product.name}</h3><p>{product.tone}</p></div><strong>{money(product.price)}</strong></div>
             <div className="admin-card-actions"><button onClick={() => setEditing(product)}><Pencil size={14}/> EDIT</button><button onClick={() => toggleFeatured(product.id)}>{featured.includes(product.id) ? <EyeOff size={14}/> : <Eye size={14}/>} {featured.includes(product.id) ? "HIDE HOME" : "SHOW HOME"}</button><button className="danger" onClick={() => deleteProduct(product.id)}><Trash2 size={14}/> DELETE</button></div>
           </article>)}
         </div>
@@ -496,7 +523,7 @@ export default function Admin() {
           <label className="wide"><span>PRODUCT PAGE LIQUID GLASS TINT</span><div className="admin-color-field"><input type="color" value={editing.glassTint || "#d72d28"} onChange={e => setEditing({...editing,glassTint:e.target.value})}/><input value={editing.glassTint || ""} onChange={e => setEditing({...editing,glassTint:e.target.value})} placeholder="Auto from product colour"/></div></label>
         </div>
         <div className="admin-tint-note">Leave the tint blank to automatically derive a subtle glass colour from the product tone.</div>
-        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.category || "Category"} · {editing.kind}{editing.isBestSeller ? " · BEST SELLER" : ""}{editing.isNewDrop ? " · NEW DROP" : ""}</span></div></div>
+        <div className="admin-preview">{editing.image ? <img src={editing.image} alt="Preview"/> : <span>IMAGE PREVIEW</span>}<div><strong>{editing.name || "Product name"}</strong><span>{editing.category || productTypeLabel(editing.productType)}{editing.isBestSeller ? " · BEST SELLER" : ""}{editing.isNewDrop ? " · NEW DROP" : ""}</span></div></div>
         <div className="admin-modal-actions"><button onClick={() => setEditing(null)}>CANCEL</button><button className="admin-primary" onClick={saveProduct}><Save size={15}/> SAVE PRODUCT</button></div>
       </div></div>}
     </main>
