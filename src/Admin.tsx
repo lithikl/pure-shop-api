@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
   DEFAULT_ETERNAL_FITS,
@@ -212,6 +212,11 @@ export default function Admin() {
 
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
+  const logoutAdmin = () => {
+    localStorage.removeItem("noirknull:admin-token:v1");
+    setAuthenticated(false);
+  };
+
   const flash = () => { setSaved(true); window.setTimeout(() => setSaved(false), 1400); };
   const persistProducts = (next: Shoe[]) => {
     const normalized = next.map(product => ({
@@ -219,6 +224,8 @@ export default function Admin() {
       category: product.category?.trim() || "SHOES",
       isBestSeller: Boolean(product.isBestSeller),
       isNewDrop: Boolean(product.isNewDrop),
+      productType: product.productType || "shoes",
+      sizes: Array.isArray(product.sizes) ? product.sizes.map(String) : defaultSizesForProduct(product),
     }));
     setProducts(normalized);
     saveProducts(normalized);
@@ -259,6 +266,8 @@ export default function Admin() {
       tag: editing.tag?.trim(),
       isBestSeller: Boolean(editing.isBestSeller),
       isNewDrop: Boolean(editing.isNewDrop),
+      productType: editing.productType || "shoes",
+      sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String) : defaultSizesForProduct(editing),
     };
     const exists = products.some(p => p.id === editing.id);
     persistProducts(exists ? products.map(p => p.id === editing.id ? normalized : p) : [...products, normalized]);
@@ -332,7 +341,7 @@ export default function Admin() {
     <main className="admin-main">
       <header className="admin-topbar">
         <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "orders" ? "Orders." : tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
-        <div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div>
+        <div className="admin-top-actions"><div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div><button className="admin-logout" onClick={logoutAdmin}>LOG OUT</button></div>
       </header>
 
       {tab === "orders" && <section className="admin-section">
@@ -467,7 +476,14 @@ export default function Admin() {
         <div className="admin-form-grid">
           <label><span>PRODUCT NAME</span><input value={editing.name} onChange={e => setEditing({...editing,name:e.target.value})} placeholder="NOIR / 05"/></label>
           <label><span>CATEGORY</span><div className="admin-category-field"><select value={editing.category || "SHOES"} onChange={e => setEditing({...editing,category:e.target.value})}>{categories.map(category => <option key={category} value={category}>{category}</option>)}</select><button type="button" onClick={() => setCategoryComposerOpen(value => !value)}><Plus size={13}/> NEW CATEGORY</button></div>{categoryComposerOpen && <div className="admin-category-inline"><input autoFocus value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => { if (e.key === "Enter") addCategory(true); }} placeholder="Category name"/><button type="button" className="admin-primary" onClick={() => addCategory(true)}>CREATE</button></div>}</label>
+          <label><span>PRODUCT TYPE</span><select value={editing.productType || "shoes"} onChange={e => { const productType = e.target.value as ProductType; setEditing({...editing, productType, sizes: defaultSizesForProduct({...editing, productType})}); }}>{([["shoes","SHOES / SNEAKERS"],["apparel","T-SHIRT / SHIRT"],["watch","WATCH"],["accessory","ACCESSORY"],["other","OTHER"]] as [ProductType,string][]).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
           <label><span>PRICE (₹)</span><input type="number" min="1" value={editing.price || ""} onChange={e => setEditing({...editing,price:Number(e.target.value)})}/></label>
+          <div className="admin-size-manager wide">
+            <div className="admin-size-manager-head"><span>AVAILABLE SIZES</span><small>{editing.productType === "watch" || editing.productType === "accessory" ? "ONE SIZE ONLY" : editing.productType === "apparel" ? "SELECT THE CLOTHING SIZES YOU ACTUALLY HAVE IN STOCK" : editing.productType === "shoes" ? "SELECT THE SHOE SIZES YOU ACTUALLY HAVE IN STOCK" : "NO SIZE REQUIRED"}</small></div>
+            <div className="admin-size-options">
+              {(["shoes","apparel","watch","accessory","other"] as ProductType[]).includes(editing.productType || "shoes") && (editing.productType === "shoes" ? ["6","7","8","9","10","11","12"] : editing.productType === "apparel" ? ["XS","S","M","L","XL","XXL","XXXL"] : editing.productType === "watch" || editing.productType === "accessory" ? ["OS"] : []).map(size => <label key={size} className={editing.sizes?.includes(size) ? "admin-size-chip active" : "admin-size-chip"}><input type="checkbox" checked={Boolean(editing.sizes?.includes(size))} disabled={editing.productType === "watch" || editing.productType === "accessory"} onChange={e => setEditing({...editing, sizes: e.target.checked ? Array.from(new Set([...(editing.sizes || []), size])) : (editing.sizes || []).filter(value => value !== size)})}/><b>{size}</b></label>)}
+            </div>
+          </div>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
           <div className="admin-merch-options wide">
