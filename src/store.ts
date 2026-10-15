@@ -1,3 +1,5 @@
+export type ProductType = "shoes" | "apparel" | "watch" | "accessory" | "other";
+
 export type Shoe = {
   id: number;
   name: string;
@@ -9,6 +11,8 @@ export type Shoe = {
   tone: string;
   tag?: string;
   glassTint?: string;
+  productType?: ProductType;
+  sizes?: string[];
   isBestSeller?: boolean;
   isNewDrop?: boolean;
 };
@@ -22,10 +26,10 @@ export type EternalFit = {
 };
 
 export const DEFAULT_SHOES: Shoe[] = [
-  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER", isBestSeller: true },
-  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP", isNewDrop: true },
-  { id: 3, name: "FORM / 03", kind: "Retro Court", category: "Court", price: 4590, image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90"], tone: "Stone / Bone" },
-  { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
+  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isBestSeller: true },
+  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isNewDrop: true },
+  { id: 3, name: "FORM / 03", kind: "Retro Court", category: "Court", price: 4590, productType: "shoes", sizes: ["6","7","8","9","10","11","12"], image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90"], tone: "Stone / Bone" },
+  { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, productType: "shoes", sizes: ["6","7","8","9","10","11","12"], image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
 ];
 
 const CLOUD_API_BASE = "https://noirknull.lithiksaran130510.workers.dev";
@@ -37,6 +41,7 @@ const FEATURED_KEY = "noirknull:featured:v1";
 const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
 const HOMEPAGE_KEY = "noirknull:homepage:v1";
 const CATEGORIES_KEY = "noirknull:categories:v1";
+const ADMIN_TOKEN_KEY = "noirknull:admin-token:v1";
 
 type CloudStore = {
   products?: Shoe[];
@@ -111,7 +116,10 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
       try {
         const response = await fetch(cloudApi("/api/store"), {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(localStorage.getItem(ADMIN_TOKEN_KEY) ? { Authorization: `Bearer ${localStorage.getItem(ADMIN_TOKEN_KEY)}` } : {}),
+          },
           body: JSON.stringify({ section, value }),
         });
         if (response.ok) return;
@@ -235,13 +243,35 @@ export function saveCategories(categories: string[]) {
   publishCloudSection("categories", normalized);
 }
 
+function inferProductType(product: Shoe): ProductType {
+  const text = `${product.category || ""} ${product.kind || ""} ${product.name || ""}`.toLowerCase();
+  if (text.includes("watch")) return "watch";
+  if (text.includes("accessor") || text.includes("bag") || text.includes("wallet") || text.includes("cap") || text.includes("belt")) return "accessory";
+  if (text.includes("shirt") || text.includes("tee") || text.includes("t-shirt") || text.includes("apparel") || text.includes("hoodie") || text.includes("jacket")) return "apparel";
+  if (text.includes("shoe") || text.includes("runner") || text.includes("sneaker") || text.includes("court") || text.includes("street") || text.includes("essential")) return "shoes";
+  return "other";
+}
+
+export function defaultSizesForProduct(product: Shoe): string[] {
+  const type = product.productType || inferProductType(product);
+  if (type === "watch" || type === "accessory") return ["OS"];
+  if (type === "apparel") return ["XS", "S", "M", "L", "XL", "XXL"];
+  if (type === "shoes") return ["6", "7", "8", "9", "10", "11", "12"];
+  return [];
+}
+
 export function loadProducts(): Shoe[] {
   try {
     const raw = localStorage.getItem(PRODUCTS_KEY);
     if (!raw) return DEFAULT_SHOES;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return DEFAULT_SHOES;
-    return parsed.map((product: Shoe) => ({ ...product, images: Array.isArray(product.images) && product.images.length ? product.images : [product.image] }));
+    return parsed.map((product: Shoe) => ({
+      ...product,
+      productType: product.productType || inferProductType(product),
+      sizes: Array.isArray(product.sizes) && product.sizes.length ? product.sizes.map(String) : defaultSizesForProduct(product),
+      images: Array.isArray(product.images) && product.images.length ? product.images : [product.image],
+    }));
   } catch { return DEFAULT_SHOES; }
 }
 
