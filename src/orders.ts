@@ -20,7 +20,7 @@ export type Order = {
     state: string;
     pincode: string;
   };
-  items: Array<{ productId: number; name: string; kind: string; image: string; price: number; size: number }>;
+  items: Array<{ productId: number; name: string; kind: string; image: string; price: number; size: string }>;
   timeline: Array<{ status: OrderStatus; at: string }>;
 };
 
