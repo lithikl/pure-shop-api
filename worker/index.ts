@@ -13,6 +13,7 @@ type Env = {
   MIGRATION_TOKEN?: string;
   RAZORPAY_KEY_ID?: string;
   RAZORPAY_KEY_SECRET?: string;
+  ADMIN_PASSWORD?: string;
 };
 
 const STORE_KEY = "noirknull/data/store.json";
@@ -80,7 +81,48 @@ async function readStoreApi(env: Env) {
   }
 }
 
+const ADMIN_TOKEN_TTL = 12 * 60 * 60 * 1000;
+
+async function hmacHex(secret: string, value: string) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return hex(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value)));
+}
+
+async function createAdminToken(env: Env) {
+  if (!env.ADMIN_PASSWORD) throw new Error("Admin password is not configured.");
+  const payload = `${Date.now() + ADMIN_TOKEN_TTL}.${crypto.randomUUID()}`;
+  return `${payload}.${await hmacHex(env.ADMIN_PASSWORD, payload)}`;
+}
+
+async function verifyAdminToken(request: Request, env: Env) {
+  if (!env.ADMIN_PASSWORD) return false;
+  const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return false;
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  const expiry = Number(parts[0]);
+  if (!Number.isFinite(expiry) || expiry < Date.now()) return false;
+  const payload = `${parts[0]}.${parts[1]}`;
+  const expected = await hmacHex(env.ADMIN_PASSWORD, payload);
+  return safeEqual(expected, parts[2]);
+}
+
+async function adminLogin(request: Request, env: Env) {
+  if (request.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
+  if (!env.ADMIN_PASSWORD) return json({ ok: false, error: "Admin password is not configured." }, { status: 500 });
+  try {
+    const body = await request.json() as { password?: string };
+    if (!body.password || body.password !== env.ADMIN_PASSWORD) return json({ ok: false, error: "Invalid admin password." }, { status: 401 });
+    return json({ ok: true, token: await createAdminToken(env), expiresIn: ADMIN_TOKEN_TTL });
+  } catch {
+    return json({ ok: false, error: "Unable to sign in." }, { status: 400 });
+  }
+}
+
 async function writeStoreApi(request: Request, env: Env) {
+  if (!(await verifyAdminToken(request, env))) {
+    return json({ ok: false, error: "Admin authentication required." }, { status: 401 });
+  }
   if (!allowedOrigin(request)) {
     return json({ ok: false, error: "Origin not allowed" }, { status: 403 });
   }
@@ -118,6 +160,9 @@ async function writeStoreApi(request: Request, env: Env) {
 }
 
 async function uploadMedia(request: Request, env: Env) {
+  if (!(await verifyAdminToken(request, env))) {
+    return json({ ok: false, error: "Admin authentication required." }, { status: 401 });
+  }
   if (!allowedOrigin(request)) {
     return json({ ok: false, error: "Origin not allowed" }, { status: 403 });
   }
@@ -490,6 +535,10 @@ export default {
 
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({ ok: true, platform: "cloudflare" });
+    }
+
+    if (url.pathname === "/api/admin/login") {
+      return adminLogin(request, env);
     }
 
     if (url.pathname === "/api/create-order") {
