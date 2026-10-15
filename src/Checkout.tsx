@@ -58,7 +58,14 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
         try {
           const orderResponse = await fetch("/api/create-order", {
             method: "POST", headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({ amount: total, currency: "INR", receipt: `noir-${Date.now()}`, customer: { name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone } })
+            body: JSON.stringify({
+              amount: total,
+              currency: "INR",
+              receipt: `noir-${Date.now()}`,
+              shippingMethod: shipping,
+              items: cart.map(item => ({ productId: item.shoe.id, quantity: 1, price: item.shoe.price, size: item.size })),
+              customer: { name: `${data.firstName} ${data.lastName}`, email: data.email, phone: data.phone }
+            })
           });
           const order = await readJsonResponse(orderResponse);
           if (!orderResponse.ok) throw new Error(order.error || "Unable to create payment order.");
