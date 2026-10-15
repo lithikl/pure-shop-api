@@ -20,6 +20,7 @@ import {
   saveHomepageSettings,
   saveProducts,
   hydrateFromCloud,
+  defaultSizesForProduct,
   publishCloudSection,
 } from "./store";
 
@@ -55,7 +56,12 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
 async function uploadMedia(file: File): Promise<string> {
   const form = new FormData();
   form.append("file", file);
-  const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/upload", { method: "POST", body: form });
+  const token = localStorage.getItem("noirknull:admin-token:v1");
+  const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/upload", {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
   if (!response.ok) throw new Error("Cloud upload failed");
   const payload = await response.json();
   if (!payload?.url) throw new Error("Cloud upload returned no URL");
@@ -190,6 +196,10 @@ export default function Admin() {
   const [saved, setSaved] = useState(false);
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
+  const [authenticated, setAuthenticated] = useState(() => Boolean(localStorage.getItem("noirknull:admin-token:v1")));
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminBusy, setAdminBusy] = useState(false);
+  const [adminError, setAdminError] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -215,6 +225,30 @@ export default function Admin() {
   }, []);
 
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
+
+  const loginAdmin = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setAdminBusy(true);
+    setAdminError("");
+    try {
+      const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ password: adminPassword }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.token) {
+        throw new Error(payload?.error || "Unable to sign in.");
+      }
+      localStorage.setItem("noirknull:admin-token:v1", payload.token);
+      setAuthenticated(true);
+      setAdminPassword("");
+    } catch (error) {
+      setAdminError(error instanceof Error ? error.message : "Unable to sign in.");
+    } finally {
+      setAdminBusy(false);
+    }
+  };
 
   const logoutAdmin = () => {
     localStorage.removeItem("noirknull:admin-token:v1");
@@ -350,6 +384,33 @@ export default function Admin() {
     setEditing(null);
     setEditingFit(null);
   };
+
+  if (!authenticated) {
+    return <main className="admin-login-page">
+      <section className="admin-login-card">
+        <p className="kicker">NOIRKNULL / PRIVATE ACCESS</p>
+        <h1>CONTROL ROOM</h1>
+        <p>Enter the admin password to manage products, categories, homepage content and orders.</p>
+        <form onSubmit={loginAdmin}>
+          <label>
+            <span>ADMIN PASSWORD</span>
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={e => setAdminPassword(e.target.value)}
+              autoComplete="current-password"
+              autoFocus
+              placeholder="Enter password"
+            />
+          </label>
+          {adminError && <div className="admin-login-error">{adminError}</div>}
+          <button className="admin-primary" type="submit" disabled={adminBusy || !adminPassword}>
+            {adminBusy ? "CHECKING..." : "ENTER CONTROL ROOM"}
+          </button>
+        </form>
+      </section>
+    </main>;
+  }
 
   return <div className="admin-page">
     <aside className="admin-sidebar">
