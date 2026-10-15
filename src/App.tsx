@@ -29,6 +29,7 @@ const tintFromTone = (tone: string) => {
 export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const isTrackOrder = window.location.pathname === "/track-order";
+  const collectionPath = window.location.pathname === "/best-sellers" ? "best" : window.location.pathname === "/new-drop" ? "new" : null;
   const [products, setProducts] = useState<Shoe[]>(loadProducts);
   const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
@@ -38,7 +39,8 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [galleryTouchStart, setGalleryTouchStart] = useState<number | null>(null);
-  const [shopOpen, setShopOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(collectionPath !== null);
+  const [collectionMode, setCollectionMode] = useState<"best" | "new" | null>(collectionPath);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [sortBy, setSortBy] = useState("featured");
@@ -151,6 +153,7 @@ export default function App() {
     
     setSelectedProduct(null);
     setShopOpen(true);
+    setCollectionMode(null);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -158,6 +161,7 @@ export default function App() {
     
     setSelectedProduct(null);
     setShopOpen(false);
+    setCollectionMode(null);
     setMobileMenuOpen(false);
     requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -188,7 +192,8 @@ export default function App() {
   const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
     const category = categoryName(shoe);
-    return matchesSearch && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
+    const matchesCollection = collectionMode === "best" ? Boolean(shoe.isBestSeller) : collectionMode === "new" ? Boolean(shoe.isNewDrop) : true;
+    return matchesSearch && matchesCollection && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
   }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
   const add = (shoe: Shoe, size: string) => {
     setSelectedProduct(null);
@@ -229,7 +234,7 @@ export default function App() {
     </header>
 
     {shopOpen && !selectedProduct && <main className="shop-page">
-      <div className="shop-page-top"><div className="shop-breadcrumb"><button onClick={() => { setShopOpen(false); window.scrollTo({top:0,behavior:"smooth"}); }}>HOME</button><span>/</span><span>SHOP ALL</span></div><p className="kicker">NOIRKNULL® — THE FIRST DROP</p><h1>Find your<br/><em>own pace.</em></h1><p className="shop-intro">Considered silhouettes. Everyday movement.<br/>Find the pair that feels like you.</p></div>
+      <div className="shop-page-top"><div className="shop-breadcrumb"><button onClick={() => { setShopOpen(false); window.scrollTo({top:0,behavior:"smooth"}); }}>HOME</button><span>/</span><span>SHOP ALL</span></div><p className="kicker">NOIRKNULL® — {collectionMode === "best" ? "BEST SELLERS" : collectionMode === "new" ? "NEW DROP" : "THE FIRST DROP"}</p><h1>{collectionMode === "best" ? <>The most<br/><em>wanted.</em></> : collectionMode === "new" ? <>Just<br/><em>dropped.</em></> : <>Find your<br/><em>own pace.</em>}</h1><p className="shop-intro">{collectionMode === "best" ? "The pieces customers keep coming back for." : collectionMode === "new" ? "Fresh silhouettes. Just landed. Made for your next move." : <>Considered silhouettes. Everyday movement.<br/>Find the pair that feels like you.</>}</p></div>
       <section className="fit-picks">
         <div className="fit-picks-heading"><div><p className="kicker">STYLE NOTES / 001</p><h2>The finishing<br/><em>touches.</em></h2></div><p>Small details. Entirely different energy.<br/>Explore the moodboard, then find your pair below.</p></div>
         <div className="fit-picks-grid">
@@ -369,7 +374,7 @@ export default function App() {
               </div>
               <div className="product-rail-edge product-rail-edge-right"/>
             </div>
-            <div className="product-rail-footer"><span>AUTOPLAY / HOVER TO PAUSE</span><button onClick={openShop}>VIEW ALL SHOES <ArrowRight size={14}/></button></div>
+            <div className="product-rail-footer"><span>AUTOPLAY / HOVER TO PAUSE</span><a href="/best-sellers">VIEW ALL BEST SELLERS <ArrowRight size={14}/></a></div>
           </section>}
 
           {homepage.showNewDrops && newDrops.length > 0 && <section className="product-rail-panel product-rail-new">
