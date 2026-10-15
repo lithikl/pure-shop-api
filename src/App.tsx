@@ -366,7 +366,7 @@ export default function App() {
                     <span className="product-rail-index">{String((index % bestSellers.length) + 1).padStart(2, "0")} / {String(bestSellers.length).padStart(2, "0")}</span>
                   </button>
                   <div className="product-rail-info">
-                    <div><span>{shoe.category || "SHOES"} · {shoe.kind}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
+                    <div><span>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
                     <strong>{money(shoe.price)}</strong>
                   </div>
                   <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
@@ -392,7 +392,7 @@ export default function App() {
                     <span className="product-rail-index">{String((index % newDrops.length) + 1).padStart(2, "0")} / {String(newDrops.length).padStart(2, "0")}</span>
                   </button>
                   <div className="product-rail-info">
-                    <div><span>{shoe.category || "SHOES"} · {shoe.kind}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
+                    <div><span>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
                     <strong>{money(shoe.price)}</strong>
                   </div>
                   <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
