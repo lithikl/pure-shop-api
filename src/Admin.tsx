@@ -293,7 +293,6 @@ export default function Admin() {
       tag: editing.tag?.trim(),
       isBestSeller: Boolean(editing.isBestSeller),
       isNewDrop: Boolean(editing.isNewDrop),
-      productType: editing.productType || "shoes",
       sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String) : defaultSizesForProduct(editing),
     };
     const exists = products.some(p => p.id === editing.id);
