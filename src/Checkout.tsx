@@ -78,7 +78,7 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
           });
           if (!(await loadRazorpay())) throw new Error("Razorpay Checkout could not be loaded.");
           const Razorpay = (window as any).Razorpay;
-          const key = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TnQj6JwZEoSi6t";
+          const key = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_live_To4oI1QSRaNgMZ";
           if (!key) throw new Error("Razorpay key is not configured.");
           const razorpay = new Razorpay({
             key, amount: order.amount, currency: order.currency, order_id: order.id,
