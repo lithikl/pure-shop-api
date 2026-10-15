@@ -1886,14 +1886,31 @@ textarea:focus-visible{
   flex-wrap:wrap;
   gap:7px;
 }
-.admin-category-chips span{
-  padding:7px 10px;
+.admin-category-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 8px 7px 10px;
   border:1px solid #cbc6ba;
   border-radius:999px;
   background:#fffdf8;
   font:8px var(--mono);
   letter-spacing:.05em;
 }
+.admin-category-chip>span{padding:0;border:0;background:transparent;font:inherit;letter-spacing:inherit}
+.admin-category-chip button{
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  padding:0;
+  border:1px solid #c8c3b8;
+  border-radius:50%;
+  background:transparent;
+  cursor:pointer;
+}
+.admin-category-chip button:hover:not(:disabled){background:#171512;color:#fff}
+.admin-category-chip button:disabled{opacity:.3;cursor:not-allowed}
 .admin-category-add{
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
