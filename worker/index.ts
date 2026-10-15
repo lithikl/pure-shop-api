@@ -267,12 +267,32 @@ async function createRazorpayOrder(request: Request, env: Env) {
       amount?: number;
       currency?: string;
       receipt?: string;
+      shippingMethod?: "standard" | "express";
+      items?: Array<{ productId?: number; quantity?: number; price?: number; size?: string }>;
       customer?: { name?: string; email?: string; phone?: string };
     };
 
+    if (!Array.isArray(body.items) || body.items.length === 0) {
+      return json({ ok: false, error: "Your cart is empty." }, { status: 400 });
+    }
+
+    const store = await readStore(env);
+    const products = Array.isArray(store?.products) ? store.products as Array<Record<string, unknown>> : [];
+    let subtotal = 0;
+    for (const item of body.items) {
+      const product = products.find(entry => Number(entry.id) === Number(item.productId));
+      const quantity = Math.max(1, Math.floor(Number(item.quantity || 1)));
+      if (!product || !Number.isFinite(Number(product.price)) || Number(product.price) !== Number(item.price)) {
+        return json({ ok: false, error: "Cart price changed. Please refresh your cart and try again." }, { status: 409 });
+      }
+      subtotal += Number(product.price) * quantity;
+    }
+
+    const shippingCost = body.shippingMethod === "express" ? 199 : subtotal >= 5000 ? 0 : 99;
+    const expectedAmount = subtotal + shippingCost;
     const parsedAmount = Number(body.amount);
-    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
-      return json({ ok: false, error: "Invalid amount." }, { status: 400 });
+    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0 || parsedAmount !== expectedAmount) {
+      return json({ ok: false, error: "Cart total changed. Please refresh your cart and try again." }, { status: 409 });
     }
 
     const credentials = btoa(
@@ -306,17 +326,10 @@ async function createRazorpayOrder(request: Request, env: Env) {
     }
 
     if (!response.ok) {
-      return json(
-        {
-          ok: false,
-          error:
-            data?.error?.description ||
-            data?.error?.code ||
-            raw ||
-            "Razorpay order creation failed.",
-        },
-        { status: response.status },
-      );
+      const credentialError = response.status === 401
+        ? "Razorpay rejected the API credentials. The Cloudflare RAZORPAY_KEY_SECRET must belong to the Live Key ID configured for this Worker."
+        : data?.error?.description || data?.error?.code || raw || "Razorpay order creation failed.";
+      return json({ ok: false, error: credentialError }, { status: response.status });
     }
 
     return json({
