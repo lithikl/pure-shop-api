@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { createOrder } from "./orders";
 
 type Shoe = { id: number; name: string; kind: string; price: number; image: string; tone: string; tag?: string };
-type CartItem = { shoe: Shoe; size: number };
+type CartItem = { shoe: Shoe; size: string };
 type Props = { cart: CartItem[]; onBack: () => void; onComplete: (orderId?: string) => void };
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
@@ -91,5 +91,5 @@ export default function Checkout({ cart, onBack, onComplete }: Props) {
         } catch (error) { alert(error instanceof Error ? error.message : "Unable to start payment."); }
       }}>PAY SECURELY — {money(total)} <ArrowRight size={17}/></button><p className="checkout-terms">By placing your order, you confirm that your delivery details are correct and agree to the store purchase terms.</p>
     </div>}
-  </div><aside className="checkout-summary"><div className="checkout-summary-sticky"><div className="summary-title"><p className="kicker">YOUR ORDER</p><h2>Order summary <span>{cart.length}</span></h2></div><div className="summary-items">{cart.map((item,i)=><div className="summary-item" key={item.shoe.id+"-"+item.size+"-"+i}><div className="summary-image"><img src={item.shoe.image} alt={item.shoe.kind}/><span>{item.size}</span></div><div><p>{item.shoe.kind}</p><h3>{item.shoe.name}</h3><small>SIZE {item.size}</small></div><strong>{money(item.shoe.price)}</strong></div>)}</div><div className="summary-totals"><div><span>SUBTOTAL</span><b>{money(subtotal)}</b></div><div><span>SHIPPING</span><b>{shippingCost===0?"FREE":money(shippingCost)}</b></div><div className="summary-total"><span>TOTAL</span><strong>{money(total)}</strong></div></div><p className="summary-note">Prices include applicable taxes. Free standard shipping on orders over ₹5,000.</p></div></aside></div></main>;
+  </div><aside className="checkout-summary"><div className="checkout-summary-sticky"><div className="summary-title"><p className="kicker">YOUR ORDER</p><h2>Order summary <span>{cart.length}</span></h2></div><div className="summary-items">{cart.map((item,i)=><div className="summary-item" key={item.shoe.id+"-"+item.size+"-"+i}><div className="summary-image"><img src={item.shoe.image} alt={item.shoe.kind}/><span>{item.size}</span></div><div><p>{item.shoe.kind}</p><h3>{item.shoe.name}</h3><small>{item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</small></div><strong>{money(item.shoe.price)}</strong></div>)}</div><div className="summary-totals"><div><span>SUBTOTAL</span><b>{money(subtotal)}</b></div><div><span>SHIPPING</span><b>{shippingCost===0?"FREE":money(shippingCost)}</b></div><div className="summary-total"><span>TOTAL</span><strong>{money(total)}</strong></div></div><p className="summary-note">Prices include applicable taxes. Free standard shipping on orders over ₹5,000.</p></div></aside></div></main>;
 }
