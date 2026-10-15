@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { EternalFit, HomepageSettings, Shoe, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
+import { EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
 import PatternWaves from "./PatternWaves";
 import TrackOrder from "./TrackOrder";
 
-type CartItem = { shoe: Shoe; size: number };
+type CartItem = { shoe: Shoe; size: string };
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
@@ -42,7 +42,7 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [sortBy, setSortBy] = useState("featured");
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>("description");
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -171,6 +171,10 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const closeProduct = () => { setSelectedProduct(null); setSelectedImageIndex(0); setSelectedSize(null); };
+  const sizeOptionsForProduct = (shoe: Shoe) => {
+    const sizes = Array.isArray(shoe.sizes) && shoe.sizes.length ? shoe.sizes.map(String) : defaultSizesForProduct(shoe);
+    return sizes;
+  };
   const categoryName = (shoe: Shoe) => shoe.category?.trim() || "SHOES";
   const categories = ["ALL", ...savedCategories.filter(category => category && category.toUpperCase() !== "ALL")];
   const homepageShoes = products.filter((shoe) => featuredIds.includes(shoe.id));
@@ -186,7 +190,7 @@ export default function App() {
     const category = categoryName(shoe);
     return matchesSearch && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
   }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
-  const add = (shoe: Shoe, size: number) => {
+  const add = (shoe: Shoe, size: string) => {
     setSelectedProduct(null);
     setShopOpen(false);
     setCart((old) => [...old, { shoe, size }]);
@@ -295,10 +299,12 @@ export default function App() {
           <div className="product-price-line"><strong>{money(selectedProduct.price)}</strong><span>INCLUSIVE OF TAXES</span></div>
           <p className="product-tone">{selectedProduct.tone}</p>
           <p className="product-description">A considered everyday silhouette. Clean lines, a confident profile and a design that moves with your own direction. No extra noise—just the essentials.</p>
-          <div className="size-heading"><span>SELECT YOUR SIZE (INDIA / UK)</span><button onClick={() => setOpenDetail(openDetail === "size" ? null : "size")}>SIZE GUIDE ↗</button></div>
-          <div className="size-grid">{[6,7,8,9,10,11,12].map((size) => <button key={size} className={selectedSize === size ? "size-option size-selected" : "size-option"} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div>
-          {openDetail === "size" && <div className="size-guide-note">Choose your usual UK/India shoe size. If you are between sizes, check the fit with our team before ordering.</div>}
-          <button className="product-add-button" onClick={() => selectedSize ? add(selectedProduct, selectedSize) : document.querySelector(".size-grid")?.scrollIntoView({ behavior: "smooth", block: "center" })}>{selectedSize ? "ADD TO BAG — " + money(selectedProduct.price) : "SELECT A SIZE TO CONTINUE"} <ArrowRight size={17}/></button>
+          {sizeOptionsForProduct(selectedProduct).length > 0 ? <>
+            <div className="size-heading"><span>{selectedProduct.productType === "apparel" ? "SELECT YOUR SIZE" : selectedProduct.productType === "watch" || selectedProduct.productType === "accessory" ? "SIZE" : "SELECT YOUR SIZE (INDIA / UK)"}</span>{selectedProduct.productType === "shoes" && <button onClick={() => setOpenDetail(openDetail === "size" ? null : "size")}>SIZE GUIDE ↗</button>}</div>
+            <div className={"size-grid " + ((selectedProduct.productType === "watch" || selectedProduct.productType === "accessory") ? "size-grid-one" : "")}>{sizeOptionsForProduct(selectedProduct).map(size => <button key={size} className={selectedSize === size ? "size-option size-selected" : "size-option"} onClick={() => setSelectedSize(size)} aria-pressed={selectedSize === size}>{size}</button>)}</div>
+            {openDetail === "size" && selectedProduct.productType === "shoes" && <div className="size-guide-note">Choose your usual UK/India shoe size. If you are between sizes, check the fit with our team before ordering.</div>}
+          </> : <div className="size-not-required"><span>SIZE</span><strong>ONE SIZE / NOT REQUIRED</strong></div>}
+          <button className="product-add-button" onClick={() => selectedSize || sizeOptionsForProduct(selectedProduct).length === 0 ? add(selectedProduct, selectedSize || "OS") : document.querySelector(".size-grid")?.scrollIntoView({ behavior: "smooth", block: "center" })}>{selectedSize ? "ADD TO BAG — " + money(selectedProduct.price) : sizeOptionsForProduct(selectedProduct).length === 0 ? "ADD TO BAG — " + money(selectedProduct.price) : "SELECT A SIZE TO CONTINUE"} <ArrowRight size={17}/></button>
           <p className="product-delivery-note">↗ FREE SHIPPING ON ORDERS OVER ₹5,000</p>
           <div className="product-accordions">
             <div className="product-accordion"><button onClick={() => setOpenDetail(openDetail === "description" ? null : "description")}><span>PRODUCT DETAILS</span><b>{openDetail === "description" ? "−" : "+"}</b></button>{openDetail === "description" && <p>Designed around everyday versatility and a distinct silhouette. Colourway: {selectedProduct.tone}. Product: {selectedProduct.name}. A fresh take on footwear for your own pace.</p>}</div>
@@ -444,6 +450,6 @@ export default function App() {
 
     }
 
-    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind}/><div><p>{item.shoe.kind} · SIZE {item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
+    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind}/><div><p>{item.shoe.kind} · {item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
   </div>;
 }
