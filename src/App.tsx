@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal, Share2 } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
@@ -124,6 +124,18 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const productId = Number(new URLSearchParams(window.location.search).get("product"));
+    if (!productId) return;
+    const shoe = products.find((item) => item.id === productId);
+    if (!shoe) return;
+    setSelectedProduct(shoe);
+    setSelectedImageIndex(0);
+    setSelectedSize(null);
+    setOpenDetail("description");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [products]);
+
+  useEffect(() => {
     const revealElements = Array.from(document.querySelectorAll(".reveal"));
     if (!revealElements.length) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
@@ -172,9 +184,42 @@ export default function App() {
     setSelectedImageIndex(0);
     setSelectedSize(null);
     setOpenDetail("description");
+    const url = new URL(window.location.href);
+    url.searchParams.set("product", String(shoe.id));
+    window.history.pushState({ product: shoe.id }, "", url);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const closeProduct = () => { setSelectedProduct(null); setSelectedImageIndex(0); setSelectedSize(null); };
+  const closeProduct = () => {
+    setSelectedProduct(null);
+    setSelectedImageIndex(0);
+    setSelectedSize(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("product");
+    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+  };
+  const shareProduct = async (shoe: Shoe) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("product", String(shoe.id));
+    const shareData = {
+      title: shoe.name + " — NoirKnull",
+      text: shoe.description?.trim() || (shoe.name + " — " + money(shoe.price)),
+      url: url.toString(),
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(url.toString());
+        window.alert("Product link copied.");
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        window.alert("Product link copied.");
+      } catch {}
+    }
+  };
   const sizeOptionsForProduct = (shoe: Shoe) => {
     const sizes = Array.isArray(shoe.sizes) && shoe.sizes.length ? shoe.sizes.map(String) : defaultSizesForProduct(shoe);
     return sizes;
@@ -300,7 +345,13 @@ export default function App() {
             </div>
           </div>
           <p className="product-category">{selectedProduct.category || selectedProduct.kind}</p>
-          <h1>{selectedProduct.name}</h1>
+          <div className="product-title-row">
+            <h1>{selectedProduct.name}</h1>
+            <button className="product-share-button" type="button" onClick={() => shareProduct(selectedProduct)} aria-label={"Share " + selectedProduct.name} title="Share product">
+              <Share2 size={17}/>
+              <span>SHARE</span>
+            </button>
+          </div>
           <div className="product-price-line"><strong>{money(selectedProduct.price)}</strong><span>INCLUSIVE OF TAXES</span></div>
           <p className="product-tone">{selectedProduct.tone}</p>
           <p className="product-description">{selectedProduct.description?.trim() || "A considered everyday silhouette. Clean lines, a confident profile and a design that moves with your own direction. No extra noise—just the essentials."}</p>
