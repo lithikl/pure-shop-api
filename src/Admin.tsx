@@ -42,6 +42,7 @@ const emptyProduct = (): Shoe => ({
   glassTint: "",
   isBestSeller: false,
   isNewDrop: false,
+  description: "",
 });
 
 const emptyEternalFit = (): EternalFit => ({ id: Date.now(), image: "", title: "", meta: "", caption: "" });
@@ -327,6 +328,7 @@ export default function Admin() {
       tag: editing.tag?.trim(),
       isBestSeller: Boolean(editing.isBestSeller),
       isNewDrop: Boolean(editing.isNewDrop),
+      description: editing.description?.trim() || "",
       sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String) : defaultSizesForProduct(editing),
     };
     const exists = products.some(p => p.id === editing.id);
@@ -571,6 +573,7 @@ export default function Admin() {
               {(["shoes","apparel","watch","accessory","other"] as ProductType[]).includes(editing.productType || "shoes") && (editing.productType === "shoes" ? ["6","7","8","9","10","11","12"] : editing.productType === "apparel" ? ["XS","S","M","L","XL","XXL","XXXL"] : editing.productType === "watch" || editing.productType === "accessory" ? ["OS"] : []).map(size => <label key={size} className={editing.sizes?.includes(size) ? "admin-size-chip active" : "admin-size-chip"}><input type="checkbox" checked={Boolean(editing.sizes?.includes(size))} disabled={editing.productType === "watch" || editing.productType === "accessory"} onChange={e => setEditing({...editing, sizes: e.target.checked ? Array.from(new Set([...(editing.sizes || []), size])) : (editing.sizes || []).filter(value => value !== size)})}/><b>{size}</b></label>)}
             </div>
           </div>
+          <label className="wide"><span>PRODUCT DESCRIPTION</span><textarea value={editing.description || ""} onChange={e => setEditing({...editing,description:e.target.value})} placeholder="Describe the product, materials, fit, feel and what makes it different..." rows={6}/><small>Shown directly on the customer product page. Keep it clear and specific.</small></label>
           <label><span>COLOUR / TONE</span><input value={editing.tone} onChange={e => setEditing({...editing,tone:e.target.value})} placeholder="Black / Bone"/></label>
           <label><span>BADGE</span><input value={editing.tag || ""} onChange={e => setEditing({...editing,tag:e.target.value})} placeholder="NEW DROP"/></label>
           <div className="admin-merch-options wide">

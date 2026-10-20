@@ -15,6 +15,7 @@ export type Shoe = {
   sizes?: string[];
   isBestSeller?: boolean;
   isNewDrop?: boolean;
+  description?: string;
 };
 
 export type EternalFit = {
@@ -26,8 +27,8 @@ export type EternalFit = {
 };
 
 export const DEFAULT_SHOES: Shoe[] = [
-  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isBestSeller: true },
-  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isNewDrop: true },
+  { id: 1, name: "NOIR / 01", kind: "Everyday Runner", category: "Runners", price: 4290, image: "/assets/output-onlinepngtools.png", images: ["/assets/output-onlinepngtools.png"], tone: "Crimson / Chalk", tag: "BESTSELLER", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isBestSeller: true, description: "A considered everyday runner with a confident profile, designed for comfort and movement without unnecessary noise." },
+  { id: 2, name: "NULL / 02", kind: "Street Low", category: "Street", price: 3890, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1100&q=90"], tone: "Cloud / Ink", tag: "NEW DROP", productType: "shoes", sizes: ["6","7","8","9","10","11","12"], isNewDrop: true, description: "A low-profile street silhouette with a clean shape and an easy everyday feel." },
   { id: 3, name: "FORM / 03", kind: "Retro Court", category: "Court", price: 4590, productType: "shoes", sizes: ["6","7","8","9","10","11","12"], image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=90"], tone: "Stone / Bone" },
   { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, productType: "shoes", sizes: ["6","7","8","9","10","11","12"], image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
 ];
