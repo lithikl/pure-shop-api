@@ -63,8 +63,10 @@ async function uploadMedia(file: File): Promise<string> {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: form,
   });
-  if (!response.ok) throw new Error("Cloud upload failed");
-  const payload = await response.json();
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(payload?.error || `Cloud upload failed (${response.status})`);
+  }
   if (!payload?.url) throw new Error("Cloud upload returned no URL");
   return payload.url;
 }
@@ -204,11 +206,17 @@ export default function Admin() {
 
   useEffect(() => {
     const onCloudError = (event: Event) => {
-      const detail = (event as CustomEvent<{ status?: number }>).detail;
-      if (detail?.status !== 401) return;
-      localStorage.removeItem("noirknull:admin-token:v1");
-      setAuthenticated(false);
-      setAdminError("Your admin session expired. Please sign in again before saving.");
+      const detail = (event as CustomEvent<{ status?: number; section?: string }>).detail;
+      const status = Number(detail?.status || 0);
+      if (status === 401) {
+        localStorage.removeItem("noirknull:admin-token:v1");
+        setAuthenticated(false);
+        setAdminError("Your admin session expired. Please sign in again before saving.");
+        return;
+      }
+      setAdminError(
+        `Cloud save failed${status ? ` (HTTP ${status})` : ""}. The change is still in this browser, but it may not appear on other devices until cloud storage is available again.`,
+      );
     };
     window.addEventListener("noirknull:cloud-error", onCloudError);
     return () => window.removeEventListener("noirknull:cloud-error", onCloudError);
@@ -469,6 +477,7 @@ export default function Admin() {
         <div><p className="kicker">NOIRKNULL® / ADMIN</p><h1>{tab === "orders" ? "Orders." : tab === "products" ? "Products." : tab === "homepage" ? "Homepage." : tab === "eternal" ? "Eternal Fits." : "Settings."}</h1></div>
         <div className="admin-top-actions"><div className="admin-status">{saved ? <><Check size={14}/> SAVED</> : "CONTROL ROOM"}</div><button className="admin-logout" onClick={logoutAdmin}>LOG OUT</button></div>
       </header>
+      {adminError && <div className="admin-login-error">{adminError}</div>}
 
       {tab === "orders" && <section className="admin-section">
         <div className="admin-section-head"><div><span>00 / ORDER CONTROL</span><h2>Every order, in one place.</h2><p>Review customer details, payment method, products and delivery status. Update the status and the customer tracking page follows it.</p></div><div className="admin-status">{orders.length} ORDERS</div></div>
