@@ -282,16 +282,16 @@ export default function App() {
       <section className="fit-picks">
         <div className="fit-picks-heading"><div><p className="kicker">STYLE NOTES / 001</p><h2>The finishing<br/><em>touches.</em></h2></div><p>Small details. Entirely different energy.<br/>Explore the moodboard, then find your pair below.</p></div>
         <div className="fit-picks-grid">
-          <article className="fit-pick fit-pick-wide"><img src={homepage.fitPickImages[0]} alt="Streetwear outfit inspiration"/><div><span>01 / THE OFF-DUTY FIT</span><h3>Easy layers.<br/>Strong silhouette.</h3><p>Keep the shape relaxed and let the sneakers do the talking.</p></div></article>
-          <article className="fit-pick"><img src={homepage.fitPickImages[1]} alt="Minimal watch detail"/><div><span>02 / ACCESSORIES</span><h3>Details that<br/>feel like you.</h3><p>Clean, useful, never too much.</p></div></article>
-          <article className="fit-pick"><img src={homepage.fitPickImages[2]} alt="Everyday backpack"/><div><span>03 / EVERYDAY CARRY</span><h3>Take your<br/>own route.</h3><p>Built around the places your day takes you.</p></div></article>
+          <article className="fit-pick fit-pick-wide"><img src={homepage.fitPickImages[0]} alt="Streetwear outfit inspiration" loading="lazy" decoding="async"/><div><span>01 / THE OFF-DUTY FIT</span><h3>Easy layers.<br/>Strong silhouette.</h3><p>Keep the shape relaxed and let the sneakers do the talking.</p></div></article>
+          <article className="fit-pick"><img src={homepage.fitPickImages[1]} alt="Minimal watch detail" loading="lazy" decoding="async"/><div><span>02 / ACCESSORIES</span><h3>Details that<br/>feel like you.</h3><p>Clean, useful, never too much.</p></div></article>
+          <article className="fit-pick"><img src={homepage.fitPickImages[2]} alt="Everyday backpack" loading="lazy" decoding="async"/><div><span>03 / EVERYDAY CARRY</span><h3>Take your<br/>own route.</h3><p>Built around the places your day takes you.</p></div></article>
         </div>
         <div className="fit-picks-bottom"><span>STYLE IS PERSONAL. THIS IS JUST A STARTING POINT.</span><span>NOIRKNULL® — 2026</span></div>
       </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
       <div className="shop-body"><div className="shop-mobile-controls"><label className="shop-mobile-search"><Search size={16}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search products..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={14}/></button>}</label><div className="shop-mobile-categories">{categories.map(category => <button key={category} className={activeCategory===category?"active":""} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}</div><label className="shop-mobile-sort"><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)}><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}<div className="filter-note"><span>NOIRKNULL — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
-      <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind}/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
+      <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
       <section className="shop-editorial reveal">
         <div className="shop-editorial-copy">
@@ -305,8 +305,8 @@ export default function App() {
           <div className="editorial-ring editorial-ring-a"/><div className="editorial-ring editorial-ring-b"/>
           <span className="editorial-vertical">FORM / FUNCTION / FEELING</span>
           <img className="editorial-main-sneaker" src={homepage.editorialMainImage} alt="Red sneaker styled for the Noirknull collection"/>
-          <div className="editorial-float-card editorial-accessory-one"><img src={homepage.editorialAccessoryImages[0]} alt="Minimal everyday watch accessory"/><span>THE DAILY DETAIL <b>01</b></span></div>
-          <div className="editorial-float-card editorial-accessory-two"><img src={homepage.editorialAccessoryImages[1]} alt="Minimal streetwear backpack"/><span>CARRY YOUR WORLD <b>02</b></span></div>
+          <div className="editorial-float-card editorial-accessory-one"><img src={homepage.editorialAccessoryImages[0]} alt="Minimal everyday watch accessory" loading="lazy" decoding="async"/><span>THE DAILY DETAIL <b>01</b></span></div>
+          <div className="editorial-float-card editorial-accessory-two"><img src={homepage.editorialAccessoryImages[1]} alt="Minimal streetwear backpack" loading="lazy" decoding="async"/><span>CARRY YOUR WORLD <b>02</b></span></div>
           <div className="editorial-art-stamp">STYLE<small>STUDY 001</small></div>
           <span className="editorial-orbit-label">EVERYDAY / UNCOMMON ↗</span>
         </div>
@@ -331,7 +331,7 @@ export default function App() {
               <div className="product-glass-product-label"><span>{selectedProduct.category || (selectedProduct.productType === "watch" ? "WATCHES" : selectedProduct.productType === "apparel" ? "APPAREL" : selectedProduct.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</span><strong>{selectedProduct.name}</strong></div>
               <span className="product-image-index">{String(selectedImageIndex + 1).padStart(2, "0")} / {String(selectedProductImages.length).padStart(2, "0")}</span>
             </div>
-            {selectedProductImages.length > 1 && <div className="product-gallery-thumbs">{selectedProductImages.map((image, index) => <button key={index} className={index === selectedImageIndex ? "active" : ""} onClick={() => setSelectedImageIndex(index)} aria-label={`View product image ${index + 1}`}><img src={image} alt="" /></button>)}</div>}
+            {selectedProductImages.length > 1 && <div className="product-gallery-thumbs">{selectedProductImages.map((image, index) => <button key={index} className={index === selectedImageIndex ? "active" : ""} onClick={() => setSelectedImageIndex(index)} aria-label={`View product image ${index + 1}`}><img src={image} alt="" loading="lazy" decoding="async" /></button>)}</div>}
           </div>
           <div className="product-gallery-note"><span>SWIPE TO EXPLORE.</span><span>FORM FOLLOWS FEELING ↗</span></div>
         </div>
@@ -369,7 +369,7 @@ export default function App() {
           <div className="product-number"><span>NOIRKNULL / 2026</span><span>0{selectedProduct.id} — 04</span></div>
         </div>
       </div>
-      <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{products.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind}/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} ↗</small></button>)}</div></section>
+      <section className="related-products"><div><p className="kicker">KEEP EXPLORING</p><h2>More from the<br/><em>first drop.</em></h2></div><div className="related-grid">{products.filter((shoe) => shoe.id !== selectedProduct.id).slice(0,3).map((shoe) => <button key={shoe.id} className="related-card" onClick={() => openProduct(shoe)}><img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/><span>{shoe.name} <b>{money(shoe.price)}</b></span><small>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} ↗</small></button>)}</div></section>
     </main>}
     {checkoutOpen && <Checkout cart={cart} onBack={() => { setCheckoutOpen(false); setCartOpen(true); }} onComplete={() => { setCheckoutOpen(false); setCart([]); setCheckoutStep("details"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />}
     {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
@@ -411,7 +411,7 @@ export default function App() {
               <div className="product-rail-track">
                 {[...bestSellers, ...bestSellers].map((shoe, index) => <article className="product-rail-card" key={`best-${shoe.id}-${index}`}>
                   <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
-                    <img src={shoe.image} alt={shoe.kind}/>
+                    <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
                     <div className="product-rail-status"><span>BEST SELLER</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
                     <span className="product-rail-index">{String((index % bestSellers.length) + 1).padStart(2, "0")} / {String(bestSellers.length).padStart(2, "0")}</span>
                   </button>
@@ -437,7 +437,7 @@ export default function App() {
               <div className="product-rail-track product-rail-track-reverse">
                 {[...newDrops, ...newDrops].map((shoe, index) => <article className="product-rail-card" key={`new-${shoe.id}-${index}`}>
                   <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
-                    <img src={shoe.image} alt={shoe.kind}/>
+                    <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
                     <div className="product-rail-status product-rail-status-new"><span>NEW DROP</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
                     <span className="product-rail-index">{String((index % newDrops.length) + 1).padStart(2, "0")} / {String(newDrops.length).padStart(2, "0")}</span>
                   </button>
@@ -471,7 +471,7 @@ export default function App() {
             {[...eternalFits, ...eternalFits].map((fit, index) => (
               <article className="eternal-fit-card" key={`${fit.id}-${index}`}>
                 <div className="eternal-fit-image">
-                  <img src={fit.image} alt={fit.title}/>
+                  <img src={fit.image} alt={fit.title} loading="lazy" decoding="async"/>
                   <div className="eternal-fit-glass">
                     <span>{fit.meta || `0${index + 1} / ${String(eternalFits.length).padStart(2, "0")}`}</span>
                     <strong>{fit.title}</strong>
@@ -488,7 +488,7 @@ export default function App() {
       )}
 
       {homepage.showManifesto && <section className="manifesto" id="manifesto">
-        <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
+        <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow" loading="lazy" decoding="async"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
         <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button></div>
       </section>}
 
@@ -505,6 +505,6 @@ export default function App() {
 
     }
 
-    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind}/><div><p>{item.shoe.category || (item.shoe.productType === "watch" ? "WATCHES" : item.shoe.productType === "apparel" ? "APPAREL" : item.shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} · {item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
+    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind} loading="lazy" decoding="async"/><div><p>{item.shoe.category || (item.shoe.productType === "watch" ? "WATCHES" : item.shoe.productType === "apparel" ? "APPAREL" : item.shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} · {item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
   </div>;
 }
