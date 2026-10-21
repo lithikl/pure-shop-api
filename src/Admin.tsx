@@ -41,7 +41,7 @@ const emptyProduct = (): Shoe => ({
   tag: "",
   glassTint: "",
   isBestSeller: false,
-  isNewDrop: false,
+  isNewDrop: true,
   description: "",
 });
 
@@ -203,6 +203,18 @@ export default function Admin() {
   const [adminError, setAdminError] = useState("");
 
   useEffect(() => {
+    const onCloudError = (event: Event) => {
+      const detail = (event as CustomEvent<{ status?: number }>).detail;
+      if (detail?.status !== 401) return;
+      localStorage.removeItem("noirknull:admin-token:v1");
+      setAuthenticated(false);
+      setAdminError("Your admin session expired. Please sign in again before saving.");
+    };
+    window.addEventListener("noirknull:cloud-error", onCloudError);
+    return () => window.removeEventListener("noirknull:cloud-error", onCloudError);
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
     (async () => {
       const cloudState = await hydrateFromCloud();
@@ -327,7 +339,8 @@ export default function Admin() {
       tone: editing.tone.trim(),
       tag: editing.tag?.trim(),
       isBestSeller: Boolean(editing.isBestSeller),
-      isNewDrop: Boolean(editing.isNewDrop),
+      isNewDrop: exists ? Boolean(editing.isNewDrop) : true,
+      tag: exists ? editing.tag?.trim() : (editing.tag?.trim() || "NEW DROP"),
       description: editing.description?.trim() || "",
       sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String) : defaultSizesForProduct(editing),
     };
