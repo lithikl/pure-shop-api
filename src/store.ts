@@ -120,7 +120,7 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
     let lastError: Error | null = null;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
-        const response = await fetch(cloudApi("/api/store"),
+        const response = await fetch(cloudApi("/api/store"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
