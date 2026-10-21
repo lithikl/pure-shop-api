@@ -60,6 +60,8 @@ export type CloudStoreResult = {
 
 const cloudSyncTimers = new Map<string, number>();
 let cloudWriteQueue: Promise<void> = Promise.resolve();
+let lastCloudHydration = 0;
+const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
 
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   try {
@@ -102,7 +104,10 @@ function applyCloudStore(data: CloudStore) {
   window.dispatchEvent(new Event("noirknull:categories"));
 }
 
-export async function hydrateFromCloud(): Promise<"synced" | "empty" | "unavailable"> {
+export async function hydrateFromCloud(force = false): Promise<"synced" | "empty" | "unavailable" | "throttled"> {
+  const now = Date.now();
+  if (!force && now - lastCloudHydration < CLOUD_HYDRATE_MIN_INTERVAL) return "throttled";
+  lastCloudHydration = now;
   const result = await getCloudStoreResult();
   if (!result.ok) return "unavailable";
   if (!result.exists || !result.data) return "empty";
@@ -115,7 +120,7 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
     let lastError: Error | null = null;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
-        const response = await fetch(cloudApi("/api/store"), {
+        const response = await fetch(cloudApi("/api/store"),
           method: "POST",
           headers: {
             "Content-Type": "application/json",
