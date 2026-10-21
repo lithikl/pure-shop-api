@@ -76,11 +76,11 @@ export default function App() {
     const syncHomepage = () => setHomepage(loadHomepageSettings());
     const syncCategories = () => setSavedCategories(loadCategories());
     let syncingCloud = false;
-    const syncCloud = async () => {
+    const syncCloud = async (force = false) => {
       if (syncingCloud || document.visibilityState === "hidden") return;
       syncingCloud = true;
       try {
-        const state = await hydrateFromCloud();
+        const state = await hydrateFromCloud(force);
         if (state !== "synced") return;
         setProducts(loadProducts());
         setSavedCategories(loadCategories());
@@ -102,8 +102,8 @@ export default function App() {
     window.addEventListener("storage", syncHomepage);
     const channel = (() => { try { return new BroadcastChannel("noirknull-store"); } catch { return null; } })();
     channel?.addEventListener("message", syncProducts);
-    const poll = window.setInterval(() => { void syncCloud(); }, 2000);
-    window.addEventListener("focus", syncCloud);
+    const refreshOnFocus = () => { void syncCloud(true); };
+    window.addEventListener("focus", refreshOnFocus);
     document.addEventListener("visibilitychange", syncCloud);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
@@ -117,8 +117,7 @@ export default function App() {
       window.removeEventListener("storage", syncHomepage);
       channel?.removeEventListener("message", syncProducts);
       channel?.close();
-      window.clearInterval(poll);
-      window.removeEventListener("focus", syncCloud);
+      window.removeEventListener("focus", refreshOnFocus);
       document.removeEventListener("visibilitychange", syncCloud);
     };
   }, []);
@@ -235,7 +234,7 @@ export default function App() {
   const newDrops = (taggedNewDrops.length ? taggedNewDrops : products.filter(shoe => !bestSellerIds.has(shoe.id))).slice(0, 10);
   const selectedProductImages = selectedProduct?.images?.length ? selectedProduct.images : selectedProduct ? [selectedProduct.image] : [];
   const visibleShoes = products.filter((shoe) => {
-    const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
+    const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""} ${shoe.category || ""} ${shoe.productType || ""} ${shoe.description || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
     const category = categoryName(shoe);
     const matchesCollection = collectionMode === "best" ? Boolean(shoe.isBestSeller) : collectionMode === "new" ? Boolean(shoe.isNewDrop) : true;
     return matchesSearch && matchesCollection && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
