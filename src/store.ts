@@ -136,7 +136,13 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
       }
       await new Promise(resolve => window.setTimeout(resolve, attempt * 300));
     }
-    console.error(lastError || new Error("Cloud store save failed"));
+    if (lastError) {
+      console.error(lastError);
+      const status = /Cloud store save failed \((\d+)\)/.exec(lastError.message)?.[1];
+      window.dispatchEvent(new CustomEvent("noirknull:cloud-error", {
+        detail: { status: Number(status || 0), section },
+      }));
+    }
   });
   return cloudWriteQueue;
 }
