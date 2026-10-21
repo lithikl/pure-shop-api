@@ -327,25 +327,49 @@ export default function Admin() {
   };
 
   const saveProduct = () => {
-    if (!editing?.name.trim() || !editing.image.trim() || editing.price <= 0) return;
-    const normalized = {
+    if (!editing) return;
+
+    const name = editing.name.trim();
+    const image = editing.image.trim();
+    const price = Number(editing.price);
+
+    if (!name) {
+      setAdminError("Add a product name before saving.");
+      return;
+    }
+    if (!image) {
+      setAdminError("Upload a product image or paste an image URL before saving.");
+      return;
+    }
+    if (!Number.isFinite(price) || price <= 0) {
+      setAdminError("Enter a valid product price before saving.");
+      return;
+    }
+
+    const exists = products.some(p => p.id === editing.id);
+    const normalized: Shoe = {
       ...editing,
-      name: editing.name.trim(),
+      name,
+      price,
       productType: editing.productType || "shoes",
-      kind: productTypeLabel(editing.productType),
+      kind: productTypeLabel(editing.productType || "shoes"),
       category: editing.category?.trim() || "SHOES",
-      image: editing.image.trim(),
-      images: (editing.images?.length ? editing.images : [editing.image]).map((image) => image.trim()).filter(Boolean),
+      image,
+      images: (editing.images?.length ? editing.images : [image]).map((item) => item.trim()).filter(Boolean),
       tone: editing.tone.trim(),
-      tag: editing.tag?.trim(),
+      tag: exists ? editing.tag?.trim() : (editing.tag?.trim() || "NEW DROP"),
       isBestSeller: Boolean(editing.isBestSeller),
       isNewDrop: exists ? Boolean(editing.isNewDrop) : true,
-      tag: exists ? editing.tag?.trim() : (editing.tag?.trim() || "NEW DROP"),
       description: editing.description?.trim() || "",
-      sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String) : defaultSizesForProduct(editing),
+      sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String).filter(Boolean) : defaultSizesForProduct(editing),
     };
-    const exists = products.some(p => p.id === editing.id);
-    persistProducts(exists ? products.map(p => p.id === editing.id ? normalized : p) : [...products, normalized]);
+
+    persistProducts(
+      exists
+        ? products.map(product => product.id === editing.id ? normalized : product)
+        : [...products, normalized],
+    );
+    setAdminError("");
     setEditing(null);
   };
 
