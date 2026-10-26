@@ -265,7 +265,7 @@ export default function App() {
   if (isTrackOrder) return <TrackOrder />;
 
   return <div className="noir-site">
-    <div className="topline"><span>INDEPENDENT FOOTWEAR / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
+    <div className="topline"><span>SNEAKERS & ACCESSORIES / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
     <header className="noir-header liquid-glass-header">
       <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label="Open menu" aria-expanded={mobileMenuOpen}>☰</button>
       <nav className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
@@ -489,7 +489,7 @@ export default function App() {
 
       {homepage.showManifesto && <section className="manifesto" id="manifesto">
         <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow" loading="lazy" decoding="async"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
-        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is an independent footwear concept built around considered form, everyday comfort and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button></div>
+        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is a sneaker and accessories brand built around considered design, everyday utility and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button></div>
       </section>}
 
       {homepage.showDetails && <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
