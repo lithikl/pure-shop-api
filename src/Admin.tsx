@@ -22,6 +22,9 @@ import {
   hydrateFromCloud,
   defaultSizesForProduct,
   publishCloudSection,
+  setAdminToken,
+  getAdminToken,
+  clearAdminToken,
 } from "./store";
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -57,7 +60,7 @@ const readImage = (file: File) => new Promise<string>((resolve, reject) => {
 async function uploadMedia(file: File): Promise<string> {
   const form = new FormData();
   form.append("file", file);
-  const token = localStorage.getItem("noirknull:admin-token:v1");
+  const token = getAdminToken();
   const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/upload", {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -199,7 +202,7 @@ export default function Admin() {
   const [saved, setSaved] = useState(false);
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [tab, setTab] = useState<"orders" | "products" | "homepage" | "eternal" | "settings">("orders");
-  const [authenticated, setAuthenticated] = useState(() => Boolean(localStorage.getItem("noirknull:admin-token:v1")));
+  const [authenticated, setAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [adminBusy, setAdminBusy] = useState(false);
   const [adminError, setAdminError] = useState("");
@@ -223,9 +226,10 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
+    if (!authenticated) return;
     let mounted = true;
     (async () => {
-      const cloudState = await hydrateFromCloud();
+      const cloudState = await hydrateFromCloud(true);
       if (!mounted) return;
       if (cloudState === "synced") {
         setProducts(loadProducts());
@@ -234,16 +238,21 @@ export default function Admin() {
         setEternalFits(loadEternalFits());
         setHomepage(loadHomepageSettings());
       } else if (cloudState === "empty") {
-        publishCloudSection("products", products);
-        publishCloudSection("categories", categories);
-        publishCloudSection("featured", featured);
-        publishCloudSection("eternalFits", eternalFits);
-        publishCloudSection("homepage", homepage);
-        publishCloudSection("categories", ["SHOES"]);
+        try {
+          await Promise.all([
+            publishCloudSection("products", products),
+            publishCloudSection("categories", categories),
+            publishCloudSection("featured", featured),
+            publishCloudSection("eternalFits", eternalFits),
+            publishCloudSection("homepage", homepage),
+          ]);
+        } catch {
+          // The cloud error listener displays the failure.
+        }
       }
     })();
     return () => { mounted = false; };
-  }, []);
+  }, [authenticated]);
 
   const featuredProducts = useMemo(() => featured.map(id => products.find(p => p.id === id)).filter(Boolean) as Shoe[], [featured, products]);
 
@@ -261,7 +270,7 @@ export default function Admin() {
       if (!response.ok || !payload?.token) {
         throw new Error(payload?.error || "Unable to sign in.");
       }
-      localStorage.setItem("noirknull:admin-token:v1", payload.token);
+      setAdminToken(payload.token);
       setAuthenticated(true);
       setAdminPassword("");
     } catch (error) {
@@ -272,12 +281,12 @@ export default function Admin() {
   };
 
   const logoutAdmin = () => {
-    localStorage.removeItem("noirknull:admin-token:v1");
+    clearAdminToken();
     setAuthenticated(false);
   };
 
   const flash = () => { setSaved(true); window.setTimeout(() => setSaved(false), 1400); };
-  const persistProducts = (next: Shoe[]) => {
+  const persistProducts = async (next: Shoe[]) => {
     const normalized = next.map(product => ({
       ...product,
       category: product.category?.trim() || "SHOES",
@@ -288,12 +297,18 @@ export default function Admin() {
       sizes: Array.isArray(product.sizes) ? product.sizes.map(String) : defaultSizesForProduct(product),
     }));
     setProducts(normalized);
-    saveProducts(normalized);
-    flash();
+    try {
+      await saveProducts(normalized);
+      setAdminError("");
+      flash();
+    } catch {
+      setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront.");
+      throw new Error("Cloud save failed");
+    }
   };
-  const persistFeatured = (next: number[]) => { setFeatured(next); saveFeatured(next); flash(); };
-  const persistHomepage = (next: HomepageSettings) => { setHomepage(next); saveHomepageSettings(next); flash(); };
-  const persistEternalFits = (next: EternalFit[]) => { setEternalFits(next); saveEternalFits(next); flash(); };
+  const persistFeatured = async (next: number[]) => { setFeatured(next); try { await saveFeatured(next); setAdminError(""); flash(); } catch { setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront."); } };
+  const persistHomepage = async (next: HomepageSettings) => { setHomepage(next); try { await saveHomepageSettings(next); setAdminError(""); flash(); } catch { setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront."); } };
+  const persistEternalFits = async (next: EternalFit[]) => { setEternalFits(next); try { await saveEternalFits(next); setAdminError(""); flash(); } catch { setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront."); } };
 
   const deleteCategory = (category: string) => {
     if (category.toLowerCase() === "shoes") {
@@ -367,27 +382,31 @@ export default function Admin() {
       tone: editing.tone.trim(),
       tag: exists ? editing.tag?.trim() : (editing.tag?.trim() || "NEW DROP"),
       isBestSeller: Boolean(editing.isBestSeller),
-      isNewDrop: exists ? Boolean(editing.isNewDrop) : true,
+      isNewDrop: Boolean(editing.isNewDrop),
       description: editing.description?.trim() || "",
       sizes: Array.isArray(editing.sizes) ? editing.sizes.map(String).filter(Boolean) : defaultSizesForProduct(editing),
     };
 
-    persistProducts(
-      exists
-        ? products.map(product => product.id === editing.id ? normalized : product)
-        : [...products, normalized],
-    );
-    setAdminError("");
-    setEditing(null);
+    try {
+      await persistProducts(
+        exists
+          ? products.map(product => product.id === editing.id ? normalized : product)
+          : [...products, normalized],
+      );
+      setAdminError("");
+      setEditing(null);
+    } catch {
+      // persistProducts already shows the error.
+    }
   };
 
   const deleteProduct = (id: number) => {
-    persistProducts(products.filter(p => p.id !== id));
-    persistFeatured(featured.filter(x => x !== id));
+    void persistProducts(products.filter(p => p.id !== id));
+    void persistFeatured(featured.filter(x => x !== id));
     if (editing?.id === id) setEditing(null);
   };
 
-  const toggleFeatured = (id: number) => persistFeatured(featured.includes(id) ? featured.filter(x => x !== id) : [...featured, id]);
+  const toggleFeatured = (id: number) => { void persistFeatured(featured.includes(id) ? featured.filter(x => x !== id) : [...featured, id]); };
 
   const moveFeatured = (id: number, direction: -1 | 1) => {
     const index = featured.indexOf(id);
@@ -395,19 +414,19 @@ export default function Admin() {
     if (index < 0 || target < 0 || target >= featured.length) return;
     const next = [...featured];
     [next[index], next[target]] = [next[target], next[index]];
-    persistFeatured(next);
+    void persistFeatured(next);
   };
 
   const saveEternalFit = () => {
     if (!editingFit?.image.trim() || !editingFit.title.trim()) return;
     const normalized = { ...editingFit, image: editingFit.image.trim(), title: editingFit.title.trim(), meta: editingFit.meta?.trim(), caption: editingFit.caption?.trim() };
     const exists = eternalFits.some(fit => fit.id === editingFit.id);
-    persistEternalFits(exists ? eternalFits.map(fit => fit.id === editingFit.id ? normalized : fit) : [...eternalFits, normalized]);
+    void persistEternalFits(exists ? eternalFits.map(fit => fit.id === editingFit.id ? normalized : fit) : [...eternalFits, normalized]);
     setEditingFit(null);
   };
 
   const deleteEternalFit = (id: number) => {
-    persistEternalFits(eternalFits.filter(fit => fit.id !== id));
+    void persistEternalFits(eternalFits.filter(fit => fit.id !== id));
     if (editingFit?.id === id) setEditingFit(null);
   };
 
@@ -417,17 +436,17 @@ export default function Admin() {
     if (index < 0 || target < 0 || target >= eternalFits.length) return;
     const next = [...eternalFits];
     [next[index], next[target]] = [next[target], next[index]];
-    persistEternalFits(next);
+    void persistEternalFits(next);
   };
 
   const resetAll = () => {
-    persistProducts(DEFAULT_SHOES);
+    void persistProducts(DEFAULT_SHOES);
     setCategories(["SHOES"]);
-    saveCategories(["SHOES"]);
-    publishCloudSection("categories", ["SHOES"]);
-    persistFeatured(DEFAULT_SHOES.map(p => p.id));
-    persistEternalFits(DEFAULT_ETERNAL_FITS);
-    persistHomepage(DEFAULT_HOMEPAGE);
+    void saveCategories(["SHOES"]);
+    void publishCloudSection("categories", ["SHOES"]);
+    void persistFeatured(DEFAULT_SHOES.map(p => p.id));
+    void persistEternalFits(DEFAULT_ETERNAL_FITS);
+    void persistHomepage(DEFAULT_HOMEPAGE);
     setEditing(null);
     setEditingFit(null);
   };
