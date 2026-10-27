@@ -42,7 +42,19 @@ const FEATURED_KEY = "noirknull:featured:v1";
 const ETERNAL_FITS_KEY = "noirknull:eternal-fits:v1";
 const HOMEPAGE_KEY = "noirknull:homepage:v1";
 const CATEGORIES_KEY = "noirknull:categories:v1";
-const ADMIN_TOKEN_KEY = "noirknull:admin-token:v1";
+let adminToken: string | null = null;
+
+export function setAdminToken(token: string) {
+  adminToken = token;
+}
+
+export function getAdminToken() {
+  return adminToken;
+}
+
+export function clearAdminToken() {
+  adminToken = null;
+}
 
 type CloudStore = {
   products?: Shoe[];
@@ -58,7 +70,6 @@ export type CloudStoreResult = {
   data: CloudStore | null;
 };
 
-const cloudSyncTimers = new Map<string, number>();
 let cloudWriteQueue: Promise<void> = Promise.resolve();
 let lastCloudHydration = 0;
 const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
@@ -67,15 +78,11 @@ export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   try {
     const response = await fetch(cloudApi(`/api/store?ts=${Date.now()}`), {
       cache: "no-store",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: { Accept: "application/json" },
     });
     let payload: any = null;
     try { payload = await response.json(); } catch { payload = null; }
-    if (!response.ok || !payload?.ok) {
-      return { ok: false, exists: false, data: null };
-    }
+    if (!response.ok || !payload?.ok) return { ok: false, exists: false, data: null };
     return {
       ok: true,
       exists: Boolean(payload.exists),
@@ -116,7 +123,14 @@ export async function hydrateFromCloud(force = false): Promise<"synced" | "empty
 }
 
 async function writeCloudSection(section: keyof CloudStore, value: unknown) {
-  cloudWriteQueue = cloudWriteQueue.then(async () => {
+  const token = getAdminToken();
+  if (!token) {
+    const error = new Error("Admin authentication required before saving to cloud.");
+    window.dispatchEvent(new CustomEvent("noirknull:cloud-error", { detail: { status: 401, section } }));
+    throw error;
+  }
+
+  const queuedWrite = cloudWriteQueue.then(async () => {
     let lastError: Error | null = null;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
@@ -124,7 +138,7 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(localStorage.getItem(ADMIN_TOKEN_KEY) ? { Authorization: `Bearer ${localStorage.getItem(ADMIN_TOKEN_KEY)}` } : {}),
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ section, value }),
         });
@@ -136,28 +150,18 @@ async function writeCloudSection(section: keyof CloudStore, value: unknown) {
       }
       await new Promise(resolve => window.setTimeout(resolve, attempt * 300));
     }
-    if (lastError) {
-      console.error(lastError);
-      const status = /Cloud store save failed \((\d+)\)/.exec(lastError.message)?.[1];
-      window.dispatchEvent(new CustomEvent("noirknull:cloud-error", {
-        detail: { status: Number(status || 0), section },
-      }));
-    }
+
+    const status = /Cloud store save failed \((\d+)\)/.exec(lastError?.message || "")?.[1];
+    window.dispatchEvent(new CustomEvent("noirknull:cloud-error", { detail: { status: Number(status || 0), section } }));
+    throw lastError || new Error("Cloud store save failed");
   });
-  return cloudWriteQueue;
+
+  cloudWriteQueue = queuedWrite.catch(() => undefined);
+  return queuedWrite;
 }
 
 export function publishCloudSection(section: keyof CloudStore, value: unknown) {
-  const key = String(section);
-  const previous = cloudSyncTimers.get(key);
-  if (previous) window.clearTimeout(previous);
-
-  const timer = window.setTimeout(() => {
-    cloudSyncTimers.delete(key);
-    void writeCloudSection(section, value);
-  }, 120);
-
-  cloudSyncTimers.set(key, timer);
+  return writeCloudSection(section, value);
 }
 
 export type HomepageSettings = {
@@ -252,7 +256,7 @@ export function saveCategories(categories: string[]) {
   const normalized = Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean))).sort();
   localStorage.setItem(CATEGORIES_KEY, JSON.stringify(normalized));
   window.dispatchEvent(new Event("noirknull:categories"));
-  publishCloudSection("categories", normalized);
+  return publishCloudSection("categories", normalized);
 }
 
 function inferProductType(product: Shoe): ProductType {
@@ -287,7 +291,7 @@ export function loadProducts(): Shoe[] {
   } catch { return DEFAULT_SHOES; }
 }
 
-export function saveProducts(products: Shoe[]) {
+export async function saveProducts(products: Shoe[]) {
   localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
   localStorage.setItem(PRODUCTS_KEY + ":updated", String(Date.now()));
   const categories = Array.from(new Set(products.map((p) => p.category?.trim()).filter(Boolean) as string[]));
@@ -298,8 +302,8 @@ export function saveProducts(products: Shoe[]) {
   try { window.dispatchEvent(new StorageEvent("storage", { key: PRODUCTS_KEY })); } catch {}
   try { new BroadcastChannel("noirknull-store").postMessage({ type: "products" }); } catch {}
   window.dispatchEvent(new Event("noirknull:categories"));
-  publishCloudSection("products", products);
-  publishCloudSection("categories", mergedCategories);
+  await publishCloudSection("products", products);
+  await publishCloudSection("categories", mergedCategories);
 }
 
 export function loadFeatured(): number[] {
@@ -314,7 +318,7 @@ export function loadFeatured(): number[] {
 export function saveFeatured(ids: number[]) {
   localStorage.setItem(FEATURED_KEY, JSON.stringify(ids));
   window.dispatchEvent(new Event("noirknull:featured"));
-  publishCloudSection("featured", ids);
+  return publishCloudSection("featured", ids);
 }
 
 
@@ -330,7 +334,7 @@ export function loadEternalFits(): EternalFit[] {
 export function saveEternalFits(fits: EternalFit[]) {
   localStorage.setItem(ETERNAL_FITS_KEY, JSON.stringify(fits));
   window.dispatchEvent(new Event("noirknull:eternal-fits"));
-  publishCloudSection("eternalFits", fits);
+  return publishCloudSection("eternalFits", fits);
 }
 
 
@@ -351,5 +355,5 @@ export function loadHomepageSettings(): HomepageSettings {
 export function saveHomepageSettings(settings: HomepageSettings) {
   localStorage.setItem(HOMEPAGE_KEY, JSON.stringify(settings));
   window.dispatchEvent(new Event("noirknull:homepage"));
-  publishCloudSection("homepage", settings);
+  return publishCloudSection("homepage", settings);
 }
