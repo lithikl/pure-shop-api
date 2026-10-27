@@ -310,7 +310,7 @@ export default function Admin() {
   const persistHomepage = async (next: HomepageSettings) => { setHomepage(next); try { await saveHomepageSettings(next); setAdminError(""); flash(); } catch { setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront."); } };
   const persistEternalFits = async (next: EternalFit[]) => { setEternalFits(next); try { await saveEternalFits(next); setAdminError(""); flash(); } catch { setAdminError("Cloud save failed. The change was kept in this browser, but it was NOT published to the storefront."); } };
 
-  const deleteCategory = (category: string) => {
+  const deleteCategory = async (category: string) => {
     if (category.toLowerCase() === "shoes") {
       alert("SHOES is the default fallback category and cannot be deleted.");
       return;
@@ -322,16 +322,20 @@ export default function Admin() {
       : product
     );
     setCategories(nextCategories);
-    saveCategories(nextCategories);
     setProducts(nextProducts);
-    saveProducts(nextProducts);
+    try {
+      await Promise.all([saveCategories(nextCategories), saveProducts(nextProducts)]);
+      setAdminError("");
+    } catch {
+      setAdminError("Cloud save failed. The category change was kept in this browser, but it was NOT published to the storefront.");
+    }
     if (editing?.category?.toLowerCase() === category.toLowerCase()) {
       setEditing(current => current ? { ...current, category: "SHOES" } : current);
     }
     flash();
   };
 
-  const addCategory = (useForCurrentProduct = false) => {
+  const addCategory = async (useForCurrentProduct = false) => {
     const normalized = newCategory.trim().replace(/\s+/g, " ");
     if (!normalized) return;
     const exists = categories.some(category => category.toLowerCase() === normalized.toLowerCase());
@@ -341,8 +345,12 @@ export default function Admin() {
     }
     const next = [...categories, normalized].sort((left, right) => left.localeCompare(right));
     setCategories(next);
-    saveCategories(next);
-    publishCloudSection("categories", next);
+    try {
+      await saveCategories(next);
+      setAdminError("");
+    } catch {
+      setAdminError("Cloud save failed. The new category was kept in this browser, but it was NOT published to the storefront.");
+    }
     if (useForCurrentProduct) setEditing(current => current ? { ...current, category: normalized, kind: current.kind?.trim() || normalized } : current);
     setNewCategory("");
     setCategoryComposerOpen(false);
