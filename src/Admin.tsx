@@ -212,7 +212,7 @@ export default function Admin() {
       const detail = (event as CustomEvent<{ status?: number; section?: string }>).detail;
       const status = Number(detail?.status || 0);
       if (status === 401) {
-        localStorage.removeItem("noirknull:admin-token:v1");
+        clearAdminToken();
         setAuthenticated(false);
         setAdminError("Your admin session expired. Please sign in again before saving.");
         return;
