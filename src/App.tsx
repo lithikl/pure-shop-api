@@ -58,7 +58,7 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const state = await hydrateFromCloud();
+      const state = await hydrateFromCloud(true);
       if (!mounted || state !== "synced") return;
       setProducts(loadProducts());
       setSavedCategories(loadCategories());
