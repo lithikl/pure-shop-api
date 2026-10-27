@@ -349,7 +349,7 @@ export default function Admin() {
     flash();
   };
 
-  const saveProduct = () => {
+  const saveProduct = async () => {
     if (!editing) return;
 
     const name = editing.name.trim();
