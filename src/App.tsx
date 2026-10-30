@@ -391,117 +391,227 @@ export default function App() {
 
       <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
-      {(homepage.showBestSellers || homepage.showNewDrops) && (bestSellers.length > 0 || newDrops.length > 0) && (
-        <section className="product-rails-section section-wrap" id="collection" aria-label="Best Sellers and New Drop">
-        <div className="product-rails-heading reveal">
+      <section className="homepage-categories section-wrap" id="categories" aria-label="Shop by category">
+        <div className="homepage-section-heading reveal">
           <div>
-            <p className="kicker">01 / THE EDIT</p>
-            <h2>Pick your<br/><em>next move.</em></h2>
+            <p className="kicker">01 / SHOP THE COLLECTION</p>
+            <h2>Find your<br/><em>category.</em></h2>
           </div>
-          <p className="section-intro">Two moving edits. Best sellers that keep earning their place, and the newest drop as it lands.<br/>Hover to pause. Open any pair and choose your size.</p>
+          <p className="section-intro">Start with what you came for. Explore the collection by category, then make it your own.<br/>Sneakers, watches, accessories and jackets.</p>
         </div>
-        <div className="product-rails-grid">
-          {homepage.showBestSellers && bestSellers.length > 0 && <section className="product-rail-panel product-rail-best">
-            <div className="product-rail-panel-head">
-              <div><p className="kicker">01 / THE MOST WANTED</p><h3>Best<br/><em>sellers.</em></h3></div>
-              <span>{bestSellers.length} OBJECTS <b>↗</b></span>
-            </div>
-            <div className="product-rail-shell">
-              <div className="product-rail-edge product-rail-edge-left"/>
-              <div className="product-rail-track">
-                {[...bestSellers, ...bestSellers].map((shoe, index) => <article className="product-rail-card" key={`best-${shoe.id}-${index}`}>
-                  <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
-                    <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
-                    <div className="product-rail-status"><span>BEST SELLER</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
-                    <span className="product-rail-index">{String((index % bestSellers.length) + 1).padStart(2, "0")} / {String(bestSellers.length).padStart(2, "0")}</span>
-                  </button>
-                  <div className="product-rail-info">
-                    <div><span>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
-                    <strong>{money(shoe.price)}</strong>
-                  </div>
-                  <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
-                </article>)}
+        <div className="homepage-category-grid">
+          {[
+            {
+              key: "SHOES",
+              label: "SHOES",
+              kicker: "01 / FOOTWEAR",
+              description: "Everyday silhouettes built around movement.",
+              image: products.find((shoe) => shoe.productType === "shoes")?.image || homepage.editorialMainImage,
+            },
+            {
+              key: "WATCHES",
+              label: "WATCHES",
+              kicker: "02 / TIME",
+              description: "Useful details with a quieter point of view.",
+              image: products.find((shoe) => shoe.productType === "watch" || /watch/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[0],
+            },
+            {
+              key: "ACCESSORIES",
+              label: "ACCESSORIES",
+              kicker: "03 / THE EXTRAS",
+              description: "The details that finish the whole feeling.",
+              image: products.find((shoe) => shoe.productType === "accessory" || /accessor|bag|wallet|cap|belt/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[1],
+            },
+            {
+              key: "JACKETS",
+              label: "JACKETS",
+              kicker: "04 / OUTER LAYER",
+              description: "Strong layers for wherever the day goes.",
+              image: products.find((shoe) => /jacket/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.fitPickImages[0],
+            },
+          ].map((category) => (
+            <button
+              key={category.key}
+              className="homepage-category-card reveal"
+              onClick={() => {
+                setSelectedProduct(null);
+                setShopOpen(true);
+                setCollectionMode(null);
+                setSearchTerm("");
+                setSortBy("featured");
+                setActiveCategory(category.key);
+                setMobileMenuOpen(false);
+                requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+              }}
+              aria-label={`Shop ${category.label}`}
+            >
+              <div className="homepage-category-image">
+                <img src={category.image} alt={category.label} loading="lazy" decoding="async"/>
+                <span className="homepage-category-index">{category.kicker}</span>
+                <span className="homepage-category-arrow"><ArrowUpRight size={18}/></span>
               </div>
-              <div className="product-rail-edge product-rail-edge-right"/>
-            </div>
-            <div className="product-rail-footer"><span>AUTOPLAY / HOVER TO PAUSE</span><a href="/best-sellers">VIEW ALL BEST SELLERS <ArrowRight size={14}/></a></div>
-          </section>}
-
-          {homepage.showNewDrops && newDrops.length > 0 && <section className="product-rail-panel product-rail-new">
-            <div className="product-rail-panel-head">
-              <div><p className="kicker">02 / JUST LANDED</p><h3>New<br/><em>drop.</em></h3></div>
-              <span>NEW IN <b>↗</b></span>
-            </div>
-            <div className="product-rail-shell">
-              <div className="product-rail-edge product-rail-edge-left"/>
-              <div className="product-rail-track product-rail-track-reverse">
-                {[...newDrops, ...newDrops].map((shoe, index) => <article className="product-rail-card" key={`new-${shoe.id}-${index}`}>
-                  <button className="product-rail-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
-                    <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
-                    <div className="product-rail-status product-rail-status-new"><span>NEW DROP</span>{shoe.tag && <b>{shoe.tag}</b>}</div>
-                    <span className="product-rail-index">{String((index % newDrops.length) + 1).padStart(2, "0")} / {String(newDrops.length).padStart(2, "0")}</span>
-                  </button>
-                  <div className="product-rail-info">
-                    <div><span>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</span><h4>{shoe.name}</h4><small>{shoe.tone}</small></div>
-                    <strong>{money(shoe.price)}</strong>
-                  </div>
-                  <button className="product-rail-buy" onClick={() => openProduct(shoe)}>SHOP NOW <ArrowUpRight size={14}/></button>
-                </article>)}
+              <div className="homepage-category-meta">
+                <div>
+                  <h3>{category.label}</h3>
+                  <p>{category.description}</p>
+                </div>
+                <span>SHOP ↗</span>
               </div>
-              <div className="product-rail-edge product-rail-edge-right"/>
-            </div>
-            <div className="product-rail-footer"><span>FRESH FROM THE STUDIO</span><button onClick={openShop}>SHOP THE DROP <ArrowRight size={14}/></button></div>
-          </section>}
+            </button>
+          ))}
         </div>
-        </section>
-      )}
+      </section>
 
-      {homepage.showEternalFits && (
-        <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
-        {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
-        <div className="eternal-fits-heading reveal">
-          <div>
-            <p className="kicker">02 / THE CAMPAIGN</p>
-            <h2>Eternal<br/><em>fits.</em></h2>
+      {homepage.showNewDrops && newDrops.length > 0 && (
+        <section className="homepage-products section-wrap" id="new-arrivals" aria-label="New arrivals">
+          <div className="homepage-section-heading reveal">
+            <div>
+              <p className="kicker">02 / JUST LANDED</p>
+              <h2>New<br/><em>arrivals.</em></h2>
+            </div>
+            <p className="section-intro">Fresh from the studio. The newest pieces to enter the NoirKnull collection.</p>
           </div>
-          <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Watch the pattern move behind the campaign.</p>
-        </div>
-        <div className="eternal-fits-stage">
-          <div className="eternal-fits-track">
-            {[...eternalFits, ...eternalFits].map((fit, index) => (
-              <article className="eternal-fit-card" key={`${fit.id}-${index}`}>
-                <div className="eternal-fit-image">
-                  <img src={fit.image} alt={fit.title} loading="lazy" decoding="async"/>
-                  <div className="eternal-fit-glass">
-                    <span>{fit.meta || `0${index + 1} / ${String(eternalFits.length).padStart(2, "0")}`}</span>
-                    <strong>{fit.title}</strong>
-                    {fit.caption && <small>{fit.caption}</small>}
+          <div className="homepage-products-grid">
+            {newDrops.slice(0, 6).map((shoe) => (
+              <article className="homepage-product-card reveal" key={shoe.id}>
+                <button className="homepage-product-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
+                  <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
+                  <span className="homepage-product-badge">NEW ARRIVAL</span>
+                  <span className="homepage-product-view">VIEW PRODUCT <ArrowUpRight size={14}/></span>
+                </button>
+                <div className="homepage-product-meta">
+                  <div>
+                    <span>{shoe.category || "NOIRKNULL"}</span>
+                    <h3>{shoe.name}</h3>
+                    <small>{shoe.tone}</small>
                   </div>
-                  
+                  <strong>{money(shoe.price)}</strong>
                 </div>
               </article>
             ))}
           </div>
-        </div>
-        <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
+          <div className="homepage-section-footer">
+            <span>FRESH FROM THE STUDIO</span>
+            <a href="/new-drop">VIEW ALL NEW ARRIVALS <ArrowRight size={14}/></a>
+          </div>
         </section>
       )}
 
-      {homepage.showManifesto && <section className="manifesto" id="manifesto">
-        <div className="manifesto-image"><img src={homepage.manifestoImage} alt="Minimal urban architecture in shadow" loading="lazy" decoding="async"/><span className="image-coordinate">13°04' N — 80°16' E</span></div>
-        <div className="manifesto-copy reveal"><p className="kicker">03 / THE NOIRKNULL POINT OF VIEW</p><h2>Less, by design.<br/><em>More, by nature.</em></h2><p>We believe what you wear should feel like you—not like everyone else. Noirknull is a sneaker and accessories brand built around considered design, everyday utility and the freedom to move your own way.</p><button className="underlined-link" onClick={() => goTo("details")}>THE THINKING BEHIND IT <ArrowRight size={16}/></button></div>
-      </section>}
+      {homepage.showBestSellers && bestSellers.length > 0 && (
+        <section className="homepage-products homepage-best-sellers section-wrap" id="best-sellers" aria-label="Best sellers">
+          <div className="homepage-section-heading reveal">
+            <div>
+              <p className="kicker">03 / THE MOST WANTED</p>
+              <h2>Best<br/><em>sellers.</em></h2>
+            </div>
+            <p className="section-intro">The pairs earning their place. Proven favourites, kept in motion.</p>
+          </div>
+          <div className="homepage-products-grid">
+            {bestSellers.slice(0, 6).map((shoe) => (
+              <article className="homepage-product-card reveal" key={shoe.id}>
+                <button className="homepage-product-image" onClick={() => openProduct(shoe)} aria-label={`View ${shoe.name}`}>
+                  <img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>
+                  <span className="homepage-product-badge best">BEST SELLER</span>
+                  <span className="homepage-product-view">VIEW PRODUCT <ArrowUpRight size={14}/></span>
+                </button>
+                <div className="homepage-product-meta">
+                  <div>
+                    <span>{shoe.category || "NOIRKNULL"}</span>
+                    <h3>{shoe.name}</h3>
+                    <small>{shoe.tone}</small>
+                  </div>
+                  <strong>{money(shoe.price)}</strong>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="homepage-section-footer">
+            <span>THE ONES PEOPLE KEEP COMING BACK TO</span>
+            <a href="/best-sellers">VIEW ALL BEST SELLERS <ArrowRight size={14}/></a>
+          </div>
+        </section>
+      )}
 
-      {homepage.showDetails && <section className="details section-wrap" id="details"><div className="details-heading reveal"><p className="kicker">04 / THE DETAILS MATTER</p><h2>Made for the<br/><em>in-between.</em></h2></div><div className="detail-list">
-        <div className="detail-row reveal"><span>01</span><h3>Everyday comfort</h3><p>Easy-wearing silhouettes made to keep pace with your day.</p><ArrowUpRight size={18}/></div>
-        <div className="detail-row reveal"><span>02</span><h3>Quiet statement</h3><p>Distinct shape, restrained details, nothing there by accident.</p><ArrowUpRight size={18}/></div>
-        <div className="detail-row reveal"><span>03</span><h3>Your own direction</h3><p>Not here to tell you where to go. Just what to go in.</p><ArrowUpRight size={18}/></div>
-      </div></section>}
+      <section className="homepage-reviews section-wrap" id="reviews" aria-label="Reviews">
+        <div className="homepage-section-heading reveal">
+          <div>
+            <p className="kicker">04 / REAL FEEDBACK</p>
+            <h2>What people<br/><em>say.</em></h2>
+          </div>
+          <p className="section-intro">No polished script. Just honest feedback from people who wear the brand.</p>
+        </div>
+        <div className="reviews-empty reveal">
+          <span>VERIFIED CUSTOMER REVIEWS</span>
+          <h3>YOUR WORDS WILL LIVE HERE.</h3>
+          <p>Reviews are ready to appear here from verified orders. Once your first customers leave feedback, their real notes can be published in this space.</p>
+          <div className="reviews-empty-line"><span>NOIRKNULL / COMMUNITY</span><span>01 / 01</span></div>
+        </div>
+      </section>
 
-      {homepage.showClosingBanner && <section className="closing-banner"><p className="kicker">YOUR MOVE.</p><h2>Find your<br/><em>own direction.</em></h2><button onClick={() => goTo("collection")}>EXPLORE THE DROP <ArrowRight size={17}/></button></section>}
+      {homepage.showEternalFits && (
+        <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
+          {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
+          <div className="eternal-fits-heading reveal">
+            <div>
+              <p className="kicker">05 / THE CAMPAIGN</p>
+              <h2>Eternal<br/><em>fits.</em></h2>
+            </div>
+            <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Watch the pattern move behind the campaign.</p>
+          </div>
+          <div className="eternal-fits-stage">
+            <div className="eternal-fits-track">
+              {[...eternalFits, ...eternalFits].map((fit, index) => (
+                <article className="eternal-fit-card" key={`${fit.id}-${index}`}>
+                  <div className="eternal-fit-image">
+                    <img src={fit.image} alt={fit.title} loading="lazy" decoding="async"/>
+                    <div className="eternal-fit-glass">
+                      <span>{fit.meta || `0${index + 1} / ${String(eternalFits.length).padStart(2, "0")}`}</span>
+                      <strong>{fit.title}</strong>
+                      {fit.caption && <small>{fit.caption}</small>}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
+        </section>
+      )}
+
+      <section className="about-contact" id="about-noirknull" aria-label="About NoirKnull and contact information">
+        <div className="about-noirknull-copy reveal">
+          <p className="kicker">06 / ABOUT NOIRKNULL</p>
+          <h2>Made to<br/><em>stand apart.</em></h2>
+          <p>NOIRKNULL is a sneakers and accessories brand built around considered design, everyday utility and the freedom to move your own way.</p>
+          <p className="about-signoff">SNEAKERS / WATCHES / ACCESSORIES / JACKETS<br/>NOIRKNULL® — 2026</p>
+        </div>
+        <div className="about-contact-card reveal" id="contact">
+          <div>
+            <p className="kicker">CONTACT</p>
+            <h3>Let's talk.</h3>
+            <p>For product questions, collaborations, orders or anything else, reach us directly.</p>
+          </div>
+          <div className="contact-links">
+            <a href="mailto:hello@noirknull.com"><span>EMAIL</span><strong>hello@noirknull.com</strong><ArrowUpRight size={16}/></a>
+            <a href="/track-order"><span>ORDERS</span><strong>TRACK AN ORDER</strong><ArrowUpRight size={16}/></a>
+          </div>
+        </div>
+      </section>
     </main>}
 
-    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}><div className="footer-main"><button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button><p>MOVE DIFFERENT.<br/>STAY YOURSELF.</p><div className="footer-nav"><button onClick={() => goTo("collection")}>SHOP THE DROP</button><button onClick={() => goTo("manifesto")}>OUR WORLD</button><a href="/track-order">TRACK ORDER ↗</a><a href="mailto:hello@noirknull.com">CONTACT ↗</a></div></div><div className="footer-legal"><span>© NOIRKNULL 2026</span><span>INDEPENDENT BY NATURE.</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div></footer>
+    {!checkoutOpen && <footer className={selectedProduct || shopOpen ? "noir-footer home-hidden" : "noir-footer"}>
+      <div className="footer-main">
+        <button className="noir-logo footer-wordmark" onClick={() => goTo("top")}>NoirKnull<span>®</span></button>
+        <p>SNEAKERS & ACCESSORIES.<br/>MADE TO STAND APART.</p>
+        <div className="footer-nav">
+          <button onClick={() => goTo("categories")}>SHOP CATEGORIES</button>
+          <button onClick={() => goTo("about-noirknull")}>ABOUT NOIRKNULL</button>
+          <a href="/track-order">TRACK ORDER ↗</a>
+          <a href="mailto:hello@noirknull.com">hello@noirknull.com ↗</a>
+        </div>
+      </div>
+      <div className="footer-legal"><span>© NOIRKNULL 2026</span><span>SNEAKERS / WATCHES / ACCESSORIES / JACKETS</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div>
+    </footer>
 
     }
 
