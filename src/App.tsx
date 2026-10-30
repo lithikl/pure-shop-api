@@ -233,11 +233,19 @@ export default function App() {
   const taggedNewDrops = products.filter((shoe) => Boolean(shoe.isNewDrop) || shoe.tag?.trim().toUpperCase() === "NEW DROP");
   const newDrops = (taggedNewDrops.length ? taggedNewDrops : products.filter(shoe => !bestSellerIds.has(shoe.id))).slice(0, 10);
   const selectedProductImages = selectedProduct?.images?.length ? selectedProduct.images : selectedProduct ? [selectedProduct.image] : [];
+  const matchesShopCategory = (shoe: Shoe, selected: string) => {
+    if (selected === "ALL") return true;
+    const text = `${shoe.name} ${shoe.kind} ${shoe.category || ""}`.toLowerCase();
+    if (selected === "SHOES") return shoe.productType === "shoes" || /shoe|sneaker|runner|court|street|essential/.test(text);
+    if (selected === "WATCHES") return shoe.productType === "watch" || /watch/.test(text);
+    if (selected === "ACCESSORIES") return shoe.productType === "accessory" || /accessor|bag|wallet|cap|belt/.test(text);
+    if (selected === "JACKETS") return /jacket/.test(text);
+    return categoryName(shoe).toUpperCase() === selected.toUpperCase();
+  };
   const visibleShoes = products.filter((shoe) => {
     const matchesSearch = `${shoe.name} ${shoe.kind} ${shoe.tone} ${shoe.tag || ""} ${shoe.category || ""} ${shoe.productType || ""} ${shoe.description || ""}`.toLowerCase().includes(searchTerm.trim().toLowerCase());
-    const category = categoryName(shoe);
     const matchesCollection = collectionMode === "best" ? Boolean(shoe.isBestSeller) : collectionMode === "new" ? Boolean(shoe.isNewDrop) : true;
-    return matchesSearch && matchesCollection && (activeCategory === "ALL" || category.toUpperCase() === activeCategory.toUpperCase());
+    return matchesSearch && matchesCollection && matchesShopCategory(shoe, activeCategory);
   }).sort((a,b) => sortBy === "price-low" ? a.price-b.price : sortBy === "price-high" ? b.price-a.price : sortBy === "name" ? a.name.localeCompare(b.name) : a.id-b.id);
   const add = (shoe: Shoe, size: string) => {
     setSelectedProduct(null);
