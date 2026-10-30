@@ -2721,3 +2721,166 @@ a{color:inherit}
   .shoe-hero{background:#121211}
   .hero-art{background:#151514}
 }
+
+
+/* ============================================
+   DARK THEME TEXT CORRECTIONS
+   Override remaining light-theme ink rules
+   ============================================ */
+
+/* Header / navigation */
+.liquid-glass-header .nav-primary,
+.liquid-glass-header .mobile-menu,
+.noir-header .nav-primary,
+.noir-header .noir-logo,
+.noir-header .nav-links button{
+  color:#f2efe7 !important;
+}
+.liquid-glass-header .nav-primary:hover,
+.noir-header .nav-primary:hover{
+  color:#ffffff !important;
+}
+
+/* Product page controls and information */
+.product-crumb button,
+.product-share-button,
+.product-glass-product-label strong,
+.product-add-button,
+.size-option,
+.product-information h1,
+.product-information h2,
+.product-information h3{
+  color:#f2efe7 !important;
+}
+.product-add-button{
+  background:#f2efe7 !important;
+  color:#0d0d0c !important;
+}
+.product-share-button{
+  background:rgba(255,255,255,.07) !important;
+  border-color:rgba(242,239,231,.16) !important;
+}
+.size-option:hover,
+.size-option.size-selected{
+  background:#f2efe7 !important;
+  color:#0d0d0c !important;
+}
+
+/* Shop controls */
+.shop-breadcrumb button,
+.shop-search input,
+.shop-sort select,
+.shop-empty h2,
+.shop-toolbar button,
+.shop-result-count,
+.shop-intro h1,
+.shop-intro p{
+  color:#f2efe7 !important;
+}
+.shop-search input::placeholder{color:#77746c !important}
+.shop-search,.shop-sort,.shop-filters,.shop-editorial{
+  color:#f2efe7;
+}
+
+/* Checkout */
+.checkout-progress span.active,
+.checkout-section h2,
+.checkout-summary h2,
+.checkout-review h3{
+  color:#f2efe7 !important;
+}
+.checkout-grid input,
+.checkout-grid select,
+.checkout-grid textarea,
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea{
+  color:#f2efe7 !important;
+  background:#1c1c1a !important;
+  border-color:#37352f !important;
+}
+.checkout-grid input::placeholder,
+.checkout-form input::placeholder,
+.checkout-form textarea::placeholder{
+  color:#77746c !important;
+}
+.checkout-option.selected{
+  color:#f2efe7 !important;
+  background:#1c1c1a !important;
+  border-color:#d72d28 !important;
+  box-shadow:inset 0 0 0 1px #d72d28 !important;
+}
+
+/* Product / collection secondary text */
+.product-accordion button,
+.related-card,
+.related-card span{
+  color:#f2efe7 !important;
+}
+.product-accordion p,
+.related-card small{
+  color:#96938a !important;
+}
+
+/* Glass / campaign text that previously inherited dark ink */
+.best-seller-glass,
+.best-seller-glass strong,
+.product-rail-panel-head>span b,
+.product-share-button{
+  color:#f2efe7 !important;
+}
+
+/* Homepage typography */
+.homepage-section-heading h2,
+.homepage-section-heading h2 em,
+.homepage-category-meta h3,
+.homepage-product-meta h3,
+.homepage-product-meta strong,
+.reviews-empty h3{
+  color:#f2efe7 !important;
+}
+
+/* About / contact */
+.about-noirknull-copy h2,
+.about-noirknull-copy h2 em,
+.about-contact-card h3,
+.contact-links a strong{
+  color:#f2efe7 !important;
+}
+
+/* Mobile navigation */
+@media(max-width:600px){
+  .nav-links .nav-primary,
+  .liquid-glass-header .nav-primary{
+    color:#f2efe7 !important;
+  }
+}
+
+/* Admin dark theme: eliminate leftover dark-on-dark text */
+.admin-page,
+.admin-page h1,
+.admin-page h2,
+.admin-page h3,
+.admin-page h4,
+.admin-page p,
+.admin-page label,
+.admin-page .admin-product-body h3,
+.admin-page .admin-product-body strong{
+  color:#f2efe7;
+}
+.admin-form-grid label>span,
+.admin-product-body small,
+.admin-product-body p{
+  color:#96938a !important;
+}
+.admin-form-grid input,
+.admin-form-grid select,
+.admin-form-grid textarea{
+  color:#f2efe7 !important;
+  background:#1c1c1a !important;
+  border-color:#37352f !important;
+}
+.admin-modal-head>button,
+.admin-card-actions button{
+  color:#f2efe7 !important;
+}
