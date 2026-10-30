@@ -2316,3 +2316,408 @@ textarea:focus-visible{
   .about-contact-card{min-height:400px}
   .contact-links a{grid-template-columns:64px 1fr 16px}
 }
+
+
+/* ============================================
+   NOIR GRAPHITE — DARK BRAND SYSTEM
+   Premium editorial / streetwear / liquid glass
+   ============================================ */
+:root{
+  --ink:#0d0d0c;
+  --paper:#0d0d0c;
+  --surface:#151514;
+  --elevated:#1c1c1a;
+  --red:#d72d28;
+  --muted:#96938a;
+  --line:#2b2a27;
+  --soft-line:#37352f;
+  --cream:#f2efe7;
+  --mono:'DM Mono',monospace;
+  color:#f2efe7;
+  background:#0d0d0c;
+}
+html,body,#root{background:#0d0d0c;color:#f2efe7}
+body{color:#f2efe7}
+a{color:inherit}
+::selection{background:#d72d28;color:#f7f3eb}
+
+.topline{
+  background:#0d0d0c;
+  color:#f2efe7;
+  border-bottom:1px solid #2b2a27;
+}
+.topline span:last-child{color:#96938a}
+
+.noir-header{
+  background:rgba(13,13,12,.88);
+  color:#f2efe7;
+  border-bottom:1px solid rgba(242,239,231,.12);
+  backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+}
+.nav-links button,.footer-nav button,.footer-nav a{color:#c9c6bd}
+.nav-links button:hover,.footer-nav button:hover,.footer-nav a:hover{color:#f2efe7}
+.noir-logo{color:#f2efe7}
+.nav-links .nav-primary:after{background:#d72d28}
+.bag-button{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+.bag-button b{color:#69675f}
+
+.shoe-hero{
+  background:#121211;
+  color:#f2efe7;
+}
+.hero-copy .kicker,
+.hero-index,
+.hero-side-note{color:#96938a}
+.hero-lower p{color:#aaa79e}
+.circle-link{
+  border-color:#4a4841;
+  color:#f2efe7;
+}
+.circle-link:hover{background:#f2efe7;color:#0d0d0c}
+.hero-art{
+  background:#151514;
+}
+.hero-art:before{
+  background:radial-gradient(ellipse at 52% 48%,#2c2b27 0,transparent 58%);
+}
+.floating-shoe{
+  mix-blend-mode:normal;
+  filter:drop-shadow(0 35px 25px rgba(0,0,0,.48));
+}
+.orbit{border-color:#3a3832}
+.orbit-two{border-color:#4a4740}
+.hero-stamp{color:#f2efe7}
+.hero-stamp small,.art-caption{color:#96938a}
+
+.ticker{
+  background:#d72d28;
+  color:#f8f4eb;
+}
+
+.home-content,
+.collection,
+.homepage-categories,
+.homepage-products,
+.homepage-reviews,
+.about-contact{
+  background:#0d0d0c;
+  color:#f2efe7;
+}
+.section-intro{color:#96938a}
+.section-top h2,.homepage-section-heading h2{color:#f2efe7}
+.homepage-section-heading .kicker{color:#96938a}
+
+.shoe-grid,.homepage-products-grid{background:transparent}
+.shoe-photo,
+.homepage-product-image,
+.homepage-category-image{
+  background:#1c1c1a;
+}
+.shoe-photo img,
+.homepage-product-image img,
+.homepage-category-image img{
+  mix-blend-mode:normal;
+}
+.shoe-tag,
+.homepage-product-badge{
+  background:rgba(13,13,12,.82);
+  color:#f2efe7;
+  border:1px solid rgba(242,239,231,.12);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.quick-add{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+.shoe-info p,
+.shoe-info span,
+.homepage-product-meta>div>span,
+.homepage-product-meta small{color:#96938a}
+.shoe-info h3,.shoe-info strong,
+.homepage-product-meta h3,
+.homepage-product-meta strong{color:#f2efe7}
+.collection-bottom,
+.homepage-section-footer{border-color:#2b2a27;color:#96938a}
+.collection-bottom button,
+.homepage-section-footer a{color:#f2efe7}
+
+.homepage-category-card,
+.homepage-product-card,
+.reviews-empty{
+  color:#f2efe7;
+}
+.homepage-category-card{
+  background:#151514;
+  border:1px solid #2b2a27;
+}
+.homepage-category-card:hover{
+  border-color:#4a4740;
+}
+.homepage-category-meta{
+  background:#151514;
+  border-top:1px solid #2b2a27;
+}
+.homepage-category-meta h3{color:#f2efe7}
+.homepage-category-meta p{color:#96938a}
+.homepage-category-meta>span{color:#f2efe7}
+.homepage-category-arrow{
+  background:rgba(13,13,12,.78);
+  color:#f2efe7;
+  border:1px solid rgba(242,239,231,.12);
+}
+.homepage-product-card{border-color:transparent}
+.homepage-product-view{
+  background:rgba(13,13,12,.84);
+  color:#f2efe7;
+  border:1px solid rgba(242,239,231,.12);
+  backdrop-filter:blur(14px);
+}
+.homepage-products .homepage-products-grid .homepage-product-card:hover .homepage-product-image img{
+  transform:scale(1.045);
+}
+
+.reviews-empty{
+  background:#151514;
+  border:1px solid #2b2a27;
+}
+.reviews-empty>span,
+.reviews-empty-line{color:#96938a}
+.reviews-empty h3{color:#f2efe7}
+.reviews-empty p{color:#aaa79e}
+.reviews-empty-line{border-top-color:#2b2a27}
+
+.eternal-fits{
+  background:#10100f;
+  color:#f2efe7;
+  border-top:1px solid #2b2a27;
+  border-bottom:1px solid #2b2a27;
+}
+.eternal-fits .kicker,.eternal-fits .section-intro,
+.eternal-fits-footer{color:#96938a}
+.eternal-fit-image{background:#1c1c1a}
+.eternal-fit-image img{filter:saturate(.92) contrast(1.02)}
+.eternal-fit-glass{
+  background:linear-gradient(135deg,rgba(21,21,20,.72),rgba(28,28,26,.32));
+  border:1px solid rgba(242,239,231,.15);
+  color:#f2efe7;
+  backdrop-filter:blur(22px) saturate(145%);
+  -webkit-backdrop-filter:blur(22px) saturate(145%);
+}
+.eternal-fit-glass span,.eternal-fit-glass small{color:#96938a}
+
+.about-contact{
+  background:#151514;
+  border-top:1px solid #2b2a27;
+}
+.about-noirknull-copy h2,
+.about-contact-card h3{color:#f2efe7}
+.about-noirknull-copy>p:not(.kicker),
+.about-signoff,
+.about-contact-card>div>p:not(.kicker){color:#aaa79e}
+.about-contact-card{
+  background:#1c1c1a;
+  border:1px solid #2b2a27;
+}
+.contact-links a{
+  border-top-color:#37352f;
+  color:#f2efe7;
+}
+.contact-links a:hover{background:#151514}
+.contact-links span{color:#96938a}
+
+.noir-footer{
+  background:#090908;
+  color:#f2efe7;
+  border-top:1px solid #2b2a27;
+}
+.footer-main>p,.footer-nav button,.footer-nav a{color:#96938a}
+.footer-legal{border-top-color:#2b2a27;color:#77746c}
+.footer-wordmark{color:#f2efe7}
+
+.cart-backdrop{background:rgba(0,0,0,.68)}
+.cart-drawer{
+  background:#151514;
+  color:#f2efe7;
+  border-left:1px solid #2b2a27;
+}
+.cart-head,.bag-item{border-color:#2b2a27}
+.cart-head h2{color:#f2efe7}
+.cart-head h2 span,.empty-bag p,.bag-item p,.bag-bottom>p{color:#96938a}
+.bag-item img{mix-blend-mode:normal;background:#1c1c1a}
+.empty-bag button,.bag-bottom>button{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+
+.product-page{
+  background:#0d0d0c;
+  color:#f2efe7;
+}
+.product-crumb{border-bottom-color:#2b2a27;color:#96938a}
+.product-crumb button{
+  background:rgba(255,255,255,.07);
+  color:#f2efe7;
+  border-color:rgba(242,239,231,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 28px rgba(0,0,0,.2);
+}
+.product-main-image{
+  background:radial-gradient(circle at 50% 48%,#2b2a26 0,transparent 62%),linear-gradient(135deg,#1c1c1a,#151514);
+  box-shadow:inset 0 0 0 1px #2b2a27;
+}
+.product-main-image img{mix-blend-mode:normal}
+.product-glass-product-label{
+  background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border-color:rgba(242,239,231,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 28px rgba(0,0,0,.24);
+}
+.product-glass-product-label span,
+.product-tone,
+.product-delivery-note{color:#96938a}
+.product-glass-product-label strong,
+.product-information h1,.product-price-line strong{color:#f2efe7}
+.product-description{color:#aaa79e}
+.product-add-button{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+.product-accordion{border-top-color:#2b2a27}
+.product-accordion:last-child{border-bottom-color:#2b2a27}
+.product-accordion button,.product-accordion p{color:#f2efe7}
+.product-accordion p{color:#aaa79e}
+.related-products{
+  background:#151514;
+  color:#f2efe7;
+  border-top:1px solid #2b2a27;
+}
+.related-card{
+  background:#1c1c1a;
+  border:1px solid #2b2a27;
+  color:#f2efe7;
+}
+.related-card img{mix-blend-mode:normal;background:#151514}
+.related-card small{color:#96938a}
+
+.shop-page{
+  background:#0d0d0c;
+  color:#f2efe7;
+}
+.shop-page-top,.shop-toolbar,.shop-body,.shop-bottom-note{
+  border-color:#2b2a27;
+}
+.shop-breadcrumb,.shop-result-count,.shop-editorial-copy p,
+.shop-empty p,.shop-bottom-note,.shop-sort select,
+.shop-search input{color:#96938a}
+.shop-intro h1,.shop-intro p,
+.shop-toolbar button,.shop-search input{color:#f2efe7}
+.shop-search,.shop-sort,.shop-filters,.shop-editorial{
+  background:#151514;
+  border-color:#2b2a27;
+}
+.shop-search input,.shop-sort select{
+  background:transparent;
+  border-color:#2b2a27;
+}
+.category-filter{
+  background:#151514;
+  color:#96938a;
+  border-color:#2b2a27;
+}
+.category-filter.active,.category-filter:hover{
+  background:#f2efe7;
+  color:#0d0d0c;
+  border-color:#f2efe7;
+}
+.shop-product-card{
+  background:#151514;
+  border-color:#2b2a27;
+}
+.shop-product-image{
+  background:#1c1c1a;
+}
+.shop-product-image img{mix-blend-mode:normal}
+.shop-product-meta{color:#f2efe7}
+.shop-product-meta span,.shop-product-meta small{color:#96938a}
+.shop-view-link{color:#f2efe7}
+
+.checkout-page{
+  background:#0d0d0c;
+  color:#f2efe7;
+}
+.checkout-shell,.checkout-section,.checkout-summary,
+.checkout-summary-sticky{
+  background:#151514;
+  border-color:#2b2a27;
+}
+.checkout-header,.checkout-section-head,.checkout-review,
+.checkout-progress{border-color:#2b2a27}
+.checkout-back,.checkout-section-head span,.checkout-payment-note,
+.checkout-validation,.checkout-terms,.checkout-summary p{color:#96938a}
+.checkout-section h2,.checkout-summary h2,.checkout-review h3{color:#f2efe7}
+.checkout-option{
+  background:#1c1c1a;
+  border-color:#2b2a27;
+  color:#f2efe7;
+}
+.checkout-option.selected{border-color:#d72d28}
+.checkout-primary{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+.checkout-form input,.checkout-form select,.checkout-form textarea{
+  background:#1c1c1a;
+  color:#f2efe7;
+  border-color:#37352f;
+}
+.checkout-form input::placeholder,.checkout-form textarea::placeholder{color:#69675f}
+.checkout-success{
+  background:#151514;
+  border-color:#2b2a27;
+  color:#f2efe7;
+}
+
+.admin-page{
+  background:#0d0d0c;
+  color:#f2efe7;
+}
+.admin-sidebar,.admin-topbar,.admin-section,.admin-modal{
+  background:#151514;
+  border-color:#2b2a27;
+}
+.admin-main,.admin-home-wide{background:#0d0d0c}
+.admin-brand,.admin-section-head h2,.admin-product-body h3{color:#f2efe7}
+.admin-status,.admin-warning,.admin-empty,.admin-control-card{
+  background:#1c1c1a;
+  color:#aaa79e;
+  border-color:#2b2a27;
+}
+.admin-primary{
+  background:#f2efe7;
+  color:#0d0d0c;
+}
+.admin-product-card,.admin-home-grid,.admin-eternal-row{
+  background:#151514;
+  border-color:#2b2a27;
+}
+.admin-product-image{background:#1c1c1a}
+.admin-product-image img{mix-blend-mode:normal}
+.admin-card-actions button,.admin-control-card button{
+  color:#f2efe7;
+  border-color:#37352f;
+}
+.admin-form-grid input,.admin-form-grid textarea,.admin-form-grid select{
+  background:#1c1c1a;
+  color:#f2efe7;
+  border-color:#37352f;
+}
+.admin-modal-backdrop{background:rgba(0,0,0,.72)}
+
+@media(max-width:600px){
+  .nav-links{background:#0d0d0c;border-bottom-color:#2b2a27}
+  .shoe-hero{background:#121211}
+  .hero-art{background:#151514}
+}
