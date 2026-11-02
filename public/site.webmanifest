@@ -1,11 +1,11 @@
 {
   "name": "Noirknull",
   "short_name": "Noirknull",
-  "description": "Independent footwear and everyday sneakers by Noirknull.",
+  "description": "Modern style, distinctive essentials and curated drops from Noirknull.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f3f1eb",
-  "theme_color": "#f3f1eb",
+  "background_color": "#090909",
+  "theme_color": "#090909",
   "icons": [
     {
       "src": "/noirknull-favicon.png",
