@@ -1,0 +1,154 @@
+/* Noirknull — Obsidian & Chrome theme */
+:root {
+  color-scheme: dark;
+  --ink: #f3f4f5;
+  --paper: #08090b;
+  --red: #c7cbd1;
+  --muted: #a3a8b0;
+  --line: #343940;
+  --chrome: #c9cdd3;
+  --chrome-dim: #858c96;
+  --surface: #111317;
+  --surface-raised: #191c21;
+}
+html, body, #root { background: #08090b !important; color: #f3f4f5; }
+body { min-width: 320px; }
+button, input, select, textarea { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #d9dde3 !important; outline-offset: 3px;
+}
+::selection { background: #c9cdd3; color: #08090b; }
+
+/* Global storefront shell */
+.noir-site, .shop-page, .product-page { background: #08090b !important; color: #f3f4f5 !important; }
+.noir-header, .nav-links, .nav-links.nav-open { background: rgba(8,9,11,.94) !important; color: #f3f4f5 !important; border-color: #343940 !important; }
+.noir-header { border-bottom: 1px solid #41464e !important; backdrop-filter: blur(22px) saturate(140%); -webkit-backdrop-filter: blur(22px) saturate(140%); }
+.noir-logo, .noir-logo span, .nav-links button, .nav-links .nav-primary, .mobile-menu { color: #f3f4f5 !important; }
+.nav-links button:hover, .footer-nav button:hover, .footer-nav a:hover, .nav-links .nav-primary span { color: #d8dce2 !important; }
+.bag-button, .quick-add, .shop-view-link, .empty-bag button, .bag-bottom>button, .shop-empty button, .editorial-cta {
+  color: #090a0c !important; background: linear-gradient(135deg,#f1f3f5 0%,#aeb4bd 48%,#e4e7eb 100%) !important;
+  border: 1px solid #f1f3f5 !important; box-shadow: inset 0 1px 0 #fff8, 0 8px 24px #0007;
+}
+.bag-button b { color: #343940 !important; }
+
+/* Home — dark editorial surfaces and chrome details */
+.shoe-hero, .hero-art, .collection, .details, .shop-page-top, .shop-editorial, .shop-editorial-art, .related-products {
+  background: #0d0f12 !important; color: #f3f4f5 !important;
+}
+.hero-art:before, .shop-editorial-art:before { background: radial-gradient(ellipse at 52% 48%,#343a43 0,transparent 62%) !important; }
+.orbit, .editorial-ring { border-color: #777f8a !important; opacity: .65; }
+.kicker, .hero-lower p, .hero-index, .hero-side-note, .art-caption, .section-intro,
+.shoe-info p, .shoe-info span, .collection-bottom, .shop-intro, .shop-breadcrumb,
+.shop-result-count, .shop-product-meta p, .shop-product-meta span, .shop-bottom-note,
+.editorial-footnote, .editorial-vertical, .product-gallery-note, .product-category,
+.product-tone, .product-delivery-note, .product-number { color: #b3b8c1 !important; }
+.hero-copy h1, .section-top h2, .details-heading h2, .shop-page-top h1,
+.shop-editorial-copy h2, .related-products h2, .product-information h1 { color: #f5f6f7 !important; }
+.hero-copy h1 span, .kicker i, .detail-row svg { color: #d6dae0 !important; background-color: #c9cdd3 !important; }
+.hero-lower p, .section-intro, .shop-intro, .shop-editorial-copy>p:not(.kicker),
+.product-description, .detail-row p { color: #c0c5cd !important; }
+.shoe-photo, .shop-product-image, .product-main-image, .manifesto-image, .shop-editorial-art {
+  background-color: #171a1f !important; border: 1px solid #343a43;
+}
+.shoe-photo img, .shop-product-image img, .product-main-image img, .related-card img { mix-blend-mode: normal !important; }
+.shoe-tag, .product-glass-product-label, .product-image-index {
+  color: #f3f4f5 !important; background: rgba(20,23,28,.78) !important;
+  border: 1px solid #747c87 !important; backdrop-filter: blur(18px) saturate(150%);
+}
+.shoe-info h3, .shoe-info strong, .shop-product-meta h2, .shop-product-meta strong,
+.detail-row h3, .detail-row>span, .collection-bottom button { color: #f0f2f4 !important; }
+.collection-bottom, .detail-list, .detail-row, .detail-row { border-color: #3b4149 !important; }
+.manifesto { background: #111317 !important; color: #f3f4f5 !important; }
+.manifesto-copy .kicker { color: #c2c7cf !important; }
+.manifesto-copy>p:not(.kicker) { color: #c0c5cd !important; }
+.manifesto-mark { color: #858c96 !important; }
+.underlined-link { color: #f5f6f7 !important; border-color: #777f8a !important; }
+.ticker { background: linear-gradient(90deg,#858c96,#e1e4e8,#858c96) !important; color: #090a0c !important; }
+.closing-banner { background: #171a1f !important; color: #f3f4f5 !important; border-top: 1px solid #737b86; border-bottom: 1px solid #737b86; }
+.closing-banner .kicker { color: #c5cad2 !important; }
+.closing-banner button { color: #090a0c !important; background: linear-gradient(135deg,#f1f3f5,#aeb4bd) !important; }
+.closing-symbol { color: #343a43 !important; }
+.noir-footer { background: #050607 !important; color: #f3f4f5 !important; border-top: 1px solid #3c424b; }
+.footer-wordmark, .footer-main>p, .footer-nav button, .footer-nav a, .footer-legal { color: #c2c7cf !important; }
+.footer-legal { border-color: #343940 !important; }
+
+/* Shop, filters, search and controls */
+.shop-page-top { border-bottom: 1px solid #343940; }
+.shop-toolbar { background: #0b0d10 !important; border-color: #414750 !important; color: #f3f4f5 !important; }
+.shop-search { border-color: #747c87 !important; }
+.shop-search input, .shop-search input::placeholder, .shop-sort, .shop-sort select,
+.shop-breadcrumb button, .category-filter, .category-filter span, .filter-heading,
+.shop-product-meta h2 { color: #e3e6ea !important; }
+.shop-search input::placeholder { color: #a4aab3 !important; opacity: 1; }
+.shop-sort select, .shop-search input { background: #101318 !important; }
+.shop-filters { border-color: #7b838e !important; }
+.category-filter { border-color: #343940 !important; }
+.category-filter:hover, .category-filter.active, .category-filter.active span { color: #fff !important; }
+.category-filter.active { border-color: #b9c0ca !important; }
+.filter-note { background: #171a1f !important; border: 1px solid #454c56; color: #f3f4f5 !important; }
+.shop-product-card, .shoe-card { color: #f3f4f5 !important; }
+.shop-empty { color: #c0c5cd !important; }
+.shop-empty h2 { color: #f3f4f5 !important; }
+.shop-bottom-note { border-color: #343940 !important; }
+.product-page:before { background: radial-gradient(circle at 18% 12%,#ffffff08,transparent 28%),radial-gradient(circle at 88% 72%,#cbd1da0b,transparent 30%) !important; }
+.product-crumb { color: #c0c5cd !important; border-color: #343940 !important; }
+.product-crumb button, .size-heading, .size-heading button, .product-accordion>button { color: #f3f4f5 !important; }
+.product-main-image { background: radial-gradient(circle at 50% 48%,#343a43 0,transparent 62%),#15181d !important; border-color: #424954 !important; }
+.product-glass-product-label, .product-image-index, .size-option, .size-guide-note, .product-accordion>button, .related-card {
+  background: linear-gradient(135deg,rgba(235,239,245,.14),rgba(130,139,151,.08)) !important;
+  border-color: #68717d !important; color: #f3f4f5 !important;
+  box-shadow: inset 0 1px 0 #ffffff24, 0 10px 28px #0005 !important;
+}
+.product-glass-product-label span, .product-glass-product-label strong { color: #f3f4f5 !important; }
+.size-option:hover, .size-option.size-selected { background: linear-gradient(135deg,#e8ebef,#929aa5) !important; color: #090a0c !important; }
+.product-add-button { background: linear-gradient(135deg,#f1f3f5,#9ea6b1) !important; color: #08090b !important; border-color: #e4e8ed !important; }
+.product-add-button * { color: #08090b !important; }
+.product-accordions, .product-accordion { border-color: #3b424b !important; }
+.product-accordion>p, .size-guide-note { color: #c5cad2 !important; }
+.related-products { background: #101318 !important; border-top: 1px solid #343940; }
+.related-card>span, .related-card>span b, .related-card small { color: #f3f4f5 !important; }
+
+/* Cart drawer and checkout */
+.cart-backdrop { background: #000b !important; }
+.cart-drawer, .checkout, [class*="checkout"], [class*="Checkout"] {
+  color: #f3f4f5;
+}
+.cart-drawer { background: #101216 !important; border-left: 1px solid #555d68; }
+.cart-head, .bag-item, .bag-bottom { border-color: #3b424b !important; }
+.cart-head h2, .bag-item h3, .bag-item strong, .bag-bottom>div { color: #f3f4f5 !important; }
+.cart-head h2 span, .empty-bag p, .bag-item p, .bag-bottom>p { color: #b7bec8 !important; }
+.bag-item img { mix-blend-mode: normal !important; }
+.cart-head>button, .bag-item>button { color: #f3f4f5 !important; }
+input, textarea, select {
+  background-color: #111419 !important; color: #f4f5f7 !important; border-color: #555e69 !important;
+}
+input::placeholder, textarea::placeholder { color: #a6adb7 !important; opacity: 1 !important; }
+label, legend, small, p { text-wrap: pretty; }
+a { color: #e1e5ea; }
+a:hover { color: #fff; }
+
+/* Admin dashboard: retain status colours, improve all neutral text/surfaces */
+.admin, [class*="admin"], [class*="Admin"] { color: #f0f2f5; }
+.admin input, .admin textarea, .admin select, [class*="admin"] input,
+[class*="admin"] textarea, [class*="admin"] select { background: #111419 !important; color: #f4f5f7 !important; border-color: #505965 !important; }
+[class*="admin"] label, [class*="admin"] p, [class*="admin"] h1,
+[class*="admin"] h2, [class*="admin"] h3, [class*="admin"] span { color: inherit; }
+[class*="admin"] button:not([class*="success"]):not([class*="danger"]) { border-color: #626b77; }
+[class*="admin"] table, [class*="admin"] th, [class*="admin"] td { border-color: #3d444e !important; }
+[class*="admin"] th { color: #c8ced6 !important; }
+[class*="admin"] td { color: #f0f2f5 !important; }
+
+/* Dialogs, popovers, dropdowns, and accessibility */
+[role="dialog"], [role="menu"], [role="listbox"], [data-radix-popper-content-wrapper] > *,
+[data-sonner-toaster] [data-sonner-toast] {
+  background-color: #15191f !important; color: #f3f4f5 !important; border-color: #59616d !important;
+}
+[role="dialog"] *, [role="menu"] *, [role="listbox"] * { color: inherit; }
+button:disabled, [aria-disabled="true"] { opacity: .48; cursor: not-allowed; }
+@media (max-width: 600px) {
+  .nav-links.nav-open { background: #090a0c !important; }
+  .shop-toolbar, .shop-body { background: #08090b !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
