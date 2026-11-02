@@ -264,7 +264,7 @@ export default function App() {
     setShopOpen(false);
     setCheckoutStep("details");
     setCheckoutOpen(true);
-    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
   };
   const updateCheckout = (key: keyof typeof checkoutData, value: string) => setCheckoutData((old) => ({ ...old, [key]: value }));
   const checkoutReady = Boolean(checkoutData.email.trim() && checkoutData.phone.trim() && checkoutData.firstName.trim() && checkoutData.lastName.trim() && checkoutData.address.trim() && checkoutData.city.trim() && checkoutData.state.trim() && checkoutData.pincode.trim().length === 6);
@@ -275,13 +275,13 @@ export default function App() {
   return <div className="noir-site">
     <div className="topline"><span>SNEAKERS & ACCESSORIES / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
     <header className="noir-header liquid-glass-header">
-      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label="Open menu" aria-expanded={mobileMenuOpen}>☰</button>
-      <nav className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
+      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>☰</button>
+      <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); setMobileMenuOpen(false); }}>ABOUT US</button>
         <a className="nav-primary header-track-link" href="/track-order" onClick={() => setMobileMenuOpen(false)}>TRACK ORDER</a>
       </nav>
-      <button className="noir-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
+      <button className="noir-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
     </header>
 
@@ -325,11 +325,11 @@ export default function App() {
       <div className="product-layout">
         <div className="product-gallery">
           <div className="product-gallery-stage" onTouchStart={e => setGalleryTouchStart(e.touches[0].clientX)} onTouchEnd={e => {
-            if (galleryTouchStart === null || selectedProductImages.length < 2) return;
+            if (galleryTouchStart === null || selectedProductImages.length < 2) { setGalleryTouchStart(null); return; }
             const delta = e.changedTouches[0].clientX - galleryTouchStart;
             if (Math.abs(delta) > 45) setSelectedImageIndex(index => delta < 0 ? (index + 1) % selectedProductImages.length : (index - 1 + selectedProductImages.length) % selectedProductImages.length);
             setGalleryTouchStart(null);
-          }}>
+          }} onTouchCancel={() => setGalleryTouchStart(null)}>
             <div className="product-main-image">
               <img key={selectedImageIndex} className="product-gallery-slide" src={selectedProductImages[selectedImageIndex] || selectedProduct.image} alt={selectedProduct.kind}/>
               {selectedProductImages.length > 1 && <>
@@ -391,7 +391,7 @@ export default function App() {
         <div className="hero-art" aria-label="Featured sneaker">
           <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
           <div className="hero-stamp">OBJECTS<br/><small>IN MOTION</small></div>
-          <div className="floating-video-shell"><div className="floating-video-media"><video className="floating-video" src={homepage.heroVideo} autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /></div><div className="floating-video-copy"><span>CAMPAIGN EDIT / 01</span><strong>MOVE<br/>DIFFERENT.</strong><small>NOIRKNULL® — 2026<br/>BUILT FOR YOUR PACE.</small></div></div>
+          <div className="floating-video-shell"><div className="floating-video-media"><video className="floating-video" src={homepage.heroVideo} poster={homepage.editorialMainImage} autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /></div><div className="floating-video-copy"><span>CAMPAIGN EDIT / 01</span><strong>MOVE<br/>DIFFERENT.</strong><small>NOIRKNULL® — 2026<br/>BUILT FOR YOUR PACE.</small></div></div>
           <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
         </div>
         <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>

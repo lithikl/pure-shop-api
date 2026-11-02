@@ -1,0 +1,265 @@
+/* Noirknull iPhone / iPad / Safari compatibility layer
+   Loaded after the brand styles so these platform fixes remain predictable. */
+:root {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+html {
+  min-height: 100%;
+  overscroll-behavior-x: none;
+}
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+#root {
+  min-height: 100svh;
+}
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+img, video {
+  max-width: 100%;
+}
+
+/* Stable full-height surfaces plus safe-area-aware overlays. */
+.checkout-page,
+.product-page,
+.shop-page,
+.admin-page {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.cart-backdrop {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+.cart-drawer {
+  height: 100%;
+  max-height: 100dvh;
+  padding-bottom: calc(25px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.bag-items {
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-modal-backdrop {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iPhone / small tablet layout corrections. */
+@media (max-width: 760px) {
+  .noir-header.liquid-glass-header {
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    height: 64px;
+    min-height: 64px;
+    padding: 0 8px;
+  }
+  .noir-header .mobile-menu-toggle,
+  .noir-header .bag-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+  }
+  .noir-header .bag-button {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+  .noir-header .noir-logo {
+    max-width: 100%;
+    font-size: 22px;
+  }
+
+  .shop-mobile-controls {
+    top: calc(env(safe-area-inset-top, 0px) + 80px);
+  }
+  .shop-mobile-categories {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .shop-mobile-categories button {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+  .shop-mobile-search button {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+  }
+  .shop-mobile-sort select {
+    min-height: 44px;
+  }
+
+  .product-crumb {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 14px 5%;
+  }
+  .product-crumb span:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .product-crumb span:last-child {
+    margin-left: auto;
+  }
+  .product-title-row {
+    gap: 8px;
+  }
+  .product-title-row h1 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(42px, 11vw, 64px);
+  }
+  .product-gallery-thumbs {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .checkout-page {
+    min-height: 100svh;
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+  .checkout-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .checkout-progress {
+    flex-wrap: wrap;
+    row-gap: 9px;
+  }
+  .checkout-summary-sticky {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .admin-modal-backdrop {
+    padding:
+      calc(12px + env(safe-area-inset-top, 0px))
+      12px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+    align-items: start;
+    overflow-y: auto;
+  }
+  .admin-modal,
+  .admin-product-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 380px) {
+  .noir-header.liquid-glass-header {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    width: calc(100% - 16px);
+    padding: 0 6px;
+  }
+  .noir-header .noir-logo {
+    font-size: 20px;
+  }
+  .noir-header .mobile-menu-toggle,
+  .noir-header .bag-button {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    min-height: 42px;
+  }
+}
+
+/* iOS Safari zooms the page when a focused form control uses text under 16px. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+    line-height: 1.4;
+  }
+  button,
+  a[role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Make the product rails genuinely swipeable instead of hover/animation-only. */
+  .product-rail-shell {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .product-rail-shell::-webkit-scrollbar {
+    display: none;
+  }
+  .product-rail-shell::before,
+  .product-rail-shell::after {
+    display: none;
+  }
+  .product-rail-track,
+  .product-rail-track-reverse {
+    width: max-content;
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+  .product-rail-card {
+    scroll-snap-align: start;
+  }
+
+  /* Replace hover-only product actions with visible tap-friendly actions. */
+  .quick-add,
+  .homepage-product-view,
+  .shop-view-link {
+    transform: none !important;
+    min-height: 44px;
+    opacity: 1;
+    visibility: visible;
+  }
+  .shoe-photo:hover img,
+  .homepage-category-card:hover .homepage-category-image img,
+  .homepage-product-card:hover .homepage-product-image img,
+  .shop-product-card:hover .shop-product-image img,
+  .product-main-image:hover img,
+  .product-rail-card:hover .product-rail-image img {
+    transform: none !important;
+  }
+  .product-rail-card:hover,
+  .homepage-category-card:hover .homepage-category-arrow {
+    transform: none !important;
+  }
+  .product-gallery-arrow {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Keep the cart and admin dialogs scrollable when the iOS keyboard is open. */
+@supports (height: 100dvh) {
+  .cart-backdrop {
+    height: 100dvh;
+  }
+  .cart-drawer {
+    max-height: 100dvh;
+  }
+  .admin-modal,
+  .admin-product-modal {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
+  }
+}
