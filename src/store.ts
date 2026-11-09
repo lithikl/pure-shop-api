@@ -173,6 +173,7 @@ export type HomepageCategoryImages = {
 
 export type HomepageSettings = {
   heroImage: string;
+  categoryImages: HomepageCategoryImages;
   heroVideo: string;
   manifestoImage: string;
   fitPickImages: [string, string, string];
@@ -196,7 +197,6 @@ export const DEFAULT_HOMEPAGE: HomepageSettings = {
     ACCESSORIES: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=88",
     JACKETS: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1000&q=88",
   },
-  heroVideo: "/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4",
   heroVideo: "/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4",
   manifestoImage: "https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=1400&q=90",
   fitPickImages: [
