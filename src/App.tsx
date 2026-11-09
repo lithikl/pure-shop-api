@@ -388,8 +388,8 @@ export default function App() {
       <section className="homepage-categories section-wrap" id="categories" aria-label="Shop by category">
         <div className="homepage-section-heading reveal">
           <div>
-            <p className="kicker">01 / SHOP THE COLLECTION</p>
-            <h2>Find your<br/><em>category.</em></h2>
+            <p className="kicker">SHOP</p>
+            <h2>Shop by<br/><em>category.</em></h2>
           </div>
           <p className="section-intro">Start with what you came for. Explore the collection by category, then make it your own.<br/>Sneakers, watches, accessories and jackets.</p>
         </div>
@@ -460,7 +460,7 @@ export default function App() {
         <section className="homepage-products section-wrap" id="new-arrivals" aria-label="New arrivals">
           <div className="homepage-section-heading reveal">
             <div>
-              <p className="kicker">02 / JUST LANDED</p>
+              <p className="kicker">NEW</p>
               <h2>New<br/><em>arrivals.</em></h2>
             </div>
             <p className="section-intro">Fresh from the studio. The newest pieces to enter the NoirKnull collection.</p>
@@ -495,7 +495,7 @@ export default function App() {
         <section className="homepage-products homepage-best-sellers section-wrap" id="best-sellers" aria-label="Best sellers">
           <div className="homepage-section-heading reveal">
             <div>
-              <p className="kicker">03 / THE MOST WANTED</p>
+              <p className="kicker">BEST SELLERS</p>
               <h2>Best<br/><em>sellers.</em></h2>
             </div>
             <p className="section-intro">The pairs earning their place. Proven favourites, kept in motion.</p>
@@ -530,7 +530,7 @@ export default function App() {
 
       <section className="about-contact" id="about-noirknull" aria-label="About NoirKnull and contact information">
         <div className="about-noirknull-copy reveal">
-          <p className="kicker">06 / ABOUT NOIRKNULL</p>
+          <p className="kicker">ABOUT NOIRKNULL</p>
           <h2>Made to<br/><em>stand apart.</em></h2>
           <p>NOIRKNULL is a sneakers and accessories brand built around considered design, everyday utility and the freedom to move your own way.</p>
           <p className="about-signoff">SNEAKERS / WATCHES / ACCESSORIES / JACKETS<br/>NOIRKNULL® — 2026</p>
