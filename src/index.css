@@ -3873,3 +3873,285 @@ button:hover{background:#fff!important;color:#000!important;}
 .admin-range input{accent-color:#000!important;}
 .shoe-tag{background:#fff!important;color:#000!important;border:1px solid #000!important;}
 .reveal{background:transparent!important;}
+
+
+/* VERIFIED FINAL THEME — WHITE SURFACES ONLY / BLACK TEXT ONLY
+   This block intentionally comes last so older theme rules cannot win. */
+:root{
+  --ink:#000!important;
+  --paper:#fff!important;
+  --red:#fff!important;
+  --muted:#000!important;
+  --line:#e5e5e5!important;
+}
+
+/* Global page surfaces */
+html,body,#root,.noir-site,
+.noir-header,.topline,.shop-page,.shop-page-top,
+.home-content,.homepage-categories,.homepage-products,.homepage-best-sellers,
+.about-contact,.checkout-page,.checkout-shell,.checkout-main,.checkout-summary,
+.product-page,.related-products,.collection,.section-wrap,
+.cart-drawer,.noir-footer,.admin-page,.admin-shell,.admin-main,
+.admin-section,.admin-sidebar,.admin-topbar,.admin-modal,
+.admin-login-page,.admin-login-card{
+  background:#fff!important;
+  color:#000!important;
+}
+
+/* Header / navigation */
+.topline{
+  color:#000!important;
+  border-bottom:1px solid #e5e5e5!important;
+}
+.topline span,.topline span:last-child{color:#000!important}
+.noir-header{
+  background:rgba(255,255,255,.96)!important;
+  border-bottom:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+.noir-logo,.nav-links,.nav-links button,.nav-links a,.mobile-menu-toggle,.bag-button{
+  background:#fff!important;
+  color:#000!important;
+}
+.bag-button{
+  border:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+}
+.bag-button b{color:#000!important}
+
+/* Opening image: keep the actual image, remove dark overlays/theme */
+.shoe-hero{
+  background:#fff!important;
+  color:#000!important;
+}
+.landing-hero-image{background:#fff!important}
+.landing-hero-overlay{
+  background:linear-gradient(to bottom,rgba(255,255,255,.90),rgba(255,255,255,0) 30%,rgba(255,255,255,0) 62%,rgba(255,255,255,.90))!important;
+  color:#000!important;
+}
+.landing-hero-brand,
+.landing-hero-brand span,
+.landing-hero-brand small,
+.landing-hero-scroll{
+  color:#000!important;
+  text-shadow:none!important;
+}
+.landing-hero-brand{
+  background:rgba(255,255,255,.92)!important;
+  padding:12px 16px!important;
+  align-self:flex-start!important;
+}
+.landing-hero-actions{
+  background:rgba(255,255,255,.92)!important;
+  padding:8px!important;
+  border:1px solid #e5e5e5!important;
+}
+.landing-hero-actions button,
+.landing-hero-actions button+button{
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #e5e5e5!important;
+}
+.landing-hero-scroll{
+  background:rgba(255,255,255,.92)!important;
+  padding:9px 12px!important;
+  align-self:center!important;
+}
+
+/* Remove old dark/coloured decorative surfaces everywhere */
+.ticker,.closing-banner,.closing-symbol,.manifesto,.details,.noir-footer,
+.eternal-fits,.fit-picks,.shop-editorial,.homepage-reviews{
+  background:#fff!important;
+  color:#000!important;
+}
+.ticker *,.closing-banner *,.noir-footer *,.manifesto *,.details *{
+  color:#000!important;
+}
+.noir-footer{border-top:1px solid #e5e5e5!important}
+.footer-legal{border-color:#e5e5e5!important}
+.closing-symbol{color:#fff!important}
+.manifesto-image,.manifesto-copy,.details-heading,.detail-list{
+  background:#fff!important;
+}
+.manifesto-image:after,.hero-art:before{background:none!important}
+.manifesto-copy .kicker,.manifesto-copy>p:not(.kicker),
+.about-noirknull-copy .kicker,.about-noirknull-copy>p:not(.kicker):not(.about-signoff),
+.about-signoff,.about-contact-card .kicker,.about-contact-card p:not(.kicker),
+.contact-links span,.section-intro,.shop-intro,.product-gallery-note{
+  color:#000!important;
+}
+.contact-links,.contact-links a,.about-noirknull-copy{
+  border-color:#e5e5e5!important;
+  color:#000!important;
+}
+.contact-links a,.contact-links strong,.contact-links svg{color:#000!important}
+
+/* Cards, images and category UI */
+.homepage-category-image,.homepage-product-image,.shoe-photo,
+.product-main-image,.admin-product-image,.admin-preview{
+  background:#fff!important;
+}
+.homepage-category-index,.homepage-category-arrow,
+.homepage-product-badge,.homepage-product-badge.best,
+.homepage-product-view,.shoe-tag,.quick-add{
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+.homepage-category-card:hover .homepage-category-arrow{
+  background:#fff!important;color:#000!important;transform:translate(2px,-2px);
+}
+.homepage-product-view{transform:translateY(100%)}
+.homepage-product-card:hover .homepage-product-view,
+.homepage-product-image:focus-visible .homepage-product-view{
+  background:#fff!important;color:#000!important;
+}
+.shoe-info,.shoe-info p,.shoe-info span,.shoe-info strong,
+.homepage-category-meta,.homepage-category-meta *,
+.homepage-product-meta,.homepage-product-meta *,
+.homepage-section-footer,.homepage-section-footer *{
+  color:#000!important;
+}
+
+/* Shop / filters */
+.shop-page-top{background:#fff!important}
+.shop-filters,.shop-category-row,.shop-toolbar,.shop-body,
+.shop-search,.shop-sort,.shop-mobile-controls,
+.category-filter,.category-filter.active{
+  background:#fff!important;
+  color:#000!important;
+  border-color:#e5e5e5!important;
+}
+.shop-search input,.shop-sort select,.shop-mobile-search input,
+.shop-mobile-sort select{
+  background:#fff!important;color:#000!important;
+}
+.category-filter.active{
+  border:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+}
+
+/* Product detail / white liquid-glass controls */
+.product-page:before{display:none!important}
+.product-crumb,.product-crumb button,
+.product-main-image,.product-glass-product-label,.product-image-index,
+.product-gallery-thumbs button,.product-status-badges span,
+.size-option,.size-guide-note,.product-accordion,
+.product-share-button,.product-add-button{
+  background:rgba(255,255,255,.96)!important;
+  color:#000!important;
+  border-color:#e5e5e5!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+.product-glass-product-label:after{display:none!important}
+.product-glass-product-label span,.product-category,.product-tone,
+.product-description,.product-delivery-note,.product-number,
+.product-price-line span,.size-heading span,.size-not-required span{
+  color:#000!important;
+}
+.product-add-button:hover,.product-share-button:hover,
+.size-option:hover,.size-option.size-selected{
+  background:#fff!important;color:#000!important;border-color:#000!important;
+}
+
+/* Checkout */
+.checkout-page,.checkout-main,.checkout-summary,.checkout-section,
+.checkout-grid,.checkout-grid label,.checkout-grid input,
+.checkout-grid select,.checkout-grid textarea,.checkout-option,
+.checkout-summary-card,.checkout-submit{
+  background:#fff!important;color:#000!important;
+}
+.checkout-grid input,.checkout-grid select,.checkout-grid textarea,
+.checkout-option,.checkout-submit{
+  border-color:#e5e5e5!important;
+}
+.checkout-submit:hover{background:#fff!important;color:#000!important}
+
+/* Cart */
+.cart-backdrop{background:rgba(255,255,255,.88)!important}
+.cart-drawer,.cart-head,.bag-item,.bag-bottom{
+  background:#fff!important;color:#000!important;
+}
+.empty-bag button,.bag-bottom>button{
+  background:#fff!important;color:#000!important;border:1px solid #e5e5e5!important;
+}
+.cart-head,.bag-item{border-color:#e5e5e5!important}
+
+/* Admin — every surface stays white */
+.admin-sidebar,.admin-main,.admin-topbar,.admin-section,
+.admin-control-card,.admin-product-card,.admin-order-card,
+.admin-category-manager,.admin-eternal-row,.admin-empty-state,
+.admin-warning,.admin-settings-grid>div,.admin-toggle,
+.admin-size-chip,.admin-merch-option,.admin-modal,
+.admin-login-card,.admin-preview,.admin-image-preview{
+  background:#fff!important;color:#000!important;
+  border-color:#e5e5e5!important;
+  box-shadow:none!important;
+}
+.admin-sidebar{border-right:1px solid #e5e5e5!important}
+.admin-topbar{border-bottom:1px solid #e5e5e5!important}
+.admin-sidebar button,.admin-nav button,.admin-section-head button,
+.admin-card-actions button,.admin-home-actions button,
+.admin-modal-actions button,.admin-category-add button,
+.admin-gallery-editor-head button,.admin-eternal-actions button,
+.admin-primary,.admin-logout{
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+}
+.admin-sidebar button.active,.admin-nav button.active,
+.admin-primary{
+  background:#fff!important;
+  color:#000!important;
+  border-color:#000!important;
+}
+.admin-product-image,.admin-image-preview{background:#fff!important}
+.admin-product-image>span{
+  background:#fff!important;color:#000!important;border:1px solid #e5e5e5!important;
+}
+.admin-card-actions{border-color:#e5e5e5!important}
+.admin-form-grid input,.admin-form-grid textarea,.admin-form-grid select,
+.admin-category-add input,.admin-category-inline input,.admin-color-field input{
+  background:#fff!important;color:#000!important;border:1px solid #e5e5e5!important;
+}
+.admin-form-grid input:focus,.admin-form-grid textarea:focus,
+.admin-form-grid select:focus,.admin-category-add input:focus,
+.admin-category-inline input:focus{
+  background:#fff!important;color:#000!important;
+  border-color:#000!important;outline:1px solid #000!important;
+}
+.admin-toggle.active,.admin-size-chip.active,.admin-merch-option.active{
+  background:#fff!important;color:#000!important;border-color:#000!important;
+}
+.admin-modal-backdrop{background:rgba(255,255,255,.94)!important}
+.admin-warning{background:#fff!important;border-color:#e5e5e5!important}
+
+/* Never use black fills on hover/focus */
+button:hover,.admin-card-actions button:hover,
+.admin-home-actions button:hover,.admin-sidebar button:hover,
+.admin-nav button:hover{
+  background:#fff!important;
+  color:#000!important;
+}
+button:focus-visible,a:focus-visible{
+  outline:1px solid #000!important;
+  outline-offset:3px;
+}
+
+/* Mobile menu is also white */
+@media(max-width:600px){
+  .nav-links,.nav-links.nav-open{
+    background:#fff!important;
+    color:#000!important;
+    border-color:#e5e5e5!important;
+  }
+  .landing-hero-brand{padding:10px 12px!important}
+  .landing-hero-actions{padding:6px!important}
+}
