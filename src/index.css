@@ -3681,3 +3681,117 @@ p,h1,h2,h3,h4,h5,h6,span,label{color:inherit}
   .landing-hero-brand{font-size:22px!important}
   .landing-hero-actions{width:100%!important}
 }
+
+/* FINAL BLACK ON WHITE THEME — NO EXCEPTIONS */
+:root{
+  --ink:#000000!important;
+  --paper:#ffffff!important;
+  --red:#000000!important;
+  --muted:#555555!important;
+  --line:#d9d9d9!important;
+}
+html,body,#root,.noir-site{background:#fff!important;color:#000!important;}
+body{color:#000!important;}
+button,input,textarea,select{color:#000!important;}
+button{background:#fff;}
+a{color:#000!important;}
+p,span,small,label,li,dt,dd{color:inherit;}
+h1,h2,h3,h4,h5,h6,strong,b{color:#000!important;}
+::placeholder{color:#777!important;opacity:1!important;}
+
+.noir-header,.nav-links,.nav-links button,.mobile-menu,.noir-logo,
+.section-wrap,.collection,.product-page,.cart-drawer,.admin-shell,.admin-main,
+.admin-section,.admin-control-card,.admin-product-card,.admin-modal,
+.admin-modal-large,.admin-login,.admin-login-card,.admin-sidebar,
+.admin-topbar,.admin-table,.admin-form-grid,.admin-category-image-control{
+  background:#fff!important;color:#000!important;
+}
+.noir-header{border-bottom:1px solid #d9d9d9!important;}
+.nav-links button,.footer-nav button,.footer-nav a{color:#000!important;}
+.nav-links button:hover,.footer-nav button:hover,.footer-nav a:hover{color:#000!important;}
+.nav-links .nav-primary span{color:#000!important;}
+.nav-links .nav-primary:after{background:#000!important;}
+
+.shoe-hero{background:#fff!important;color:#000!important;}
+.shoe-hero img{opacity:1!important;}
+.shoe-hero .hero-copy,.shoe-hero .hero-copy *,.shoe-hero .hero-actions,.shoe-hero .hero-actions *{
+  color:#000!important;
+}
+.shoe-hero .hero-actions button,.shoe-hero button{
+  background:#fff!important;color:#000!important;border:1px solid #000!important;
+}
+.shoe-hero .hero-actions button:hover,.shoe-hero button:hover{
+  background:#000!important;color:#fff!important;
+}
+.scroll-cue,.hero-branding,.hero-meta{color:#000!important;}
+
+.section-intro,.shoe-info span,.shoe-info p,.collection-bottom,.product-crumb,.product-gallery-note,
+.admin-section-head p,.admin-control-card p,.admin-category-image-help,.admin-gallery-help,
+.admin-tint-note,.admin-warning p,.admin-settings-grid span{
+  color:#555!important;
+}
+.shoe-photo{background:#f7f7f7!important;}
+.shoe-tag{background:#fff!important;color:#000!important;border:1px solid #000!important;}
+.quick-add{background:#000!important;color:#fff!important;}
+.collection-bottom{border-color:#d9d9d9!important;}
+
+.product-page,.product-main-image,.product-crumb,.product-glass-product-label,.product-image-index{
+  background:#fff!important;color:#000!important;
+}
+.product-main-image{box-shadow:inset 0 0 0 1px #d9d9d9!important;}
+.product-crumb{border-color:#d9d9d9!important;}
+.product-crumb button,.product-glass-product-label,.product-image-index{
+  background:#fff!important;color:#000!important;border:1px solid #000!important;
+  box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+.product-glass-product-label span{color:#555!important;}
+.product-glass-product-label strong{color:#000!important;}
+
+.admin-shell,.admin-main{min-height:100vh;}
+.admin-sidebar{border-right:1px solid #d9d9d9!important;}
+.admin-sidebar button,.admin-nav button,.admin-section-head button,.admin-card-actions button,
+.admin-home-actions button,.admin-modal-actions button,.admin-category-add button,
+.admin-gallery-editor-head button,.admin-eternal-actions button{
+  color:#000!important;background:#fff!important;border:1px solid #000!important;
+}
+.admin-sidebar button.active,.admin-nav button.active,
+.admin-primary{
+  background:#000!important;color:#fff!important;border-color:#000!important;
+}
+.admin-card-actions .danger,.admin-eternal-actions .danger{color:#000!important;border-color:#000!important;}
+.admin-product-card,.admin-control-card,.admin-warning,.admin-settings-grid>div,
+.admin-toggle,.admin-modal,.admin-login-card,.admin-category-image-control,
+.admin-eternal-row,.admin-size-chip,.admin-merch-option{
+  border:1px solid #d9d9d9!important;background:#fff!important;color:#000!important;
+}
+.admin-toggle.active,.admin-size-chip.active,.admin-merch-option.active{
+  background:#f2f2f2!important;color:#000!important;border-color:#000!important;
+}
+.admin-toggle b{color:#000!important;}
+.admin-form-grid input,.admin-form-grid textarea,.admin-form-grid select,
+.admin-category-add input,.admin-category-inline input,.admin-color-field input{
+  background:#fff!important;color:#000!important;border:1px solid #bdbdbd!important;
+}
+.admin-form-grid input:focus,.admin-form-grid textarea:focus,.admin-form-grid select:focus,
+.admin-category-add input:focus,.admin-category-inline input:focus{
+  border-color:#000!important;outline:2px solid #000!important;outline-offset:1px;
+}
+.admin-form-grid label>span,.admin-control-card-head span,.admin-category-image-control span,
+.admin-gallery-editor-head span,.admin-product-flags span{
+  color:#000!important;
+}
+.admin-range input{accent-color:#000!important;}
+.admin-warning{background:#fafafa!important;border-color:#000!important;}
+.admin-modal-backdrop{background:rgba(0,0,0,.55)!important;}
+.admin-modal-head{border-bottom:1px solid #d9d9d9!important;}
+.admin-preview{background:#f7f7f7!important;border:1px solid #d9d9d9!important;color:#000!important;}
+.admin-preview span,.admin-preview div span{color:#555!important;}
+.admin-login input{background:#fff!important;color:#000!important;border:1px solid #000!important;}
+
+.footer-nav,.noir-footer{color:#fff!important;}
+.noir-footer{background:#000!important;}
+.noir-footer *{color:#fff!important;}
+.footer-legal{border-color:#333!important;}
+
+.ticker,.closing-banner{background:#000!important;color:#fff!important;}
+.ticker *,.closing-banner *{color:#fff!important;}
