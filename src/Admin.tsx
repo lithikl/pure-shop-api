@@ -563,6 +563,27 @@ export default function Admin() {
           </div>
 
           <div className="admin-control-card admin-home-wide">
+            <div className="admin-control-card-head"><span>CATEGORIES / HOMEPAGE</span><strong>Homepage category photography</strong></div>
+            <p className="admin-category-image-help">These four images control the category cards on the homepage. Change them here without changing the product photos.</p>
+            <div className="admin-category-image-grid">
+              {([
+                ["SHOES", "01 / FOOTWEAR"],
+                ["WATCHES", "02 / TIME"],
+                ["ACCESSORIES", "03 / THE EXTRAS"],
+                ["JACKETS", "04 / OUTER LAYER"],
+              ] as const).map(([key, label]) => (
+                <div className="admin-category-image-control" key={key}>
+                  <div><span>{label}</span><strong>{key}</strong></div>
+                  <ImagePicker value={homepage.categoryImages?.[key] || ""} aspectRatio={1.05} label={`UPLOAD ${key} PHOTO`} onChange={value => persistHomepage({
+                    ...homepage,
+                    categoryImages: { ...homepage.categoryImages, [key]: value },
+                  })} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="admin-control-card admin-home-wide">
             <div className="admin-control-card-head"><span>FIT PICKS / SHOP</span><strong>Three moodboard images</strong></div>
             <div className="admin-three-images">{homepage.fitPickImages.map((image, index) => <div key={index}><span>0{index + 1}</span><ImagePicker value={image} aspectRatio={1.25} onChange={value => { const next = [...homepage.fitPickImages] as [string,string,string]; next[index] = value; persistHomepage({...homepage, fitPickImages: next}); }} /></div>)}</div>
           </div>
