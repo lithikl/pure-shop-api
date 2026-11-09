@@ -278,7 +278,7 @@ export default function App() {
       <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>☰</button>
       <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
-        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("manifesto"); setMobileMenuOpen(false); }}>ABOUT US</button>
+        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("about-noirknull"); setMobileMenuOpen(false); }}>ABOUT US</button>
         <a className="nav-primary header-track-link" href="/track-order" onClick={() => setMobileMenuOpen(false)}>TRACK ORDER</a>
       </nav>
       <button className="noir-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
@@ -287,15 +287,6 @@ export default function App() {
 
     {shopOpen && !selectedProduct && <main className="shop-page">
       <div className="shop-page-top"><div className="shop-breadcrumb"><button onClick={() => { setShopOpen(false); window.scrollTo({top:0,behavior:"smooth"}); }}>HOME</button><span>/</span><span>SHOP ALL</span></div><p className="kicker">NOIRKNULL® — {collectionMode === "best" ? "BEST SELLERS" : collectionMode === "new" ? "NEW DROP" : "THE FIRST DROP"}</p><h1>{collectionMode === "best" ? <>The most<br/><em>wanted.</em></> : collectionMode === "new" ? <>Just<br/><em>dropped.</em></> : <>Find your<br/><em>own pace.</em></>}</h1><p className="shop-intro">{collectionMode === "best" ? "The pieces customers keep coming back for." : collectionMode === "new" ? "Fresh silhouettes. Just landed. Made for your next move." : <>Considered silhouettes. Everyday movement.<br/>Find the pair that feels like you.</>}</p></div>
-      <section className="fit-picks">
-        <div className="fit-picks-heading"><div><p className="kicker">STYLE NOTES / 001</p><h2>The finishing<br/><em>touches.</em></h2></div><p>Small details. Entirely different energy.<br/>Explore the moodboard, then find your pair below.</p></div>
-        <div className="fit-picks-grid">
-          <article className="fit-pick fit-pick-wide"><img src={homepage.fitPickImages[0]} alt="Streetwear outfit inspiration" loading="lazy" decoding="async"/><div><span>01 / THE OFF-DUTY FIT</span><h3>Easy layers.<br/>Strong silhouette.</h3><p>Keep the shape relaxed and let the sneakers do the talking.</p></div></article>
-          <article className="fit-pick"><img src={homepage.fitPickImages[1]} alt="Minimal watch detail" loading="lazy" decoding="async"/><div><span>02 / ACCESSORIES</span><h3>Details that<br/>feel like you.</h3><p>Clean, useful, never too much.</p></div></article>
-          <article className="fit-pick"><img src={homepage.fitPickImages[2]} alt="Everyday backpack" loading="lazy" decoding="async"/><div><span>03 / EVERYDAY CARRY</span><h3>Take your<br/>own route.</h3><p>Built around the places your day takes you.</p></div></article>
-        </div>
-        <div className="fit-picks-bottom"><span>STYLE IS PERSONAL. THIS IS JUST A STARTING POINT.</span><span>NOIRKNULL® — 2026</span></div>
-      </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
       <div className="shop-body">
@@ -314,24 +305,6 @@ export default function App() {
         </div>
         <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
-      <section className="shop-editorial reveal">
-        <div className="shop-editorial-copy">
-          <p className="kicker"><i/> THE NOIRKNULL FIT DEPARTMENT</p>
-          <h2>Build the<br/><em>whole feeling.</em></h2>
-          <p>Sneakers are the starting point. Finish the fit with considered extras, everyday carry and little details that make it yours.</p>
-          <button className="editorial-cta" onClick={() => { setActiveCategory("ALL"); setSearchTerm(""); document.querySelector(".shop-toolbar")?.scrollIntoView({behavior:"smooth",block:"start"}); }}>FIND YOUR PAIR <ArrowDownRight size={16}/></button>
-          <div className="editorial-footnote"><span>01 — FOOTWEAR</span><span>02 — THE EXTRAS</span><span>03 — YOUR UNIFORM</span></div>
-        </div>
-        <div className="shop-editorial-art">
-          <div className="editorial-ring editorial-ring-a"/><div className="editorial-ring editorial-ring-b"/>
-          <span className="editorial-vertical">FORM / FUNCTION / FEELING</span>
-          <img className="editorial-main-sneaker" src={homepage.editorialMainImage} alt="Red sneaker styled for the Noirknull collection"/>
-          <div className="editorial-float-card editorial-accessory-one"><img src={homepage.editorialAccessoryImages[0]} alt="Minimal everyday watch accessory" loading="lazy" decoding="async"/><span>THE DAILY DETAIL <b>01</b></span></div>
-          <div className="editorial-float-card editorial-accessory-two"><img src={homepage.editorialAccessoryImages[1]} alt="Minimal streetwear backpack" loading="lazy" decoding="async"/><span>CARRY YOUR WORLD <b>02</b></span></div>
-          <div className="editorial-art-stamp">STYLE<small>STUDY 001</small></div>
-          <span className="editorial-orbit-label">EVERYDAY / UNCOMMON ↗</span>
-        </div>
-      </section>
  </main>}
     {selectedProduct && <main className="product-page" style={{ "--product-glass-tint": selectedProduct.glassTint?.trim() || tintFromTone(selectedProduct.tone) } as React.CSSProperties}>
       <div className="product-crumb"><button onClick={closeProduct}>← BACK TO SHOP</button><span>COLLECTION / {selectedProduct.name}</span><span>NOIRKNULL®</span></div>
@@ -394,23 +367,23 @@ export default function App() {
     </main>}
     {checkoutOpen && <Checkout cart={cart} onBack={() => { setCheckoutOpen(false); setCartOpen(true); }} onComplete={() => { setCheckoutOpen(false); setCart([]); setCheckoutStep("details"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />}
     {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
-      <section className="shoe-hero">
-        <div className="hero-copy reveal">
-          <p className="kicker"><i/> NOT MADE TO BLEND IN</p>
-          <h1>MOVE<br/>IN YOUR<br/><em>OWN</em> LANE<span>.</span></h1>
-          <div className="hero-lower"><p>Less noise. More intention.<br/>Footwear for wherever you’re going.</p><button className="circle-link" onClick={() => goTo("collection")} aria-label="Explore collection"><ArrowDown size={20}/></button></div>
-          <div className="hero-index"><span>01 / 04</span><span>THE FIRST DROP — 2026</span></div>
+      <section className="shoe-hero" aria-label="NoirKnull opening">
+        <div className="landing-hero-image">
+          <img src={homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
         </div>
-        <div className="hero-art" aria-label="Featured sneaker">
-          <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
-          <div className="hero-stamp">OBJECTS<br/><small>IN MOTION</small></div>
-          <div className="floating-video-shell"><div className="floating-video-media"><video className="floating-video" src={homepage.heroVideo} poster={homepage.editorialMainImage} autoPlay muted loop playsInline preload="metadata" aria-label="NOIRKNULL campaign edit" /></div><div className="floating-video-copy"><span>CAMPAIGN EDIT / 01</span><strong>MOVE<br/>DIFFERENT.</strong><small>NOIRKNULL® — 2026<br/>BUILT FOR YOUR PACE.</small></div></div>
-          <div className="art-caption"><span>NOIR / 01</span><span>DESIGNED TO MOVE ↗</span></div>
+        <div className="landing-hero-overlay">
+          <div className="landing-hero-brand">
+            <span>NOIRKNULL®</span>
+            <small>EST. 2026 / INDIA</small>
+          </div>
+          <div className="landing-hero-actions">
+            <button onClick={openShop}>SHOP <ArrowRight size={16}/></button>
+            <button onClick={() => goTo("about-noirknull")}>ABOUT US <ArrowDownRight size={16}/></button>
+          </div>
+          <div className="landing-hero-scroll">SCROLL TO EXPLORE ↓</div>
         </div>
-        <div className="hero-side-note">FORM FOLLOWS FEELING — SCROLL TO EXPLORE</div>
       </section>
 
-      <section className="ticker" aria-label="Brand statement"><div className="ticker-track"><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b><span>NO RULES, JUST FORM</span><b>✳</b><span>BUILT FOR YOUR PACE</span><b>✳</b></div></section>
 
       <section className="homepage-categories section-wrap" id="categories" aria-label="Shop by category">
         <div className="homepage-section-heading reveal">
@@ -553,51 +526,7 @@ export default function App() {
         </section>
       )}
 
-      <section className="homepage-reviews section-wrap" id="reviews" aria-label="Reviews">
-        <div className="homepage-section-heading reveal">
-          <div>
-            <p className="kicker">04 / REAL FEEDBACK</p>
-            <h2>What people<br/><em>say.</em></h2>
-          </div>
-          <p className="section-intro">No polished script. Just honest feedback from people who wear the brand.</p>
-        </div>
-        <div className="reviews-empty reveal">
-          <span>VERIFIED CUSTOMER REVIEWS</span>
-          <h3>YOUR WORDS WILL LIVE HERE.</h3>
-          <p>Reviews are ready to appear here from verified orders. Once your first customers leave feedback, their real notes can be published in this space.</p>
-          <div className="reviews-empty-line"><span>NOIRKNULL / COMMUNITY</span><span>01 / 01</span></div>
-        </div>
-      </section>
 
-      {homepage.showEternalFits && (
-        <section className="eternal-fits section-wrap" id="eternal-fits" aria-label="Eternal Fits campaign">
-          {homepage.patternWaves && <PatternWaves color="#0b0b0a" opacity={homepage.patternOpacity} speed={0.42} spacing={17} depth={1.0} interactive={true} />}
-          <div className="eternal-fits-heading reveal">
-            <div>
-              <p className="kicker">05 / THE CAMPAIGN</p>
-              <h2>Eternal<br/><em>fits.</em></h2>
-            </div>
-            <p className="section-intro">A moving lookbook of the people, places and silhouettes behind NoirKnull.<br/>Watch the pattern move behind the campaign.</p>
-          </div>
-          <div className="eternal-fits-stage">
-            <div className="eternal-fits-track">
-              {[...eternalFits, ...eternalFits].map((fit, index) => (
-                <article className="eternal-fit-card" key={`${fit.id}-${index}`}>
-                  <div className="eternal-fit-image">
-                    <img src={fit.image} alt={fit.title} loading="lazy" decoding="async"/>
-                    <div className="eternal-fit-glass">
-                      <span>{fit.meta || `0${index + 1} / ${String(eternalFits.length).padStart(2, "0")}`}</span>
-                      <strong>{fit.title}</strong>
-                      {fit.caption && <small>{fit.caption}</small>}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div className="eternal-fits-footer"><span>THE FIT NEVER STAYS STILL.</span><span>KEEP SCROLLING →</span></div>
-        </section>
-      )}
 
       <section className="about-contact" id="about-noirknull" aria-label="About NoirKnull and contact information">
         <div className="about-noirknull-copy reveal">
