@@ -298,8 +298,21 @@ export default function App() {
       </section>
    
       <div className="shop-toolbar"><div className="shop-result-count">{visibleShoes.length} OBJECT{visibleShoes.length===1?"":"S"} <span> / THE COLLECTION</span></div><label className="shop-search"><Search size={17}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search sneakers, styles..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={15}/></button>}</label><label className="shop-sort"><SlidersHorizontal size={15}/><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
-      <div className="shop-body"><div className="shop-mobile-controls"><label className="shop-mobile-search"><Search size={16}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search products..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={14}/></button>}</label><div className="shop-mobile-categories">{categories.map(category => <button key={category} className={activeCategory===category?"active":""} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}</div><label className="shop-mobile-sort"><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)}><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div><aside className="shop-filters"><p className="filter-heading">CATEGORIES <span>+</span></p>{categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>{category}<span>{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span></button>)}<div className="filter-note"><span>NOIRKNULL — 2026</span><p>Less noise.<br/>More intention.</p></div></aside>
-      <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
+      <div className="shop-body">
+        <div className="shop-mobile-controls">
+          <label className="shop-mobile-search"><Search size={16}/><input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search products..." aria-label="Search products"/>{searchTerm && <button onClick={() => setSearchTerm("")} aria-label="Clear search"><X size={14}/></button>}</label>
+          <label className="shop-mobile-sort"><span>SORT</span><select value={sortBy} onChange={(e) => setSortBy(e.target.value)}><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A–Z</option></select></label>
+        </div>
+        <div className="shop-filters shop-filters-top">
+          <div className="filter-heading"><span>CATEGORIES</span><b>FILTER THE DROP</b></div>
+          <div className="shop-category-row">
+            {categories.map((category) => <button key={category} className={activeCategory===category?"category-filter active":"category-filter"} onClick={() => setActiveCategory(category)}>
+              <span className="category-filter-label">{category}</span>
+              <span className="category-filter-count">{category==="ALL"?products.length:products.filter((shoe)=>categoryName(shoe).toUpperCase()===category.toUpperCase()).length}</span>
+            </button>)}
+          </div>
+        </div>
+        <div className="shop-results">{visibleShoes.length ? <div className="shop-product-grid">{visibleShoes.map((shoe,i)=><article className="shop-product-card" key={shoe.id}><button className="shop-product-image" onClick={()=>openProduct(shoe)} aria-label={`View ${shoe.name}`}><img src={shoe.image} alt={shoe.kind} loading="lazy" decoding="async"/>{shoe.tag&&<span className="shoe-tag">{shoe.tag}</span>}<span className="shop-view-link">VIEW PRODUCT <ArrowUpRight size={15}/></span></button><div className="shop-product-meta"><div><p>{shoe.category || (shoe.productType === "watch" ? "WATCHES" : shoe.productType === "apparel" ? "APPAREL" : shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")}</p><h2>{shoe.name}</h2><span>{shoe.tone}</span></div><strong>{money(shoe.price)}</strong></div></article>)}</div> : <div className="shop-empty"><Search size={25}/><h2>No matches found.</h2><p>Try another search or clear your filters.</p><button onClick={()=>{setSearchTerm("");setActiveCategory("ALL");}}>CLEAR FILTERS ↗</button></div>}</div></div>
       <div className="shop-bottom-note"><span>DESIGNED WITH INTENTION.</span><span>NO RULES, JUST FORM — NOIRKNULL®</span></div>
       <section className="shop-editorial reveal">
         <div className="shop-editorial-copy">
@@ -414,28 +427,28 @@ export default function App() {
               label: "SHOES",
               kicker: "01 / FOOTWEAR",
               description: "Everyday silhouettes built around movement.",
-              image: products.find((shoe) => shoe.productType === "shoes")?.image || homepage.editorialMainImage,
+              image: homepage.categoryImages?.SHOES || products.find((shoe) => shoe.productType === "shoes")?.image || homepage.editorialMainImage,
             },
             {
               key: "WATCHES",
               label: "WATCHES",
               kicker: "02 / TIME",
               description: "Useful details with a quieter point of view.",
-              image: products.find((shoe) => shoe.productType === "watch" || /watch/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[0],
+              image: homepage.categoryImages?.WATCHES || products.find((shoe) => shoe.productType === "watch" || /watch/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[0],
             },
             {
               key: "ACCESSORIES",
               label: "ACCESSORIES",
               kicker: "03 / THE EXTRAS",
               description: "The details that finish the whole feeling.",
-              image: products.find((shoe) => shoe.productType === "accessory" || /accessor|bag|wallet|cap|belt/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[1],
+              image: homepage.categoryImages?.ACCESSORIES || products.find((shoe) => shoe.productType === "accessory" || /accessor|bag|wallet|cap|belt/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.editorialAccessoryImages[1],
             },
             {
               key: "JACKETS",
               label: "JACKETS",
               kicker: "04 / OUTER LAYER",
               description: "Strong layers for wherever the day goes.",
-              image: products.find((shoe) => /jacket/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.fitPickImages[0],
+              image: homepage.categoryImages?.JACKETS || products.find((shoe) => /jacket/i.test(`${shoe.name} ${shoe.kind} ${shoe.category || ""}`))?.image || homepage.fitPickImages[0],
             },
           ].map((category) => (
             <button
