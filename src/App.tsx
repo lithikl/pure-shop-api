@@ -543,8 +543,8 @@ export default function App() {
             <p>For product questions, collaborations, orders or anything else, reach us directly.</p>
           </div>
           <div className="contact-links">
-            <a href="mailto:hello@noirknull.com"><span>EMAIL</span><strong>hello@noirknull.com</strong><ArrowUpRight size={16}/></a>
-            <a href="/track-order"><span>ORDERS</span><strong>TRACK AN ORDER</strong><ArrowUpRight size={16}/></a>
+            <a href="mailto:noirknull@gmail.com"><span>EMAIL</span><strong>noirknull@gmail.com</strong><ArrowUpRight size={16}/></a>
+            <a href="https://www.instagram.com/noir.knull" target="_blank" rel="noreferrer"><span>INSTAGRAM</span><strong>@noir.knull</strong><ArrowUpRight size={16}/></a><a href="/track-order"><span>ORDERS</span><strong>TRACK AN ORDER</strong><ArrowUpRight size={16}/></a>
           </div>
         </div>
       </section>
@@ -558,7 +558,7 @@ export default function App() {
           <button onClick={() => goTo("categories")}>SHOP CATEGORIES</button>
           <button onClick={() => goTo("about-noirknull")}>ABOUT NOIRKNULL</button>
           <a href="/track-order">TRACK ORDER ↗</a>
-          <a href="mailto:hello@noirknull.com">hello@noirknull.com ↗</a>
+          <a href="mailto:noirknull@gmail.com">noirknull@gmail.com ↗</a><a href="https://www.instagram.com/noir.knull" target="_blank" rel="noreferrer">@noir.knull ↗</a>
         </div>
       </div>
       <div className="footer-legal"><span>© NOIRKNULL 2026</span><span>SNEAKERS / WATCHES / ACCESSORIES / JACKETS</span><button onClick={() => goTo("top")}>BACK TO TOP ↑</button></div>
