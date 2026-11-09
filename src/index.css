@@ -4155,3 +4155,109 @@ button:focus-visible,a:focus-visible{
   .landing-hero-brand{padding:10px 12px!important}
   .landing-hero-actions{padding:6px!important}
 }
+
+
+/* FINAL VERIFIED FIXES — landing photo, cart, mobile categories */
+.liquid-glass-header .bag-button,
+.noir-header .bag-button,
+.bag-button{
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #e5e5e5!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+.liquid-glass-header .bag-button b,
+.noir-header .bag-button b,
+.bag-button b{
+  background:#fff!important;
+  color:#000!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.liquid-glass-header .bag-button:hover,
+.noir-header .bag-button:hover,
+.bag-button:hover{
+  background:#fff!important;
+  color:#000!important;
+}
+
+/* Category navigation must remain available on every viewport.
+   It scrolls horizontally on small screens rather than disappearing. */
+.shop-filters.shop-filters-top{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  background:#fff!important;
+  color:#000!important;
+  border-top:1px solid #e5e5e5!important;
+  border-bottom:1px solid #e5e5e5!important;
+}
+.shop-category-row{
+  display:flex!important;
+  width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  visibility:visible!important;
+  opacity:1!important;
+  background:#fff!important;
+}
+.shop-category-row .category-filter,
+.shop-category-row .category-filter:hover,
+.shop-category-row .category-filter.active{
+  flex:0 0 auto!important;
+  min-width:112px!important;
+  background:#fff!important;
+  color:#000!important;
+  border-color:#e5e5e5!important;
+  box-shadow:none!important;
+}
+.shop-category-row .category-filter.active{
+  border-color:#000!important;
+  background:#fff!important;
+  color:#000!important;
+}
+.shop-category-row .category-filter.active:before{
+  display:none!important;
+  content:none!important;
+}
+.shop-category-row .category-filter-label,
+.shop-category-row .category-filter-count{
+  color:#000!important;
+}
+
+/* All four homepage category cards stay visible on mobile. */
+.homepage-category-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.homepage-category-card{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  background:#fff!important;
+  color:#000!important;
+}
+.homepage-category-card *{color:#000!important}
+@media(max-width:900px){
+  .homepage-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+  .homepage-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .homepage-category-card{display:block!important}
+  .shop-category-row{padding-bottom:1px!important}
+  .shop-category-row .category-filter{min-width:112px!important}
+}
+
+/* Make the landing-photo control unmistakable in Admin. */
+.admin-landing-photo-card{
+  grid-column:1 / -1!important;
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #e5e5e5!important;
+}
+.admin-landing-photo-card .admin-category-image-help{
+  color:#000!important;
+}
