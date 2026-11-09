@@ -4261,3 +4261,64 @@ button:focus-visible,a:focus-visible{
 .admin-landing-photo-card .admin-category-image-help{
   color:#000!important;
 }
+
+
+/* FINAL WHITE-ONLY UI OVERRIDE
+   All interface surfaces stay white; black is reserved for readable text/icons only. */
+html,body,.noir-site{background:#fff!important;color:#111!important}
+.topline{background:#fff!important;color:#111!important;border-bottom:1px solid #e8e8e8}
+.topline span,.topline span:last-child{color:#111!important}
+.noir-header,.liquid-glass-header{background:#fff!important;color:#111!important;border-bottom:1px solid #e8e8e8;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.nav-links .nav-primary,.nav-links a,.noir-logo,.bag-button{background:#fff!important;color:#111!important;border-color:#ddd!important;box-shadow:none!important}
+.nav-links .nav-primary:after{background:#111!important}
+.bag-button:hover{background:#fff!important;color:#111!important}
+.bag-button b{background:#fff!important;color:#111!important;border:0!important}
+.mobile-menu-toggle{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.shoe-hero,.landing-hero-overlay,.landing-hero-actions button{background:#fff!important;color:#111!important}
+.landing-hero-overlay{background:transparent!important}
+.landing-hero-brand span,.landing-hero-brand small,.landing-hero-scroll{color:#111!important;text-shadow:none!important}
+.landing-hero-actions button{border:1px solid #ddd!important;color:#111!important}
+.landing-hero-actions button:hover{background:#fff!important;color:#111!important}
+.section-wrap,.collection,.homepage-categories,.homepage-products,.about-contact{background:#fff!important;color:#111!important}
+.homepage-section-heading,.section-intro,.homepage-section-heading *,.homepage-category-meta,.homepage-category-meta *,.homepage-product-meta,.homepage-product-meta *{color:#111!important}
+.homepage-category-card,.homepage-product-card,.shop-product-card,.related-card{background:#fff!important;color:#111!important;border-color:#e5e5e5!important;box-shadow:none!important}
+.homepage-category-arrow{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.homepage-category-card:hover .homepage-category-arrow{background:#fff!important;color:#111!important}
+.homepage-product-badge,.homepage-product-badge.best{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.homepage-product-view,.shop-view-link,.quick-add,.editorial-cta{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.shop-page,.shop-page-top,.shop-body,.shop-results,.shop-filters,.shop-toolbar,.shop-mobile-controls{background:#fff!important;color:#111!important}
+.shop-category-row .category-filter,.shop-category-row .category-filter.active,.shop-category-row .category-filter:hover{background:#fff!important;color:#111!important;border:1px solid #ddd!important;box-shadow:none!important}
+.shop-category-row .category-filter.active{border-color:#111!important}
+.category-filter-label,.category-filter-count{color:#111!important}
+.shop-search,.shop-sort,.shop-mobile-search,.shop-mobile-sort{background:#fff!important;color:#111!important;border-color:#ddd!important}
+.shop-search input,.shop-mobile-search input,.shop-sort select,.shop-mobile-sort select{background:#fff!important;color:#111!important}
+.shop-empty,.shop-empty *{background:#fff!important;color:#111!important}
+.shop-empty button{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.product-page,.product-information,.product-gallery,.product-gallery-stage,.product-main-image,.product-accordions,.product-accordion,.related-products{background:#fff!important;color:#111!important}
+.product-glass-product-label{background:#fff!important;color:#111!important;border:1px solid #ddd!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.product-glass-product-label *,.product-image-index,.product-category,.product-tone,.product-description,.product-delivery-note,.product-number{color:#111!important}
+.product-gallery-arrow,.product-gallery-thumbs button{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.product-gallery-thumbs button.active{border-color:#111!important}
+.size-option,.size-option:hover,.size-option.size-selected{background:#fff!important;color:#111!important;border:1px solid #ddd!important;box-shadow:none!important}
+.product-add-button,.checkout-primary{background:#fff!important;color:#111!important;border:1px solid #111!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.product-add-button:hover,.checkout-primary:hover{background:#fff!important;color:#111!important}
+.cart-backdrop{background:rgba(255,255,255,.78)!important}
+.cart-drawer,.cart-head,.bag-items,.bag-item,.bag-bottom,.empty-bag{background:#fff!important;color:#111!important}
+.cart-head h2,.bag-item h3,.bag-item strong,.bag-bottom strong,.empty-bag p{color:#111!important}
+.cart-head>button,.bag-item>button,.empty-bag button,.bag-bottom>button{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.admin-page,.admin-shell,.admin-main,.admin-content,.admin-section,.admin-card,.admin-sidebar,.admin-header,.admin-panel,.admin-login-card{background:#fff!important;color:#111!important}
+.admin-sidebar{border-right:1px solid #e5e5e5!important}
+.admin-sidebar nav button,.admin-back{background:#fff!important;color:#111!important;border-color:#ddd!important}
+.admin-sidebar nav button.active,.admin-sidebar nav button:hover,.admin-back:hover{background:#fff!important;color:#111!important;border-color:#111!important}
+.admin-primary,.admin-secondary,.admin-category-chip button,.admin-size-chip.active{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.admin-product-card,.admin-product-image,.admin-product-body,.admin-card-actions{background:#fff!important;color:#111!important;border-color:#e5e5e5!important}
+.admin-product-image>span{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.admin-login-card input{background:#fff!important;color:#111!important;border:1px solid #ddd!important}
+.admin-login-card *{color:#111!important}
+.about-contact{display:grid;background:#fff!important;color:#111!important}
+.about-noirknull-copy,.about-contact-card,.contact-links,.contact-links a,.contact-links a *{background:#fff!important;color:#111!important}
+.contact-links a{border-color:#e5e5e5!important}
+.noir-footer,.footer-main,.footer-legal,.footer-nav{background:#fff!important;color:#111!important}
+.noir-footer *,.footer-nav a,.footer-nav button,.footer-wordmark,.footer-legal{color:#111!important}
+.noir-footer{border-top:1px solid #e5e5e5!important}
+::selection{background:#eee!important;color:#111!important}
