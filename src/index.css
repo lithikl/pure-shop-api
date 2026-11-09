@@ -2884,3 +2884,95 @@ a{color:inherit}
 .admin-card-actions button{
   color:#f2efe7 !important;
 }
+
+
+/* NoirKnull shop category navigation: horizontal above the product grid */
+.shop-body{
+  display:block;
+  max-width:1320px;
+  margin:0 auto;
+  padding:0 max(5%,calc((100vw - 1320px)/2)) 60px;
+}
+.shop-mobile-controls{display:none}
+.shop-filters.shop-filters-top{
+  position:static;
+  width:100%;
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--line);
+  margin:0 0 28px;
+  padding:0;
+}
+.shop-filters-top .filter-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 0;
+  margin:0;
+  border-bottom:1px solid var(--line);
+  font:8px var(--mono);
+  letter-spacing:.08em;
+  color:var(--ink);
+}
+.shop-filters-top .filter-heading b{font:8px var(--mono);font-weight:400;color:var(--muted)}
+.shop-category-row{display:flex;align-items:stretch;gap:0;width:100%;overflow-x:auto;scrollbar-width:none}
+.shop-category-row::-webkit-scrollbar{display:none}
+.shop-category-row .category-filter{
+  width:auto;
+  min-width:110px;
+  flex:1 1 0;
+  border-top:0;
+  border-right:1px solid var(--line);
+  padding:14px 16px;
+  gap:10px;
+  justify-content:space-between;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.shop-category-row .category-filter:last-child{border-right:0}
+.shop-category-row .category-filter:hover,
+.shop-category-row .category-filter.active{color:var(--ink);background:#e8e5dc}
+.shop-category-row .category-filter.active{font-weight:500}
+.shop-category-row .category-filter.active:before{display:none}
+.category-filter-label{font:9px var(--mono);letter-spacing:.05em}
+.category-filter-count{font:8px var(--mono);color:#aaa79d}
+.shop-results{width:100%;min-width:0}
+.shop-product-grid{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:32px 18px}
+.shop-product-card{min-width:0}
+.shop-product-image{aspect-ratio:1/1}
+.shop-product-meta{min-height:64px}
+.admin-category-image-help{margin:0 0 16px;color:#77736a;font-size:10px;line-height:1.6}
+.admin-category-image-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.admin-category-image-control{min-width:0}
+.admin-category-image-control>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:9px}
+.admin-category-image-control>div:first-child span{font:7px var(--mono);color:#77736a;letter-spacing:.06em}
+.admin-category-image-control>div:first-child strong{font:9px var(--mono)}
+@media(max-width:1000px){
+  .shop-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .admin-category-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px){
+  .shop-body{max-width:none;padding-left:5%;padding-right:5%}
+  .shop-filters.shop-filters-top{margin-bottom:22px}
+  .shop-category-row .category-filter{flex:0 0 auto;min-width:120px}
+  .shop-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 12px}
+}
+@media(max-width:600px){
+  .shop-body{padding-top:0;padding-bottom:48px}
+  .shop-mobile-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin:0 0 14px}
+  .shop-mobile-search{display:flex;align-items:center;gap:8px;min-width:0;border-bottom:1px solid #aaa79d;padding:9px 0}
+  .shop-mobile-search input{width:100%;min-width:0;border:0;outline:none;background:transparent;font-size:10px}
+  .shop-mobile-search button{background:none;padding:3px}
+  .shop-mobile-sort{display:flex;align-items:center;gap:5px;font:8px var(--mono);white-space:nowrap}
+  .shop-mobile-sort select{max-width:105px;border:0;background:transparent;font:9px var(--mono)}
+  .shop-filters.shop-filters-top{margin-bottom:20px}
+  .shop-filters-top .filter-heading{padding:11px 0}
+  .shop-category-row .category-filter{min-width:108px;padding:12px 11px}
+  .shop-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 10px}
+  .shop-product-image{aspect-ratio:1/1}
+  .shop-product-meta{min-height:0}
+  .shop-product-meta h2{font-size:10px}
+  .shop-product-meta p{font-size:8px}
+  .shop-product-meta span{font-size:8px}
+  .shop-product-meta strong{font-size:9px}
+  .admin-category-image-grid{grid-template-columns:1fr}
+}
