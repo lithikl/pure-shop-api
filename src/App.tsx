@@ -103,8 +103,9 @@ export default function App() {
     const channel = (() => { try { return new BroadcastChannel("noirknull-store"); } catch { return null; } })();
     channel?.addEventListener("message", syncProducts);
     const refreshOnFocus = () => { void syncCloud(true); };
+    const refreshOnVisibility = () => { void syncCloud(); };
     window.addEventListener("focus", refreshOnFocus);
-    document.addEventListener("visibilitychange", syncCloud);
+    document.addEventListener("visibilitychange", refreshOnVisibility);
     return () => {
       window.removeEventListener("noirknull:products", syncProducts);
       window.removeEventListener("noirknull:featured", syncFeatured);
@@ -118,7 +119,7 @@ export default function App() {
       channel?.removeEventListener("message", syncProducts);
       channel?.close();
       window.removeEventListener("focus", refreshOnFocus);
-      document.removeEventListener("visibilitychange", syncCloud);
+      document.removeEventListener("visibilitychange", refreshOnVisibility);
     };
   }, []);
 
