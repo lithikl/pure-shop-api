@@ -3795,3 +3795,81 @@ h1,h2,h3,h4,h5,h6,strong,b{color:#000!important;}
 
 .ticker,.closing-banner{background:#000!important;color:#fff!important;}
 .ticker *,.closing-banner *{color:#fff!important;}
+
+/* PURE WHITE SURFACE — BLACK TEXT ONLY */
+:root{
+  --ink:#000!important;
+  --paper:#fff!important;
+  --red:#fff!important;
+  --muted:#000!important;
+  --line:#e5e5e5!important;
+}
+html,body,#root,.noir-site,.admin-shell,.admin-main,.product-page,
+section,main,article,aside,header,nav,footer,div,form{
+  background-color:#fff!important;
+  color:#000!important;
+}
+body{background:#fff!important;color:#000!important;}
+*{border-color:#e5e5e5;}
+h1,h2,h3,h4,h5,h6,p,span,strong,b,small,label,a,button,input,textarea,select,li{
+  color:#000!important;
+}
+button,input,textarea,select{
+  background:#fff!important;
+  color:#000!important;
+  box-shadow:none!important;
+}
+button:hover{background:#fff!important;color:#000!important;}
+::placeholder{color:#777!important;}
+.topline,.ticker,.closing-banner,.noir-footer{
+  background:#fff!important;
+  color:#000!important;
+}
+.topline *, .ticker *, .closing-banner *, .noir-footer *{
+  color:#000!important;
+}
+.bag-button,.quick-add,.admin-primary,.admin-sidebar button.active,
+.admin-nav button.active,.admin-login button,.admin-modal-actions .admin-primary{
+  background:#fff!important;
+  color:#000!important;
+  border:1px solid #000!important;
+}
+.bag-button b{color:#000!important;}
+.shoe-hero,.hero-art,.shoe-photo,.product-main-image,.admin-product-image,
+.admin-preview,.admin-login-card,.admin-sidebar,.admin-topbar,.admin-section,
+.admin-control-card,.admin-product-card,.admin-warning,.admin-settings-grid>div,
+.admin-toggle,.admin-modal,.admin-eternal-row,.admin-size-chip,.admin-merch-option,
+.admin-category-image-control,.admin-category-add,.admin-home-actions{
+  background:#fff!important;
+  color:#000!important;
+}
+.hero-copy,.hero-copy *,.hero-branding,.hero-meta,.scroll-cue{
+  color:#000!important;
+}
+.shoe-hero .hero-actions button,.shoe-hero button{
+  background:#fff!important;color:#000!important;border:1px solid #000!important;
+}
+.product-glass-product-label,.product-image-index,.product-crumb button,
+.product-crumb,.product-main-image,.product-page *{
+  background-color:#fff!important;
+  color:#000!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.product-glass-product-label span{color:#000!important;}
+.admin-modal-backdrop,.cart-backdrop{background:rgba(255,255,255,.88)!important;}
+.cart-drawer{background:#fff!important;color:#000!important;}
+.cart-head,.bag-item,.detail-list,.detail-row,.admin-modal-head{
+  border-color:#e5e5e5!important;
+}
+.admin-form-grid input,.admin-form-grid textarea,.admin-form-grid select,
+.admin-category-add input,.admin-category-inline input,.admin-color-field input{
+  background:#fff!important;color:#000!important;border:1px solid #d0d0d0!important;
+}
+.admin-toggle.active,.admin-size-chip.active,.admin-merch-option.active{
+  background:#fff!important;color:#000!important;border:1px solid #000!important;
+}
+.admin-range input{accent-color:#000!important;}
+.shoe-tag{background:#fff!important;color:#000!important;border:1px solid #000!important;}
+.reveal{background:transparent!important;}
