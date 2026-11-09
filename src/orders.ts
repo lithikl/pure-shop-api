@@ -40,7 +40,7 @@ export function saveOrders(orders: Order[]) {
   window.dispatchEvent(new Event("noirknull:orders"));
 }
 
-export function createOrder(input: Omit<Order, "id" | "createdAt" | "timeline" | "status">): Order {
+export function createOrder(input: Omit<Order, "id" | "trackingNumber" | "createdAt" | "timeline" | "status">): Order {
   const order: Order = {
     ...input,
     id: "NK" + Date.now().toString(36).toUpperCase(),
