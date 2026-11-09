@@ -370,7 +370,7 @@ export default function App() {
     {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
       <section className="shoe-hero" aria-label="NoirKnull opening">
         <div className="landing-hero-image">
-          <img src={homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
+          <img src={homepage.heroImage || homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
         </div>
         <div className="landing-hero-overlay">
           <div className="landing-hero-brand">
