@@ -164,6 +164,13 @@ export function publishCloudSection(section: keyof CloudStore, value: unknown) {
   return writeCloudSection(section, value);
 }
 
+export type HomepageCategoryImages = {
+  SHOES: string;
+  WATCHES: string;
+  ACCESSORIES: string;
+  JACKETS: string;
+};
+
 export type HomepageSettings = {
   heroImage: string;
   heroVideo: string;
@@ -183,6 +190,13 @@ export type HomepageSettings = {
 
 export const DEFAULT_HOMEPAGE: HomepageSettings = {
   heroImage: "/assets/output-onlinepngtools.png",
+  categoryImages: {
+    SHOES: DEFAULT_SHOES[0].image,
+    WATCHES: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=88",
+    ACCESSORIES: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=88",
+    JACKETS: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1000&q=88",
+  },
+  heroVideo: "/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4",
   heroVideo: "/assets/WhatsApp Video 2026-10-12 at 12.43.48 PM.mp4",
   manifestoImage: "https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=1400&q=90",
   fitPickImages: [
@@ -346,6 +360,10 @@ export function loadHomepageSettings(): HomepageSettings {
     return {
       ...DEFAULT_HOMEPAGE,
       ...parsed,
+      categoryImages: {
+        ...DEFAULT_HOMEPAGE.categoryImages,
+        ...(parsed.categoryImages && typeof parsed.categoryImages === "object" ? parsed.categoryImages : {}),
+      },
       fitPickImages: Array.isArray(parsed.fitPickImages) ? parsed.fitPickImages.slice(0, 3) : DEFAULT_HOMEPAGE.fitPickImages,
       editorialAccessoryImages: Array.isArray(parsed.editorialAccessoryImages) ? parsed.editorialAccessoryImages.slice(0, 2) : DEFAULT_HOMEPAGE.editorialAccessoryImages,
     };
