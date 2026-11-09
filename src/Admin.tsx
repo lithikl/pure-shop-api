@@ -547,9 +547,10 @@ export default function Admin() {
         <div className="admin-section-head"><div><span>02 / HOMEPAGE CONTROL</span><h2>Control the visual direction.</h2><p>Change the homepage photography, turn sections on/off and control the Eternal Fits wave treatment. Uploading a photo here changes the storefront immediately in this browser.</p></div></div>
 
         <div className="admin-home-grid">
-          <div className="admin-control-card admin-home-hero-card">
-            <div className="admin-control-card-head"><span>HERO / 01</span><strong>Main sneaker image</strong></div>
-            <ImagePicker value={homepage.heroImage} aspectRatio={1} onChange={value => persistHomepage({...homepage, heroImage: value})} />
+          <div className="admin-control-card admin-home-hero-card admin-landing-photo-card">
+            <div className="admin-control-card-head"><span>LANDING PAGE / MAIN PHOTO</span><strong>Opening landing image</strong></div>
+            <p className="admin-category-image-help">This is the huge photo shown first on the NoirKnull landing page. Change it here and the storefront opening image updates.</p>
+            <ImagePicker value={homepage.heroImage} aspectRatio={1.78} onChange={value => persistHomepage({...homepage, heroImage: value})} />
           </div>
 
           <div className="admin-control-card admin-home-hero-card">
