@@ -3,7 +3,6 @@ import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Se
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
-import PatternWaves from "./PatternWaves";
 import TrackOrder from "./TrackOrder";
 
 type CartItem = { shoe: Shoe; size: string };
@@ -32,6 +31,7 @@ export default function App() {
   const collectionPath = window.location.pathname === "/best-sellers" ? "best" : window.location.pathname === "/new-drop" ? "new" : null;
   const [products, setProducts] = useState<Shoe[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
   const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
@@ -60,25 +60,28 @@ export default function App() {
     let mounted = true;
     (async () => {
       try {
+        setCatalogError("");
         const state = await hydrateFromCloud(true);
         if (!mounted) return;
 
-        if (state === "synced") {
-          // R2/cloud store is authoritative for the live storefront.
-          setProducts(loadProducts());
-          setSavedCategories(loadCategories());
-          setFeaturedIds(loadFeatured());
-          setEternalFits(loadEternalFits());
-          setHomepage(loadHomepageSettings());
+        if (state !== "synced") {
+          setCatalogError(
+            state === "empty"
+              ? "The live collection is currently empty."
+              : "We couldn't load the latest collection. Please try again."
+          );
           return;
         }
 
-        // Only fall back to local cache if the cloud is temporarily unavailable.
+        // Cloudflare/R2 is the storefront source of truth. Never render an old
+        // browser catalog first and accidentally mix it with the live catalog.
         setProducts(loadProducts());
         setSavedCategories(loadCategories());
         setFeaturedIds(loadFeatured());
         setEternalFits(loadEternalFits());
         setHomepage(loadHomepageSettings());
+      } catch {
+        if (mounted) setCatalogError("We couldn't load the latest collection. Please try again.");
       } finally {
         if (mounted) setCatalogLoading(false);
       }
@@ -293,8 +296,27 @@ export default function App() {
   if (catalogLoading) {
     return (
       <div className="noir-site" style={{ minHeight: "100svh", background: "#fff", color: "#111", display: "grid", placeItems: "center" }}>
-        <div style={{ fontFamily: "DM Mono, monospace", fontSize: "10px", letterSpacing: ".12em" }}>
-          LOADING NOIRKNULL
+        <div style={{ textAlign: "center", fontFamily: "DM Mono, monospace", fontSize: "10px", letterSpacing: ".12em" }}>
+          LOADING COLLECTION
+        </div>
+      </div>
+    );
+  }
+
+  if (catalogError) {
+    return (
+      <div className="noir-site" style={{ minHeight: "100svh", background: "#fff", color: "#111", display: "grid", placeItems: "center", padding: "24px" }}>
+        <div style={{ width: "min(460px,100%)", textAlign: "center" }}>
+          <p className="kicker">NOIRKNULL / COLLECTION</p>
+          <h1 style={{ margin: "14px 0", fontSize: "clamp(42px,8vw,68px)", letterSpacing: "-.08em", lineHeight: ".92" }}>Collection<br/><em style={{ fontStyle: "normal", fontWeight: 300 }}>unavailable.</em></h1>
+          <p style={{ color: "#6b6b67", fontSize: "12px", lineHeight: 1.7 }}>{catalogError}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            style={{ marginTop: "18px", minHeight: "46px", padding: "0 18px", border: "1px solid #111", borderRadius: "999px", background: "#111", color: "#fff", font: "800 9px/1 var(--mono)", letterSpacing: ".08em" }}
+          >
+            RETRY
+          </button>
         </div>
       </div>
     );
@@ -400,10 +422,6 @@ export default function App() {
           <img src={homepage.heroImage || homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
         </div>
         <div className="landing-hero-overlay">
-          <div className="landing-hero-brand">
-            <span>NOIRKNULL®</span>
-            <small>EST. 2026 / INDIA</small>
-          </div>
           <div className="landing-hero-actions">
             <button onClick={openShop}>SHOP <ArrowRight size={16}/></button>
             <button onClick={() => goTo("about-noirknull")}>ABOUT US <ArrowDownRight size={16}/></button>
@@ -593,6 +611,6 @@ export default function App() {
 
     }
 
-    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); goTo("collection"); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind} loading="lazy" decoding="async"/><div><p>{item.shoe.category || (item.shoe.productType === "watch" ? "WATCHES" : item.shoe.productType === "apparel" ? "APPAREL" : item.shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} · {item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
+    {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}><div className="cart-head"><div><p className="kicker">NOIRKNULL / YOUR BAG</p><h2>Your picks <span>({cart.length})</span></h2></div><button onClick={() => setCartOpen(false)} aria-label="Close bag"><X/></button></div>{cart.length === 0 ? <div className="empty-bag"><ShoppingBag size={28}/><p>Your bag is taking it slow.</p><button onClick={() => { setCartOpen(false); openShop(); }}>EXPLORE THE DROP <ArrowRight size={15}/></button></div> : <><div className="bag-items">{cart.map((item, i) => <div className="bag-item" key={`${item.shoe.id}-${item.size}-${i}`}><img src={item.shoe.image} alt={item.shoe.kind} loading="lazy" decoding="async"/><div><p>{item.shoe.category || (item.shoe.productType === "watch" ? "WATCHES" : item.shoe.productType === "apparel" ? "APPAREL" : item.shoe.productType === "accessory" ? "ACCESSORIES" : "SHOES")} · {item.size === "OS" ? "ONE SIZE" : "SIZE " + item.size}</p><h3>{item.shoe.name}</h3><strong>{money(item.shoe.price)}</strong></div><button aria-label="Remove item" onClick={() => setCart((old) => old.filter((_, index) => index !== i))}><X size={15}/></button></div>)}</div><div className="bag-bottom"><div><span>SUBTOTAL</span><strong>{money(cart.reduce((sum, item) => sum + item.shoe.price, 0))}</strong></div><p>Shipping and taxes calculated at checkout.</p><button onClick={openCheckout}>CONTINUE TO CHECKOUT <ArrowRight size={16}/></button></div></>}</aside></div>}
   </div>;
 }
