@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Menu, Search, SlidersHorizontal, Share2 } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
-import { EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
+import { DEFAULT_SHOES, EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
 import TrackOrder from "./TrackOrder";
 
 type CartItem = { shoe: Shoe; size: string };
@@ -29,7 +29,7 @@ export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const isTrackOrder = window.location.pathname === "/track-order";
   const collectionPath = window.location.pathname === "/best-sellers" ? "best" : window.location.pathname === "/new-drop" ? "new" : null;
-  const [products, setProducts] = useState<Shoe[]>([]);
+  const [products, setProducts] = useState<Shoe[]>(DEFAULT_SHOES);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
   const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
@@ -65,16 +65,20 @@ export default function App() {
         if (!mounted) return;
 
         if (state !== "synced") {
-          setCatalogError(
-            state === "empty"
-              ? "The live collection is currently empty."
-              : "We couldn't load the latest collection. Please try again."
-          );
+          // The storefront must remain usable even when the cloud catalog is
+          // temporarily unreachable on a browser/network. Keep a known-good
+          // built-in catalog instead of replacing the entire site with an
+          // "Collection unavailable" error page.
+          setCatalogError("");
+          setProducts(DEFAULT_SHOES);
+          setSavedCategories(Array.from(new Set(DEFAULT_SHOES.map((p) => p.category).filter(Boolean) as string[])).sort());
+          setFeaturedIds(DEFAULT_SHOES.map((p) => p.id));
           return;
         }
 
-        // Cloudflare/R2 is the storefront source of truth. Never render an old
-        // browser catalog first and accidentally mix it with the live catalog.
+        // Cloudflare/R2 is the storefront source of truth when reachable.
+        // Never mix a stale browser catalog with the live catalog.
+        setCatalogError("");
         setProducts(loadProducts());
         setSavedCategories(loadCategories());
         setFeaturedIds(loadFeatured());
