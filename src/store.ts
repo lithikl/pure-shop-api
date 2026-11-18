@@ -33,7 +33,16 @@ export const DEFAULT_SHOES: Shoe[] = [
   { id: 4, name: "AFTER / 04", kind: "Daily Essential", category: "Essentials", price: 3490, productType: "shoes", sizes: ["6","7","8","9","10","11","12"], image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90", images: ["https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1100&q=90"], tone: "Mono / Grey" },
 ];
 
-const CLOUD_API_BASE = "https://noirknull.lithiksaran130510.workers.dev";
+const CLOUD_API_BASE = (() => {
+  if (typeof window === "undefined") return "https://noirknull.lithiksaran130510.workers.dev";
+  const host = window.location.hostname.toLowerCase();
+  // On production, use the same origin as the storefront so Safari/iPhone does
+  // not depend on a separate workers.dev origin or cross-site cache.
+  if (host === "noirknull.in" || host === "www.noirknull.in" || host.endsWith(".noirknull.in")) {
+    return "";
+  }
+  return "https://noirknull.lithiksaran130510.workers.dev";
+})();
 
 const cloudApi = (path: string) => `${CLOUD_API_BASE}${path}`;
 
