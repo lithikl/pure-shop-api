@@ -29,6 +29,16 @@ import {
 
 const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
+const API_BASE = (() => {
+  if (typeof window === "undefined") return "https://noirknull.lithiksaran130510.workers.dev";
+  const host = window.location.hostname.toLowerCase();
+  return host === "noirknull.in" || host === "www.noirknull.in" || host.endsWith(".noirknull.in")
+    ? ""
+    : "https://noirknull.lithiksaran130510.workers.dev";
+})();
+
+const api = (path: string) => `${API_BASE}${path}`;
+
 const productTypeLabel = (type: ProductType | undefined) => type === "watch" ? "WATCH" : type === "apparel" ? "APPAREL" : type === "accessory" ? "ACCESSORY" : type === "other" ? "OTHER" : "SHOES";
 
 const emptyProduct = (): Shoe => ({
@@ -61,7 +71,7 @@ async function uploadMedia(file: File): Promise<string> {
   const form = new FormData();
   form.append("file", file);
   const token = getAdminToken();
-  const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/upload", {
+  const response = await fetch(api("/api/upload"), {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: form,
@@ -261,7 +271,7 @@ export default function Admin() {
     setAdminBusy(true);
     setAdminError("");
     try {
-      const response = await fetch("https://noirknull.lithiksaran130510.workers.dev/api/admin/login", {
+      const response = await fetch(api("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ password: adminPassword }),
