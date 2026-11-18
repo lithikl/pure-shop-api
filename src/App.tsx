@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal, Share2 } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Menu, Search, SlidersHorizontal, Share2 } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
@@ -345,7 +345,7 @@ export default function App() {
   return <div className="noir-site">
     <div className="topline"><span>SNEAKERS & ACCESSORIES / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
     <header className="noir-header liquid-glass-header">
-      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>☰</button>
+      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={18}/> : <Menu size={18}/>}</button>
       <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
         <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("about-noirknull"); setMobileMenuOpen(false); }}>ABOUT US</button>
