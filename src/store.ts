@@ -86,38 +86,39 @@ const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   const workerBase = "https://noirknull.lithiksaran130510.workers.dev";
   const sameOriginBase = CLOUD_API_BASE;
-  // Cloudflare Worker is the storefront source of truth. Try it first so
-  // Safari/iPhone never depends on how the custom domain routes /api/*.
+  const paths = ["/api/catalog", "/api/store"];
   const bases = Array.from(new Set([workerBase, sameOriginBase].filter((value) => value !== undefined)));
 
   for (const base of bases) {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 8000);
+    for (const path of paths) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 8000);
 
-    try {
-      const response = await fetch(`${base}/api/store?ts=${Date.now()}`, {
-        method: "GET",
-        mode: base ? "cors" : "same-origin",
-        credentials: "omit",
-        cache: "no-store",
-        signal: controller.signal,
-        headers: { Accept: "application/json" },
-      });
+      try {
+        const response = await fetch(`${base}${path}?ts=${Date.now()}`, {
+          method: "GET",
+          mode: base ? "cors" : "same-origin",
+          credentials: "omit",
+          cache: "no-store",
+          signal: controller.signal,
+          headers: { Accept: "application/json" },
+        });
 
-      if (!response.ok) continue;
+        if (!response.ok) continue;
 
-      const payload = await response.json().catch(() => null);
-      if (!payload?.ok) continue;
+        const payload = await response.json().catch(() => null);
+        if (!payload?.ok) continue;
 
-      return {
-        ok: true,
-        exists: Boolean(payload.exists),
-        data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
-      };
-    } catch {
-      // Try the next API origin.
-    } finally {
-      window.clearTimeout(timeout);
+        return {
+          ok: true,
+          exists: Boolean(payload.exists),
+          data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
+        };
+      } catch {
+        // Try the next endpoint/origin.
+      } finally {
+        window.clearTimeout(timeout);
+      }
     }
   }
 
