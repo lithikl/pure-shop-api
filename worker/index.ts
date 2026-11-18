@@ -562,9 +562,9 @@ export default {
       return verifyRazorpayPayment(request, env);
     }
 
-    if (url.pathname === "/api/store") {
+    if (url.pathname === "/api/store" || url.pathname === "/api/catalog") {
       if (request.method === "GET") return readStoreApi(env);
-      if (request.method === "POST") return writeStoreApi(request, env);
+      if (request.method === "POST" && url.pathname === "/api/store") return writeStoreApi(request, env);
       return new Response("Method Not Allowed", { status: 405 });
     }
 
