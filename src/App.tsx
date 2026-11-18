@@ -156,6 +156,26 @@ export default function App() {
   }, [products]);
 
   useEffect(() => {
+    const syncProductFromUrl = () => {
+      const productId = Number(new URLSearchParams(window.location.search).get("product"));
+      if (!productId) {
+        setSelectedProduct(null);
+        setSelectedImageIndex(0);
+        setSelectedSize(null);
+        return;
+      }
+      const shoe = products.find((item) => item.id === productId);
+      if (!shoe) return;
+      setSelectedProduct(shoe);
+      setSelectedImageIndex(0);
+      setSelectedSize(null);
+      setOpenDetail("description");
+    };
+    window.addEventListener("popstate", syncProductFromUrl);
+    return () => window.removeEventListener("popstate", syncProductFromUrl);
+  }, [products]);
+
+  useEffect(() => {
     const revealElements = Array.from(document.querySelectorAll(".reveal"));
     if (!revealElements.length) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
