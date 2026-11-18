@@ -86,43 +86,45 @@ const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   const workerBase = "https://noirknull.lithiksaran130510.workers.dev";
   const sameOriginBase = CLOUD_API_BASE;
-  const paths = ["/api/catalog", "/api/store"];
-  const bases = Array.from(new Set([workerBase, sameOriginBase].filter((value) => value !== undefined)));
+  const bases = Array.from(new Set([sameOriginBase, workerBase]));
+  const urls = bases.flatMap((base) =>
+    ["/api/catalog", "/api/store"].map((path) => `${base}${path}?ts=${Date.now()}`)
+  );
 
-  for (const base of bases) {
-    for (const path of paths) {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 8000);
-
-      try {
-        const response = await fetch(`${base}${path}?ts=${Date.now()}`, {
-          method: "GET",
-          mode: base ? "cors" : "same-origin",
-          credentials: "omit",
-          cache: "no-store",
-          signal: controller.signal,
-          headers: { Accept: "application/json" },
-        });
-
-        if (!response.ok) continue;
-
-        const payload = await response.json().catch(() => null);
-        if (!payload?.ok) continue;
-
-        return {
-          ok: true,
-          exists: Boolean(payload.exists),
-          data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
-        };
-      } catch {
-        // Try the next endpoint/origin.
-      } finally {
-        window.clearTimeout(timeout);
-      }
+  // Do the endpoints concurrently. iOS WebKit can be slow to establish a
+  // second connection after a failed/blocked request; racing all known routes
+  // prevents one dead request from making the whole catalog appear unavailable.
+  const request = async (url: string) => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 7000);
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        mode: url.startsWith("https://noirknull.in") || url.startsWith("https://www.noirknull.in") ? "same-origin" : "cors",
+        credentials: "omit",
+        cache: "no-store",
+        redirect: "follow",
+        signal: controller.signal,
+        headers: { Accept: "application/json, text/plain, */*" },
+      });
+      if (!response.ok) return null;
+      const payload = await response.json().catch(() => null);
+      if (!payload?.ok) return null;
+      return {
+        ok: true,
+        exists: Boolean(payload.exists),
+        data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
+      } satisfies CloudStoreResult;
+    } catch {
+      return null;
+    } finally {
+      window.clearTimeout(timeout);
     }
-  }
+  };
 
-  return { ok: false, exists: false, data: null };
+  const results = await Promise.all(urls.map(request));
+  const success = results.find((result): result is CloudStoreResult => Boolean(result?.ok));
+  return success || { ok: false, exists: false, data: null };
 }
 
 export async function getCloudStore(): Promise<CloudStore | null> {
