@@ -3122,3 +3122,133 @@ body {
 .pattern-waves {
   display: none !important;
 }
+
+
+/* Final white-surface contract — overrides legacy !important rules. */
+.topline,
+.noir-header,
+.liquid-glass-header,
+.nav-links,
+.nav-links.nav-open,
+.landing-hero-actions,
+.landing-hero-actions button,
+.homepage-category-arrow,
+.homepage-category-index,
+.homepage-product-badge,
+.homepage-product-view,
+.shop-view-link,
+.shoe-tag,
+.shop-search,
+.shop-sort,
+.shop-mobile-search,
+.shop-mobile-sort,
+.category-filter,
+.category-filter.active,
+.product-crumb button,
+.product-glass-product-label,
+.product-image-index,
+.product-gallery-arrow,
+.product-gallery-thumbs button,
+.product-share-button,
+.size-option,
+.product-accordion > button,
+.cart-head > button,
+.bag-item > button,
+.admin-sidebar button,
+.admin-nav button,
+.admin-primary,
+.admin-secondary,
+.admin-card-actions button,
+.admin-home-actions button,
+.admin-modal-actions button,
+.admin-category-add button,
+.admin-category-inline button,
+.admin-gallery-editor-head button,
+.admin-eternal-actions button,
+.admin-upload-button,
+.admin-adjust-button,
+.admin-reset,
+.admin-size-options button,
+.admin-merch-options button,
+.checkout-option,
+.review-card,
+.track-search input,
+.track-search button,
+.track-back,
+.checkout-back {
+  background: #fff !important;
+  color: #111 !important;
+}
+
+.category-filter.active,
+.category-filter.active:hover {
+  border-color: #111 !important;
+  color: #111 !important;
+}
+
+.category-filter.active .category-filter-label,
+.category-filter.active .category-filter-count {
+  color: #111 !important;
+}
+
+.product-add-button,
+.checkout-primary,
+.bag-bottom > button,
+.empty-bag button {
+  background: #fff !important;
+  color: #111 !important;
+  border: 1px solid #111 !important;
+  box-shadow: none !important;
+}
+
+.product-add-button:hover,
+.checkout-primary:hover,
+.bag-bottom > button:hover,
+.empty-bag button:hover,
+.track-search button:hover,
+.admin-primary:hover {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #111 !important;
+}
+
+.noir-footer,
+.footer-main,
+.footer-legal,
+.footer-nav,
+.home-content,
+.shop-page,
+.product-page,
+.checkout-page,
+.track-page,
+.admin-page,
+.admin-main,
+.admin-sidebar {
+  background: #fff !important;
+  color: #111 !important;
+}
+
+.noir-footer * {
+  color: #111 !important;
+}
+
+button:hover {
+  color: inherit;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .noir-header.liquid-glass-header {
+    top: 0 !important;
+    padding-top: env(safe-area-inset-top,0px) !important;
+  }
+
+  .cart-backdrop {
+    height: 100dvh !important;
+  }
+
+  .cart-drawer {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom,0px)) !important;
+  }
+}
