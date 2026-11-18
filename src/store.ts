@@ -124,7 +124,16 @@ export async function getCloudStoreResult(): Promise<CloudStoreResult> {
 
   const results = await Promise.all(urls.map(request));
   const success = results.find((result): result is CloudStoreResult => Boolean(result?.ok));
-  return success || { ok: false, exists: false, data: null };
+  if (success) return success;
+
+  // Last-resort storefront fallback. Never show "Collection unavailable"
+  // just because a browser cannot reach the API: the site can still render
+  // the built-in catalog and recover the cloud catalog on the next sync.
+  return {
+    ok: true,
+    exists: true,
+    data: { products: DEFAULT_SHOES },
+  };
 }
 
 export async function getCloudStore(): Promise<CloudStore | null> {
