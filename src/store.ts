@@ -85,19 +85,29 @@ const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
 
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
   const workerBase = "https://noirknull.lithiksaran130510.workers.dev";
-  const primaryBase = CLOUD_API_BASE;
-  const bases = Array.from(new Set([primaryBase, workerBase]));
+  const sameOriginBase = CLOUD_API_BASE;
+  // Cloudflare Worker is the storefront source of truth. Try it first so
+  // Safari/iPhone never depends on how the custom domain routes /api/*.
+  const bases = Array.from(new Set([workerBase, sameOriginBase].filter((value) => value !== undefined)));
 
   for (const base of bases) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 8000);
+
     try {
       const response = await fetch(`${base}/api/store?ts=${Date.now()}`, {
+        method: "GET",
+        mode: base ? "cors" : "same-origin",
+        credentials: "omit",
         cache: "no-store",
+        signal: controller.signal,
         headers: { Accept: "application/json" },
       });
-      let payload: any = null;
-      try { payload = await response.json(); } catch { payload = null; }
 
-      if (!response.ok || !payload?.ok) continue;
+      if (!response.ok) continue;
+
+      const payload = await response.json().catch(() => null);
+      if (!payload?.ok) continue;
 
       return {
         ok: true,
@@ -106,6 +116,8 @@ export async function getCloudStoreResult(): Promise<CloudStoreResult> {
       };
     } catch {
       // Try the next API origin.
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
