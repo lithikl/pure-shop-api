@@ -84,22 +84,32 @@ let lastCloudHydration = 0;
 const CLOUD_HYDRATE_MIN_INTERVAL = 30_000;
 
 export async function getCloudStoreResult(): Promise<CloudStoreResult> {
-  try {
-    const response = await fetch(cloudApi(`/api/store?ts=${Date.now()}`), {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    let payload: any = null;
-    try { payload = await response.json(); } catch { payload = null; }
-    if (!response.ok || !payload?.ok) return { ok: false, exists: false, data: null };
-    return {
-      ok: true,
-      exists: Boolean(payload.exists),
-      data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
-    };
-  } catch {
-    return { ok: false, exists: false, data: null };
+  const workerBase = "https://noirknull.lithiksaran130510.workers.dev";
+  const primaryBase = CLOUD_API_BASE;
+  const bases = Array.from(new Set([primaryBase, workerBase]));
+
+  for (const base of bases) {
+    try {
+      const response = await fetch(`${base}/api/store?ts=${Date.now()}`, {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      let payload: any = null;
+      try { payload = await response.json(); } catch { payload = null; }
+
+      if (!response.ok || !payload?.ok) continue;
+
+      return {
+        ok: true,
+        exists: Boolean(payload.exists),
+        data: payload.data && typeof payload.data === "object" ? payload.data as CloudStore : null,
+      };
+    } catch {
+      // Try the next API origin.
+    }
   }
+
+  return { ok: false, exists: false, data: null };
 }
 
 export async function getCloudStore(): Promise<CloudStore | null> {
