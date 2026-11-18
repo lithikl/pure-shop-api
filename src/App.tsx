@@ -30,7 +30,8 @@ export default function App() {
   const isAdmin = window.location.pathname === "/admin";
   const isTrackOrder = window.location.pathname === "/track-order";
   const collectionPath = window.location.pathname === "/best-sellers" ? "best" : window.location.pathname === "/new-drop" ? "new" : null;
-  const [products, setProducts] = useState<Shoe[]>(loadProducts);
+  const [products, setProducts] = useState<Shoe[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [savedCategories, setSavedCategories] = useState<string[]>(loadCategories);
   const [featuredIds, setFeaturedIds] = useState<number[]>(loadFeatured);
   const [eternalFits, setEternalFits] = useState<EternalFit[]>(loadEternalFits);
@@ -58,13 +59,29 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const state = await hydrateFromCloud(true);
-      if (!mounted || state !== "synced") return;
-      setProducts(loadProducts());
-      setSavedCategories(loadCategories());
-      setFeaturedIds(loadFeatured());
-      setEternalFits(loadEternalFits());
-      setHomepage(loadHomepageSettings());
+      try {
+        const state = await hydrateFromCloud(true);
+        if (!mounted) return;
+
+        if (state === "synced") {
+          // R2/cloud store is authoritative for the live storefront.
+          setProducts(loadProducts());
+          setSavedCategories(loadCategories());
+          setFeaturedIds(loadFeatured());
+          setEternalFits(loadEternalFits());
+          setHomepage(loadHomepageSettings());
+          return;
+        }
+
+        // Only fall back to local cache if the cloud is temporarily unavailable.
+        setProducts(loadProducts());
+        setSavedCategories(loadCategories());
+        setFeaturedIds(loadFeatured());
+        setEternalFits(loadEternalFits());
+        setHomepage(loadHomepageSettings());
+      } finally {
+        if (mounted) setCatalogLoading(false);
+      }
     })();
     return () => { mounted = false; };
   }, []);
@@ -272,6 +289,16 @@ export default function App() {
 
   if (isAdmin) return <Admin />;
   if (isTrackOrder) return <TrackOrder />;
+
+  if (catalogLoading) {
+    return (
+      <div className="noir-site" style={{ minHeight: "100svh", background: "#fff", color: "#111", display: "grid", placeItems: "center" }}>
+        <div style={{ fontFamily: "DM Mono, monospace", fontSize: "10px", letterSpacing: ".12em" }}>
+          LOADING NOIRKNULL
+        </div>
+      </div>
+    );
+  }
 
   return <div className="noir-site">
     <div className="topline"><span>SNEAKERS & ACCESSORIES / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
