@@ -3526,7 +3526,7 @@ button:hover {
   .noir-header.liquid-glass-header {
     height: 64px !important;
     min-height: 64px !important;
-    padding: 0 max(10px, env(safe-area-inset-left, 0px)) 0 max(10px, env(safe-area-inset-right, 0px)) !important;
+    padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px)) !important;
     grid-template-columns: 44px minmax(0, 1fr) 44px !important;
     column-gap: 0 !important;
   }
