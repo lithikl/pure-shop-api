@@ -263,3 +263,173 @@ img, video {
     max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
   }
 }
+
+
+/* iOS 26/modern Safari hardening
+   NoirKnull uses a white, non-edge-to-edge layout, so do not depend on
+   viewport-fit=cover. This avoids Safari viewport/safe-area regressions. */
+@supports (-webkit-touch-callout: none) {
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body,
+  #root,
+  .noir-site {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    overflow-x: clip;
+  }
+
+  .noir-header.liquid-glass-header {
+    top: 0 !important;
+    height: calc(64px + env(safe-area-inset-top, 0px)) !important;
+    min-height: calc(64px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    box-sizing: border-box !important;
+  }
+
+  .noir-header.liquid-glass-header > * {
+    align-self: center;
+  }
+
+  .nav-links.nav-open {
+    top: calc(64px + env(safe-area-inset-top, 0px)) !important;
+    max-height: calc(100dvh - 64px - env(safe-area-inset-top, 0px)) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cart-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .cart-drawer {
+    width: min(440px, 100vw) !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding-top: calc(20px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .shop-category-row,
+  .shop-mobile-categories,
+  .product-gallery-thumbs {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .shop-category-row::-webkit-scrollbar,
+  .shop-mobile-categories::-webkit-scrollbar,
+  .product-gallery-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-main-image img,
+  .homepage-category-image img,
+  .homepage-product-image img,
+  .shop-product-image img,
+  .shoe-photo img {
+    -webkit-user-drag: none;
+  }
+
+  /* Prevent accidental horizontal overflow from long product/admin text. */
+  .product-information,
+  .product-title-row,
+  .shop-page-top,
+  .shop-toolbar,
+  .checkout-main,
+  .checkout-summary,
+  .admin-main,
+  .admin-content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .product-title-row h1,
+  .shop-page-top h1,
+  .admin-section h1,
+  .admin-section h2,
+  .admin-section h3 {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Keep the mobile header inside the safe area without creating a gap above it. */
+  .noir-header.liquid-glass-header {
+    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .noir-header .mobile-menu-toggle,
+  .noir-header .bag-button {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .noir-header .noir-logo {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topline {
+    min-height: 27px;
+    height: 27px;
+  }
+
+  .topline span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topline span:last-child {
+    max-width: 42%;
+    text-align: right;
+  }
+
+  .checkout-page,
+  .product-page,
+  .shop-page,
+  .admin-page {
+    min-height: 100dvh !important;
+  }
+}
+
+/* Small iPhones: prevent the logo/header from forcing a wider layout. */
+@media (max-width: 390px) {
+  .noir-header.liquid-glass-header {
+    grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+  }
+
+  .noir-header .mobile-menu-toggle,
+  .noir-header .bag-button {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+
+  .noir-header .noir-logo {
+    font-size: 19px !important;
+  }
+}
