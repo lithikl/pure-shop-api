@@ -3895,7 +3895,31 @@ button:hover {
   color:#111 !important;
 }
 
-.landing-header .header-actions{
+
+.landing-header button.menu-text-button,
+.landing-header button.cart-text-button,
+.landing-header button.menu-text-button:hover,
+.landing-header button.cart-text-button:hover,
+.landing-header button.menu-text-button:active,
+.landing-header button.cart-text-button:active,
+.landing-header button.menu-text-button:focus,
+.landing-header button.cart-text-button:focus,
+.landing-header button.menu-text-button:focus-visible,
+.landing-header button.cart-text-button:focus-visible{
+  all:unset !important;
+  display:inline !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:#111 !important;
+  font:700 9px/1 var(--mono) !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  cursor:pointer !important;
+  box-sizing:border-box !important;
+}
+\n.landing-header .header-actions{
   position:absolute !important;
   right:30px !important;
   top:50% !important;
@@ -4052,7 +4076,7 @@ button:hover {
   -webkit-text-fill-color:transparent !important;
   color:transparent !important;
   -webkit-text-stroke:.22px rgba(255,255,255,.24) !important;
-  font:900 46px/.9 Manrope,sans-serif !important;
+  font:900 34px/.9 Manrope,sans-serif !important;
   letter-spacing:-.07em !important;
   text-transform:uppercase !important;
   white-space:nowrap !important;
@@ -4179,7 +4203,7 @@ button:hover {
   }
 
   .scroll-logo{
-    font-size:34px !important;
+    font-size:28px !important;
   }
 
   .landing-hero-overlay{
