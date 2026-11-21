@@ -3615,3 +3615,63 @@ button:hover {
     font-size: 19px !important;
   }
 }
+
+
+/* Admin responsive refinements */
+@media (max-width: 980px) {
+  .admin-main { padding-left: 24px; padding-right: 24px; }
+  .admin-product-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-product-gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-three-images { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-two-images { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-crop-workspace { grid-template-columns:1fr; }
+  .admin-crop-preview-panel { max-width:360px; }
+}
+
+@media (max-width: 760px) {
+  .admin-main { padding:0 14px 50px; }
+  .admin-topbar { align-items:flex-start; padding:10px 0; }
+  .admin-topbar h1 { font-size:20px; }
+  .admin-top-actions { flex-wrap:wrap; justify-content:flex-end; }
+  .admin-top-actions .admin-status { display:none; }
+  .admin-section { padding-top:24px; }
+  .admin-section-head { align-items:stretch; flex-direction:column; }
+  .admin-section-head h2 { font-size:25px; }
+  .admin-category-manager-head { align-items:flex-start; flex-direction:column; }
+  .admin-category-add,
+  .admin-category-field,
+  .admin-category-inline { grid-template-columns:1fr; }
+  .admin-product-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .admin-card-actions { display:grid; grid-template-columns:1fr 1fr; }
+  .admin-card-actions button:last-child { grid-column:1/-1; }
+  .admin-product-body { padding:10px; }
+  .admin-product-body h3 { font-size:12px; }
+  .admin-product-body > strong { font-size:9px; }
+  .admin-image-picker-actions,
+  .admin-video-actions { grid-template-columns:1fr; }
+  .admin-crop-editor { padding:9px; }
+  .admin-crop-editor-head strong { max-width:240px; line-height:1.35; }
+  .admin-crop-stage { max-height:52vh; }
+  .admin-crop-controls { grid-template-columns:1fr; }
+  .admin-crop-actions { display:grid; grid-template-columns:1fr 1fr; }
+  .admin-crop-actions .admin-primary { grid-column:1/-1; }
+  .admin-product-gallery-grid { grid-template-columns:1fr 1fr; }
+  .admin-form-grid { padding:14px; grid-template-columns:1fr; }
+  .admin-toggle-grid,
+  .admin-merch-options > div { grid-template-columns:1fr; }
+  .admin-order-grid { grid-template-columns:1fr; gap:12px; }
+  .admin-order-footer { align-items:stretch; flex-direction:column; }
+  .admin-order-footer label { min-width:0; }
+  .admin-order-tracking { flex-wrap:wrap; }
+  .admin-eternal-row { grid-template-columns:24px 74px minmax(0,1fr); }
+  .admin-eternal-row > img { width:74px; }
+  .admin-eternal-actions { grid-column:1/-1; justify-content:flex-start; }
+}
+
+@media (max-width: 420px) {
+  .admin-product-grid { grid-template-columns:1fr; }
+  .admin-product-gallery-grid { grid-template-columns:1fr; }
+  .admin-three-images,
+  .admin-two-images { grid-template-columns:1fr; }
+  .admin-crop-preview-panel { max-width:none; }
+}
