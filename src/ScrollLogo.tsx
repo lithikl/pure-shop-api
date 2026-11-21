@@ -6,7 +6,7 @@ type ScrollLogoProps = {
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const HEADER_LOGO_SIZE = 16;
+const HEADER_LOGO_SIZE = 14;
 
 export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -32,7 +32,7 @@ export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
       const viewportCenterX = document.documentElement.clientWidth / 2;
 
       if (!placeholder) {
-        return { target: 1, centerY: headerCenterY, headerCenterY, startFont: 46, viewportCenterX };
+        return { target: 1, centerY: headerCenterY, headerCenterY, startFont: 34, viewportCenterX };
       }
 
       const heroRect = placeholder.getBoundingClientRect();
@@ -45,7 +45,7 @@ export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
         target,
         centerY: heroCenterY,
         headerCenterY,
-        startFont: parseFloat(getComputedStyle(placeholder).fontSize) || 46,
+        startFont: parseFloat(getComputedStyle(placeholder).fontSize) || 34,
         viewportCenterX,
         header,
       };
@@ -109,11 +109,7 @@ export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
       ref={ref}
       type="button"
       onClick={() => {
-        if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
-          window.location.href = "/";
-          return;
-        }
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.location.href = "/";
       }}
       aria-label="NOIRKNULL, go to home page"
       className="scroll-logo"
