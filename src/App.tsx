@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Menu, Search, SlidersHorizontal, Share2 } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal, Share2 } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { DEFAULT_SHOES, EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
