@@ -356,13 +356,18 @@ export default function App() {
 
   return <div className="noir-site">
     <header className={"noir-header liquid-glass-header landing-header" + (landingScrolled ? " is-scrolled" : "")}>
-      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
-      <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
-        <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
-        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("SHOES"); setMobileMenuOpen(false); }}>SHOES</button>
-        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
-        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
-      </nav>
+      <div className="landing-header-menu">
+        <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+        <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
+          <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
+          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("SHOES"); setMobileMenuOpen(false); }}>SHOES</button>
+          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
+          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
+        </nav>
+      </div>
+      <button type="button" className="landing-header-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="NoirKnull home">
+        NoirKnull<span>®</span>
+      </button>
       <div className="header-actions">
         <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Cart, " + cart.length + " items"}><ShoppingBag size={20}/><b>{cart.length}</b></button>
       </div>
