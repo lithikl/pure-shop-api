@@ -3809,3 +3809,152 @@ button:hover {
   .admin-image-editor-actions button{width:100%}
 }
 
+
+
+/* =========================================================
+   CINEMATIC LANDING — NoirKnull
+   The header logo is the hero logo. It travels from the
+   center of the opening image into the top navigation.
+   ========================================================= */
+.landing-header{
+  position:fixed !important;
+  inset:0 0 auto 0 !important;
+  height:76px !important;
+  min-height:76px !important;
+  z-index:100 !important;
+  padding:0 34px !important;
+  background:transparent !important;
+  color:#fff !important;
+  border-bottom:1px solid transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  transition:background .55s ease,color .45s ease,border-color .45s ease,backdrop-filter .45s ease;
+}
+.landing-header .nav-links .nav-primary,
+.landing-header .noir-logo,
+.landing-header .noir-logo span{
+  color:#fff !important;
+}
+.landing-header .nav-links .nav-primary::after{background:#fff !important}
+.landing-header .header-actions{
+  justify-self:end;
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+.landing-header .header-actions > button{
+  width:28px;height:28px;padding:0;border:0;background:transparent;color:#fff;
+  display:grid;place-items:center;cursor:pointer;
+}
+.landing-header .header-actions .bag-button{
+  min-width:28px;width:28px;height:28px;min-height:28px;padding:0 !important;
+  border:0 !important;background:transparent !important;color:#fff !important;
+  border-radius:0;box-shadow:none !important;
+}
+.landing-header .header-actions .bag-button b{
+  position:absolute;margin:-17px -20px 0 0;font:700 7px var(--mono);color:#fff !important;
+}
+.landing-header .landing-moving-logo{
+  position:relative;
+  z-index:4;
+  transition:transform .8s cubic-bezier(.2,.75,.2,1),font-size .8s cubic-bezier(.2,.75,.2,1),color .45s ease;
+  transform:translateY(calc(50svh - 38px)) scale(2.25);
+  transform-origin:center;
+  pointer-events:auto;
+}
+.landing-header.is-scrolled{
+  background:rgba(255,255,255,.94) !important;
+  color:#111 !important;
+  border-bottom-color:rgba(17,17,17,.1) !important;
+  backdrop-filter:blur(20px) saturate(125%) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(125%) !important;
+}
+.landing-header.is-scrolled .nav-links .nav-primary,
+.landing-header.is-scrolled .noir-logo,
+.landing-header.is-scrolled .noir-logo span{color:#111 !important}
+.landing-header.is-scrolled .nav-links .nav-primary::after{background:#111 !important}
+.landing-header.is-scrolled .header-actions > button,
+.landing-header.is-scrolled .header-actions .bag-button{color:#111 !important}
+.landing-header.is-scrolled .header-actions .bag-button b{color:#111 !important}
+.landing-header.is-scrolled .landing-moving-logo{
+  transform:translateY(0) scale(1);
+}
+.shoe-hero{
+  height:100svh !important;
+  min-height:100svh !important;
+  margin:0 !important;
+  background:#111 !important;
+}
+.landing-hero-image{
+  position:absolute !important;
+  inset:0 !important;
+}
+.landing-hero-image::after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.02) 36%,rgba(0,0,0,.38) 100%);
+}
+.landing-hero-image img{
+  width:100%;height:100%;object-fit:cover;object-position:center;
+}
+.landing-hero-overlay{
+  inset:0 !important;
+  padding:0 5vw 34px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  background:transparent !important;
+  color:#fff !important;
+  pointer-events:none;
+}
+.landing-hero-copy{
+  width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+  pointer-events:none;text-align:center;
+}
+.landing-hero-copy p{
+  margin:0;color:rgba(255,255,255,.8);font:700 9px var(--mono);letter-spacing:.16em;
+}
+.landing-hero-copy button{
+  pointer-events:auto;border:0;border-bottom:1px solid rgba(255,255,255,.75);border-radius:0;
+  padding:7px 0;background:transparent;color:#fff;font:700 10px var(--mono);letter-spacing:.08em;
+}
+.landing-hero-copy button:hover{border-bottom-color:#fff}
+.landing-hero-scroll{
+  position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
+  margin:0 !important;color:rgba(255,255,255,.78) !important;font:700 8px var(--mono);
+  letter-spacing:.14em;white-space:nowrap;
+}
+@media(max-width:900px){
+  .landing-header{padding:0 18px !important}
+  .landing-header .nav-links{gap:16px}
+  .landing-header .nav-links .desktop-only{display:none !important}
+  .landing-header .header-actions{gap:10px}
+  .landing-header .header-actions > button:nth-child(2),
+  .landing-header .header-actions > button:nth-child(3){display:none}
+  .landing-header .landing-moving-logo{transform:translateY(calc(50svh - 38px)) scale(1.7)}
+  .landing-header.is-scrolled .landing-moving-logo{transform:translateY(0) scale(1)}
+}
+@media(max-width:680px){
+  .landing-header{height:64px !important;min-height:64px !important;padding:0 15px !important;grid-template-columns:40px auto 40px !important}
+  .landing-header .mobile-menu-toggle{
+    display:grid !important;place-items:center;width:36px;height:36px;padding:0;border:0;background:transparent;color:#fff;
+  }
+  .landing-header.is-scrolled .mobile-menu-toggle{color:#111}
+  .landing-header .nav-links{
+    position:absolute;top:64px;left:10px;right:10px;padding:14px;display:none !important;
+    flex-direction:column;align-items:stretch;gap:4px;background:rgba(255,255,255,.97);
+    border:1px solid #ddd;border-radius:12px;box-shadow:0 18px 45px rgba(0,0,0,.12);
+  }
+  .landing-header .nav-links.nav-open{display:flex !important}
+  .landing-header .nav-links .nav-primary{color:#111 !important;text-align:left;padding:12px !important}
+  .landing-header .nav-links .nav-primary::after{background:#111 !important}
+  .landing-header .landing-moving-logo{font-size:21px !important;transform:translateY(calc(50svh - 32px)) scale(1.65)}
+  .landing-header.is-scrolled .landing-moving-logo{transform:translateY(0) scale(1)}
+  .landing-header .header-actions{gap:0}
+  .landing-header .header-actions > button:not(.bag-button){display:none}
+  .landing-header .header-actions .bag-button{display:grid}
+  .landing-hero-copy{padding:0 20px}
+  .landing-hero-copy p{font-size:8px}
+  .landing-hero-scroll{bottom:22px}
+}
