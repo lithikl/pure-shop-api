@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Menu, Search, SlidersHorizontal, Share2 } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Menu, Search, SlidersHorizontal, Share2, Heart, UserRound } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { DEFAULT_SHOES, EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
@@ -347,16 +347,22 @@ export default function App() {
   }
 
   return <div className="noir-site">
-    <div className="topline"><span>SNEAKERS & ACCESSORIES / EST. 2026</span><span>FREE SHIPPING OVER ₹5,000 ↗</span></div>
-    <header className="noir-header liquid-glass-header">
-      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={18}/> : <Menu size={18}/>}</button>
+    <header className="noir-header liquid-glass-header landing-header">
+      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
       <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
-        <button className="nav-primary header-shop-link" onClick={openShop}>SHOP <span>↗</span></button>
-        <button className="nav-primary header-world-link" onClick={() => { closeProduct(); goTo("about-noirknull"); setMobileMenuOpen(false); }}>ABOUT US</button>
-        <a className="nav-primary header-track-link" href="/track-order" onClick={() => setMobileMenuOpen(false)}>TRACK ORDER</a>
+        <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>NEW IN</button>
+        <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
+        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("SHOES"); setMobileMenuOpen(false); }}>FOR MEN</button>
+        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>FOR WOMEN</button>
+        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
       </nav>
-      <button className="noir-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
-      <button className="bag-button" onClick={() => setCartOpen(true)}><ShoppingBag size={17}/><span>BAG</span><b>{cart.length}</b></button>
+      <button className="noir-logo landing-moving-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
+      <div className="header-actions">
+        <button type="button" aria-label="Search" onClick={openShop}><Search size={19}/></button>
+        <button type="button" aria-label="Account"><UserRound size={19}/></button>
+        <button type="button" aria-label="Wishlist"><Heart size={20}/></button>
+        <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Bag, " + cart.length + " items"}><ShoppingBag size={19}/><b>{cart.length}</b></button>
+      </div>
     </header>
 
     {shopOpen && !selectedProduct && <main className="shop-page">
@@ -446,9 +452,10 @@ export default function App() {
           <img src={homepage.heroImage || homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
         </div>
         <div className="landing-hero-overlay">
-          <div className="landing-hero-actions">
-            <button onClick={openShop}>SHOP <ArrowRight size={16}/></button>
-            <button onClick={() => goTo("about-noirknull")}>ABOUT US <ArrowDownRight size={16}/></button>
+          <div className="landing-hero-copy">
+            <span>NOIRKNULL®</span>
+            <h1>NoirKnull</h1>
+            <button onClick={openShop}>SHOP NOW <ArrowDown size={14}/></button>
           </div>
           <div className="landing-hero-scroll">SCROLL TO EXPLORE ↓</div>
         </div>
