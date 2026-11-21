@@ -55,6 +55,14 @@ export default function App() {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("upi");
   const [checkoutData, setCheckoutData] = useState({ email: "", phone: "", firstName: "", lastName: "", address: "", apartment: "", city: "Chennai", state: "Tamil Nadu", pincode: "" });
   const [added, setAdded] = useState<number | null>(null);
+  const [landingScrolled, setLandingScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setLandingScrolled(window.scrollY > Math.max(40, window.innerHeight * 0.08));
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -347,7 +355,7 @@ export default function App() {
   }
 
   return <div className="noir-site">
-    <header className="noir-header liquid-glass-header landing-header">
+    <header className={"noir-header liquid-glass-header landing-header" + (landingScrolled ? " is-scrolled" : "")}>
       <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
       <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
         <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>NEW IN</button>
