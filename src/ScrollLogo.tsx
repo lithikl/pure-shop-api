@@ -63,8 +63,11 @@ export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
 
     update();
 
+    const homeContent = document.querySelector(".home-content");
     const observer = new MutationObserver(schedule);
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class", "style"] });
+    if (homeContent) {
+      observer.observe(homeContent, { attributes: true, attributeFilter: ["class", "style"] });
+    }
 
     const timers = [50, 150, 400, 800].map((ms) => window.setTimeout(update, ms));
     window.addEventListener("scroll", schedule, { passive: true });
