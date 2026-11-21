@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
-import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw, RotateCw, FlipHorizontal2, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
   ProductType,
@@ -115,12 +115,18 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [flipX, setFlipX] = useState(false);
+  const [cropRatio, setCropRatio] = useState(aspectRatio);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const dragRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 });
 
+  const resetEditor = () => { setZoom(1); setOffsetX(0); setOffsetY(0); setRotation(0); setFlipX(false); setCropRatio(aspectRatio); };
+
   const clampOffsets = (nextX: number, nextY: number, nextZoom = zoom) => {
     const stageWidth = 640;
-    const stageHeight = stageWidth / Math.max(0.55, Math.min(2.2, aspectRatio));
+    const stageHeight = stageWidth / Math.max(0.45, Math.min(2.4, cropRatio));
     const baseScale = imageSize.width && imageSize.height ? Math.max(stageWidth / imageSize.width, stageHeight / imageSize.height) : 1;
     const renderedWidth = imageSize.width * baseScale * Math.max(1, nextZoom);
     const renderedHeight = imageSize.height * baseScale * Math.max(1, nextZoom);
@@ -160,36 +166,27 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
   };
   const endDrag = () => { dragRef.current.active = false; };
 
+  const loadEditorImage = async () => { const image = new Image(); if (!value.startsWith("data:")) image.crossOrigin = "anonymous"; image.src = value; await new Promise<void>((resolve,reject) => { image.onload=()=>resolve(); image.onerror=()=>reject(new Error("Unable to load image")); }); return image; };
+
+  const drawCrop = (canvas: HTMLCanvasElement, image: HTMLImageElement, width = 900) => { const ratio=Math.max(0.45,Math.min(2.4,cropRatio)); const height=Math.round(width/ratio); canvas.width=width; canvas.height=height; const ctx=canvas.getContext("2d"); if(!ctx) throw new Error("Canvas unavailable"); ctx.clearRect(0,0,width,height); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="high"; ctx.save(); ctx.translate(width/2,height/2); ctx.rotate(rotation*Math.PI/180); ctx.scale(flipX?-1:1,1); const swapped=rotation%180!==0; const sw=swapped?image.naturalHeight:image.naturalWidth; const sh=swapped?image.naturalWidth:image.naturalHeight; const base=Math.max(width/sw,height/sh); const scale=base*zoom; ctx.drawImage(image,-image.naturalWidth*scale/2+offsetX*(width/760),-image.naturalHeight*scale/2+offsetY*(height/(760/ratio)),image.naturalWidth*scale,image.naturalHeight*scale); ctx.restore(); };
+
+  useEffect(()=>{ if(!editingCrop||!value||!imageLoaded||!previewCanvasRef.current) return; loadEditorImage().then(img=>{ if(previewCanvasRef.current) drawCrop(previewCanvasRef.current,img); }).catch(()=>{}); },[editingCrop,value,imageLoaded,zoom,offsetX,offsetY,rotation,flipX,cropRatio]);
+
   const applyCrop = async () => {
     if (!value || !imageLoaded) return;
     setBusy(true);
     try {
-      const safeRatio = Math.max(0.55, Math.min(2.2, aspectRatio));
+      const safeRatio = Math.max(0.45, Math.min(2.4, cropRatio));
       const width = 1600, height = Math.round(width / safeRatio);
-      const image = new Image();
-      if (!value.startsWith("data:")) image.crossOrigin = "anonymous";
-      image.src = value;
-      await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error("Unable to read image for cropping")); });
-
-      const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight) * zoom;
-      const drawWidth = image.naturalWidth * scale, drawHeight = image.naturalHeight * scale;
-      const stageWidth = 640, stageHeight = stageWidth / safeRatio;
-      const x = (width - drawWidth) / 2 + offsetX * (width / stageWidth);
-      const y = (height - drawHeight) / 2 + offsetY * (height / stageHeight);
-
+      const image = await loadEditorImage();
       const canvas = document.createElement("canvas");
-      canvas.width = width; canvas.height = height;
-      const context = canvas.getContext("2d");
-      if (!context) throw new Error("Canvas is unavailable");
-      context.imageSmoothingEnabled = true; context.imageSmoothingQuality = "high";
-      context.fillStyle = "#fff"; context.fillRect(0, 0, width, height);
-      context.drawImage(image, x, y, drawWidth, drawHeight);
+      drawCrop(canvas, image, width);
 
       const cropped = await new Promise<Blob>((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Unable to create cropped image")), "image/jpeg", 0.92));
       const file = new File([cropped], "noirknull-cropped.jpg", { type: "image/jpeg" });
       try { onChange(await uploadMedia(file)); }
       catch { onChange(URL.createObjectURL(cropped)); alert("The crop was created locally, but cloud upload is unavailable right now."); }
-      setEditingCrop(false); setZoom(1); setOffsetX(0); setOffsetY(0);
+      setEditingCrop(false); resetEditor();
     } catch (error) {
       console.error(error); alert("Could not apply the crop. Please try again.");
     } finally { setBusy(false); }
@@ -205,21 +202,21 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
 
     {editingCrop && value && <div className="admin-crop-editor">
       <div className="admin-crop-editor-head"><div><span>IMAGE EDITOR</span><strong>Drag to position · scroll to zoom · touch friendly</strong></div><button type="button" onClick={() => setEditingCrop(false)} aria-label="Close image editor"><X size={16}/></button></div>
-      <div className="admin-crop-workspace">
-        <div className="admin-crop-stage" style={{ aspectRatio: String(aspectRatio), touchAction: "none" }} onPointerDown={beginDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onWheel={event => { event.preventDefault(); updateZoom(zoom + (event.deltaY > 0 ? -0.08 : 0.08)); }}>
-          <img src={value} alt="Crop editor" draggable={false} onLoad={event => { setImageLoaded(true); setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight }); }} style={{ transform: `translate3d(${offsetX}px,${offsetY}px,0) scale(${zoom})`, opacity: imageLoaded ? 1 : 0 }} />
+      <div className="admin-crop-toolbar"><div className="admin-crop-tool-group"><span>ASPECT</span>{[["STOREFRONT",aspectRatio],["1:1",1],["4:5",.8],["3:2",1.5],["16:9",1.7778]].map(([name,ratio])=><button type="button" key={String(name)} className={Math.abs(cropRatio-Number(ratio))<.001?"active":""} onClick={()=>{setCropRatio(Number(ratio));setOffsetX(0);setOffsetY(0);}}>{name}</button>)}</div><div className="admin-crop-tool-group"><span>EDIT</span><button type="button" onClick={()=>updateZoom(zoom-.1)}><ZoomOut size={13}/></button><button type="button" onClick={()=>updateZoom(zoom+.1)}><ZoomIn size={13}/></button><button type="button" onClick={()=>setRotation((rotation+90)%360)}><RotateCw size={13}/> ROTATE</button><button type="button" className={flipX?"active":""} onClick={()=>setFlipX(!flipX)}><FlipHorizontal2 size={13}/> FLIP</button><button type="button" onClick={resetEditor}><RotateCcw size={13}/> RESET</button></div></div><div className="admin-crop-workspace">
+        <div className="admin-crop-stage" style={{ aspectRatio: String(cropRatio), touchAction: "none" }} onPointerDown={beginDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onWheel={event => { event.preventDefault(); updateZoom(zoom + (event.deltaY > 0 ? -0.08 : 0.08)); }}>
+          <img src={value} alt="Crop editor" draggable={false} onLoad={event => { setImageLoaded(true); setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight }); }} style={{ transform: `translate3d(${offsetX}px,${offsetY}px,0) rotate(${rotation}deg) scale(${zoom}) scaleX(${flipX ? -1 : 1})`, opacity: imageLoaded ? 1 : 0 }} />
           <div className="admin-crop-grid" aria-hidden="true"><i/><i/><i/><i/></div>
           <div className="admin-crop-hint">DRAG TO REPOSITION</div>
         </div>
         <div className="admin-crop-preview-panel">
           <div className="admin-crop-preview-label">LIVE PREVIEW</div>
           <div className="admin-crop-preview" style={{ aspectRatio: String(aspectRatio) }}><img src={value} alt="Final crop preview" style={{ transform: `translate3d(${offsetX * 0.45}px,${offsetY * 0.45}px,0) scale(${zoom})` }} /></div>
-          <div className="admin-crop-meta"><span>FORMAT <b>1600 × {Math.round(1600 / Math.max(0.55, Math.min(2.2, aspectRatio)))}</b></span><span>RATIO <b>{aspectRatio.toFixed(2)} : 1</b></span></div>
+          <div className="admin-crop-meta"><span>OUTPUT <b>1600 × {Math.round(1600 / cropRatio)}</b></span><span>PRECISION ZOOM <b>{zoom.toFixed(2)}×</b></span><span>ROTATION <b>{rotation}°</b></span></div>
         </div>
       </div>
       <div className="admin-crop-controls">
         <label><span>ZOOM <b>{zoom.toFixed(2)}×</b></span><input type="range" min="1" max="3" step="0.01" value={zoom} onChange={e => updateZoom(Number(e.target.value))}/></label>
-        <div className="admin-crop-actions"><button type="button" onClick={() => { setZoom(1); setOffsetX(0); setOffsetY(0); }}><RotateCcw size={14}/> RESET</button><button type="button" onClick={() => setEditingCrop(false)}>CANCEL</button><button type="button" className="admin-primary" onClick={applyCrop} disabled={busy || !imageLoaded}><Check size={14}/> {busy ? "SAVING..." : "APPLY CROP"}</button></div>
+        <div className="admin-crop-actions"><button type="button" onClick={() => setEditingCrop(false)}>CANCEL</button><button type="button" className="admin-primary" onClick={applyCrop} disabled={busy || !imageLoaded}><Check size={14}/> {busy ? "SAVING..." : "APPLY CROP"}</button></div>
       </div>
     </div>}
     {value.startsWith("data:") && <small>Temporary browser image. Applying the crop uploads the final image to cloud storage.</small>}
