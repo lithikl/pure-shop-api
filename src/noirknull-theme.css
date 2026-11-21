@@ -3811,511 +3811,71 @@ button:hover {
 
 
 
+
 /* =========================================================
-   CINEMATIC LANDING — NoirKnull
-   The header logo is the hero logo. It travels from the
-   center of the opening image into the top navigation.
+   NOIRKNULL LANDING — clean single-pass header/hero
+   The hero is the canvas. ScrollLogo is the only logo.
    ========================================================= */
+
 .landing-header{
   position:fixed !important;
   inset:0 0 auto 0 !important;
+  z-index:100 !important;
+  width:100% !important;
   height:76px !important;
   min-height:76px !important;
-  z-index:100 !important;
-  padding:0 34px !important;
+  margin:0 !important;
+  padding:0 30px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  align-items:center !important;
+  column-gap:24px !important;
   background:transparent !important;
   color:#fff !important;
-  border-bottom:1px solid transparent !important;
+  border:0 !important;
   box-shadow:none !important;
   backdrop-filter:none !important;
   -webkit-backdrop-filter:none !important;
-  transition:background .55s ease,color .45s ease,border-color .45s ease,backdrop-filter .45s ease;
+  pointer-events:none !important;
+  transition:
+    background .38s ease,
+    color .28s ease,
+    border-color .38s ease,
+    backdrop-filter .38s ease !important;
 }
-.landing-header .nav-links .nav-primary,
-.landing-header .noir-logo,
-.landing-header .noir-logo span{
-  color:#fff !important;
-}
-.landing-header .nav-links .nav-primary::after{background:#fff !important}
-.landing-header .header-actions{
-  justify-self:end;
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-.landing-header .header-actions > button{
-  width:28px;height:28px;padding:0;border:0;background:transparent;color:#fff;
-  display:grid;place-items:center;cursor:pointer;
-}
-.landing-header .header-actions .bag-button{
-  min-width:28px;width:28px;height:28px;min-height:28px;padding:0 !important;
-  border:0 !important;background:transparent !important;color:#fff !important;
-  border-radius:0;box-shadow:none !important;
-}
-.landing-header .header-actions .bag-button b{
-  position:absolute;margin:-17px -20px 0 0;font:700 7px var(--mono);color:#fff !important;
-}
-.landing-header .landing-moving-logo{
-  position:relative;
-  z-index:4;
-  transition:transform .8s cubic-bezier(.2,.75,.2,1),font-size .8s cubic-bezier(.2,.75,.2,1),color .45s ease;
-  transform:translateY(calc(50svh - 38px)) scale(2.25);
-  transform-origin:center;
-  pointer-events:auto;
-}
+
 .landing-header.is-scrolled{
   background:rgba(255,255,255,.94) !important;
   color:#111 !important;
-  border-bottom-color:rgba(17,17,17,.1) !important;
-  backdrop-filter:blur(20px) saturate(125%) !important;
-  -webkit-backdrop-filter:blur(20px) saturate(125%) !important;
-}
-.landing-header.is-scrolled .nav-links .nav-primary,
-.landing-header.is-scrolled .noir-logo,
-.landing-header.is-scrolled .noir-logo span{color:#111 !important}
-.landing-header.is-scrolled .nav-links .nav-primary::after{background:#111 !important}
-.landing-header.is-scrolled .header-actions > button,
-.landing-header.is-scrolled .header-actions .bag-button{color:#111 !important}
-.landing-header.is-scrolled .header-actions .bag-button b{color:#111 !important}
-.landing-header.is-scrolled .landing-moving-logo{
-  transform:translateY(0) scale(1);
-}
-.shoe-hero{
-  height:100svh !important;
-  min-height:100svh !important;
-  margin:0 !important;
-  background:#111 !important;
-}
-.landing-hero-image{
-  position:absolute !important;
-  inset:0 !important;
-}
-.landing-hero-image::after{
-  content:"";
-  position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.02) 36%,rgba(0,0,0,.38) 100%);
-}
-.landing-hero-image img{
-  width:100%;height:100%;object-fit:cover;object-position:center;
-}
-.landing-hero-overlay{
-  inset:0 !important;
-  padding:0 5vw 34px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  background:transparent !important;
-  color:#fff !important;
-  pointer-events:none;
-}
-.landing-hero-copy{
-  width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
-  pointer-events:none;text-align:center;
-}
-.landing-hero-copy p{
-  margin:0;color:rgba(255,255,255,.8);font:700 9px var(--mono);letter-spacing:.16em;
-}
-.landing-hero-copy button{
-  pointer-events:auto;border:0;border-bottom:1px solid rgba(255,255,255,.75);border-radius:0;
-  padding:7px 0;background:transparent;color:#fff;font:700 10px var(--mono);letter-spacing:.08em;
-}
-.landing-hero-copy button:hover{border-bottom-color:#fff}
-.landing-hero-scroll{
-  position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
-  margin:0 !important;color:rgba(255,255,255,.78) !important;font:700 8px var(--mono);
-  letter-spacing:.14em;white-space:nowrap;
-}
-@media(max-width:900px){
-  .landing-header{padding:0 18px !important}
-  .landing-header .nav-links{gap:16px}
-  .landing-header .nav-links .desktop-only{display:none !important}
-  .landing-header .header-actions{gap:10px}
-  .landing-header .header-actions > button:nth-child(2),
-  .landing-header .header-actions > button:nth-child(3){display:none}
-  .landing-header .landing-moving-logo{transform:translateY(calc(50svh - 38px)) scale(1.7)}
-  .landing-header.is-scrolled .landing-moving-logo{transform:translateY(0) scale(1)}
-}
-@media(max-width:680px){
-  .landing-header{height:64px !important;min-height:64px !important;padding:0 15px !important;grid-template-columns:40px auto 40px !important}
-  .landing-header .mobile-menu-toggle{
-    display:grid !important;place-items:center;width:36px;height:36px;padding:0;border:0;background:transparent;color:#fff;
-  }
-  .landing-header.is-scrolled .mobile-menu-toggle{color:#111}
-  .landing-header .nav-links{
-    position:absolute;top:64px;left:10px;right:10px;padding:14px;display:none !important;
-    flex-direction:column;align-items:stretch;gap:4px;background:rgba(255,255,255,.97);
-    border:1px solid #ddd;border-radius:12px;box-shadow:0 18px 45px rgba(0,0,0,.12);
-  }
-  .landing-header .nav-links.nav-open{display:flex !important}
-  .landing-header .nav-links .nav-primary{color:#111 !important;text-align:left;padding:12px !important}
-  .landing-header .nav-links .nav-primary::after{background:#111 !important}
-  .landing-header .landing-moving-logo{font-size:21px !important;transform:translateY(calc(50svh - 32px)) scale(1.65)}
-  .landing-header.is-scrolled .landing-moving-logo{transform:translateY(0) scale(1)}
-  .landing-header .header-actions{gap:0}
-  .landing-header .header-actions > button:not(.bag-button){display:none}
-  .landing-header .header-actions .bag-button{display:grid}
-  .landing-hero-copy{padding:0 20px}
-  .landing-hero-copy p{font-size:8px}
-  .landing-hero-scroll{bottom:22px}
-}
-
-
-/* Final landing hero fix: the banner is the containing block and the brand is
-   a single fixed element that visibly travels from image-center to nav-center. */
-.shoe-hero{
-  position:relative !important;
-  overflow:hidden !important;
-  width:100% !important;
-}
-.landing-hero-image{
-  position:absolute !important;
-  z-index:0 !important;
-  width:100% !important;
-  height:100% !important;
-}
-.landing-hero-image img{
-  position:absolute !important;
-  inset:0 !important;
-  display:block !important;
-}
-.landing-hero-overlay{
-  position:absolute !important;
-  z-index:2 !important;
-}
-.hero-brand-logo{
-  position:fixed !important;
-  left:50% !important;
-  top:50% !important;
-  z-index:110 !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  background:transparent !important;
-  color:#fff !important;
-  font-family:inherit !important;
-  font-size:clamp(42px,5.4vw,82px) !important;
-  font-weight:900 !important;
-  line-height:.9 !important;
-  letter-spacing:-.065em !important;
-  text-shadow:0 2px 20px rgba(0,0,0,.2) !important;
-  transform:translate(-50%,-50%) scale(1) !important;
-  transform-origin:center !important;
-  transition:
-    top .75s cubic-bezier(.2,.75,.2,1),
-    transform .75s cubic-bezier(.2,.75,.2,1),
-    color .35s ease,
-    text-shadow .35s ease !important;
-  cursor:pointer !important;
-}
-.hero-brand-logo span{
-  font-size:.28em !important;
-  vertical-align:top !important;
-  margin-left:3px !important;
-  letter-spacing:0 !important;
-}
-.hero-brand-scrolled{
-  top:38px !important;
-  transform:translate(-50%,-50%) scale(.39) !important;
-  color:#111 !important;
-  text-shadow:none !important;
-}
-.landing-header{
-  pointer-events:none !important;
-}
-.landing-header > *{
-  pointer-events:auto !important;
-}
-.landing-header .header-actions,
-.landing-header .nav-links,
-.landing-header .mobile-menu-toggle{
-  position:relative !important;
-  z-index:120 !important;
-}
-.landing-header .header-actions > button,
-.landing-header .mobile-menu-toggle,
-.landing-header .nav-links .nav-primary{
-  text-shadow:0 1px 8px rgba(0,0,0,.16);
-}
-.landing-header.is-scrolled .header-actions > button,
-.landing-header.is-scrolled .mobile-menu-toggle,
-.landing-header.is-scrolled .nav-links .nav-primary{
-  text-shadow:none !important;
-}
-@media(max-width:680px){
-  .hero-brand-logo{
-    font-size:clamp(34px,10vw,52px) !important;
-  }
-  .hero-brand-scrolled{
-    top:32px !important;
-    transform:translate(-50%,-50%) scale(.43) !important;
-  }
-}
-
-
-/* Landing header final alignment: only MENU + centered moving logo + CART. */
-.landing-header{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  width:100% !important;
-  box-sizing:border-box !important;
-  padding:0 30px !important;
-}
-.landing-header .mobile-menu-toggle{
-  display:grid !important;
-  place-items:center !important;
-  width:42px !important;
-  height:42px !important;
-  padding:0 !important;
-  margin:0 !important;
-  border:0 !important;
-  background:transparent !important;
-  color:#fff !important;
-  cursor:pointer !important;
-  flex:0 0 42px !important;
-}
-.landing-header .header-actions{
-  margin-left:auto !important;
-  width:42px !important;
-  height:42px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  flex:0 0 42px !important;
-}
-.landing-header .header-actions .bag-button{
-  display:grid !important;
-  place-items:center !important;
-  position:relative !important;
-  width:42px !important;
-  height:42px !important;
-  min-width:42px !important;
-  min-height:42px !important;
-  margin:0 !important;
-  padding:0 !important;
-}
-.landing-header .header-actions .bag-button b{
-  position:absolute !important;
-  top:2px !important;
-  right:0 !important;
-  margin:0 !important;
-  min-width:14px !important;
-  height:14px !important;
-  padding:0 3px !important;
-  display:grid !important;
-  place-items:center !important;
-  border-radius:50% !important;
-  background:#fff !important;
-  color:#111 !important;
-  font:700 7px var(--mono) !important;
-}
-.landing-header.is-scrolled .header-actions .bag-button b{
-  background:#111 !important;
-  color:#fff !important;
-}
-.landing-header .nav-links{
-  position:fixed !important;
-  top:76px !important;
-  left:20px !important;
-  width:min(320px,calc(100vw - 40px)) !important;
-  display:none !important;
-  flex-direction:column !important;
-  align-items:stretch !important;
-  gap:0 !important;
-  padding:10px !important;
-  background:rgba(255,255,255,.97) !important;
-  border:1px solid rgba(17,17,17,.1) !important;
-  border-radius:12px !important;
-  box-shadow:0 20px 60px rgba(0,0,0,.16) !important;
-  backdrop-filter:blur(20px) !important;
-  -webkit-backdrop-filter:blur(20px) !important;
-  z-index:130 !important;
-}
-.landing-header .nav-links.nav-open{display:flex !important}
-.landing-header .nav-links .nav-primary{
-  width:100% !important;
-  padding:14px 12px !important;
-  text-align:left !important;
-  color:#111 !important;
-  background:transparent !important;
-  border:0 !important;
-  font:700 10px var(--mono) !important;
-}
-.landing-header .nav-links .nav-primary::after{display:none !important}
-.landing-header.is-scrolled .nav-links{top:76px}
-.landing-header .landing-moving-logo{display:none !important}
-
-/* The hero must be a true edge-to-edge canvas, never a card/block. */
-.home-content{margin:0 !important;padding:0 !important}
-.shoe-hero{
-  position:relative !important;
-  display:block !important;
-  width:100vw !important;
-  height:100svh !important;
-  min-height:100svh !important;
-  margin:0 !important;
-  padding:0 !important;
-  border-radius:0 !important;
-  overflow:hidden !important;
-  background:#111 !important;
-}
-.landing-hero-image,
-.landing-hero-image img{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  margin:0 !important;
-  padding:0 !important;
-}
-.landing-hero-image img{
-  display:block !important;
-  max-width:none !important;
-  object-fit:cover !important;
-  object-position:center center !important;
-}
-.landing-hero-image::after{
-  z-index:1 !important;
-  background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%,rgba(0,0,0,.25) 100%) !important;
-}
-.landing-hero-overlay{
-  position:absolute !important;
-  z-index:3 !important;
-  width:100% !important;
-  height:100% !important;
-  inset:0 !important;
-  padding:0 !important;
-}
-.landing-hero-copy{
-  position:absolute !important;
-  left:50% !important;
-  bottom:12% !important;
-  transform:translateX(-50%) !important;
-  width:auto !important;
-}
-.landing-hero-copy p{display:none !important}
-.landing-hero-copy button{
-  color:#fff !important;
-  border-bottom-color:rgba(255,255,255,.85) !important;
-}
-.landing-hero-scroll{bottom:24px !important;z-index:4 !important}
-
-/* Hero logo: white over image, then snaps cleanly into the center of the bar. */
-.hero-brand-logo{
-  position:fixed !important;
-  left:50% !important;
-  top:50% !important;
-  z-index:120 !important;
-  color:#fff !important;
-  opacity:1 !important;
-  visibility:visible !important;
-  transform:translate(-50%,-50%) scale(1) !important;
-  transition:top .7s cubic-bezier(.2,.75,.2,1),transform .7s cubic-bezier(.2,.75,.2,1),color .3s ease !important;
-}
-.hero-brand-scrolled{
-  top:38px !important;
-  transform:translate(-50%,-50%) scale(.39) !important;
-  color:#111 !important;
-}
-@media(max-width:680px){
-  .landing-header{height:64px !important;min-height:64px !important;padding:0 12px !important}
-  .landing-header .mobile-menu-toggle{width:40px !important;height:40px !important;flex-basis:40px !important}
-  .landing-header .header-actions{width:40px !important;height:40px !important;flex-basis:40px !important}
-  .landing-header .header-actions .bag-button{width:40px !important;height:40px !important;min-width:40px !important}
-  .landing-header .nav-links{top:64px !important;left:10px !important;width:calc(100vw - 20px) !important}
-  .landing-header.is-scrolled .nav-links{top:64px !important}
-  .hero-brand-scrolled{top:32px !important;transform:translate(-50%,-50%) scale(.43) !important}
-}
-
-
-/* FINAL LANDING HEADER STRUCTURE — locked left / true center / locked right */
-.landing-header{
-  position:fixed !important;
-  inset:0 0 auto 0 !important;
-  z-index:100 !important;
-  width:100% !important;
-  height:76px !important;
-  min-height:76px !important;
-  margin:0 !important;
-  padding:0 30px !important;
-  display:grid !important;
-  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
-  align-items:center !important;
-  column-gap:20px !important;
-  background:transparent !important;
-  color:#fff !important;
-  border:0 !important;
-  box-shadow:none !important;
-  pointer-events:none !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
-}
-
-.landing-header > .landing-header-menu,
-.landing-header > .landing-header-brand,
-.landing-header > .header-actions{
-  min-width:0 !important;
+  border-bottom:1px solid rgba(17,17,17,.10) !important;
+  backdrop-filter:blur(18px) saturate(125%) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(125%) !important;
 }
 
 .landing-header-menu{
   position:relative !important;
   justify-self:start !important;
-  width:auto !important;
+  width:42px !important;
   height:42px !important;
-  display:flex !important;
-  align-items:center !important;
   pointer-events:auto !important;
 }
 
 .landing-header .mobile-menu-toggle{
-  position:relative !important;
-  display:grid !important;
-  place-items:center !important;
   width:42px !important;
   height:42px !important;
-  flex:0 0 42px !important;
   margin:0 !important;
   padding:0 !important;
+  display:grid !important;
+  place-items:center !important;
   border:0 !important;
   background:transparent !important;
   color:#fff !important;
-  cursor:pointer !important;
   box-shadow:none !important;
-  z-index:3 !important;
-}
-
-.landing-header-brand{
-  justify-self:center !important;
-  position:relative !important;
-  z-index:115 !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  background:transparent !important;
-  color:#fff !important;
-  font:900 24px/.92 Manrope,sans-serif !important;
-  letter-spacing:-.07em !important;
-  text-transform:uppercase !important;
-  white-space:nowrap !important;
   cursor:pointer !important;
-  pointer-events:auto !important;
-  opacity:0 !important;
-  visibility:hidden !important;
-  transition:opacity .24s ease .52s,visibility 0s linear .76s,color .25s ease !important;
 }
 
-.landing-header-brand span{
-  margin-left:3px !important;
-  color:inherit !important;
-  font:700 .3em/1 var(--mono) !important;
-  vertical-align:top !important;
-  letter-spacing:0 !important;
-}
-
-.landing-header.is-scrolled .landing-header-brand{
-  opacity:1 !important;
-  visibility:visible !important;
-  transition-delay:.52s, .52s, 0s !important;
+.landing-header.is-scrolled .mobile-menu-toggle{
+  color:#111 !important;
 }
 
 .landing-header .header-actions{
@@ -4331,14 +3891,14 @@ button:hover {
 
 .landing-header .header-actions .bag-button{
   position:relative !important;
-  display:grid !important;
-  place-items:center !important;
   width:42px !important;
   height:42px !important;
   min-width:42px !important;
   min-height:42px !important;
   margin:0 !important;
   padding:0 !important;
+  display:grid !important;
+  place-items:center !important;
   border:0 !important;
   border-radius:0 !important;
   background:transparent !important;
@@ -4347,14 +3907,18 @@ button:hover {
   cursor:pointer !important;
 }
 
+.landing-header.is-scrolled .header-actions .bag-button{
+  color:#111 !important;
+}
+
 .landing-header .header-actions .bag-button b{
   position:absolute !important;
   top:1px !important;
   right:-1px !important;
-  margin:0 !important;
   min-width:14px !important;
   height:14px !important;
   padding:0 3px !important;
+  margin:0 !important;
   display:grid !important;
   place-items:center !important;
   border-radius:50% !important;
@@ -4363,30 +3927,16 @@ button:hover {
   font:700 7px/1 var(--mono) !important;
 }
 
-.landing-header.is-scrolled{
-  background:rgba(255,255,255,.94) !important;
-  color:#111 !important;
-  border-bottom:1px solid rgba(17,17,17,.1) !important;
-  backdrop-filter:blur(20px) saturate(125%) !important;
-  -webkit-backdrop-filter:blur(20px) saturate(125%) !important;
-}
-
-.landing-header.is-scrolled .mobile-menu-toggle,
-.landing-header.is-scrolled .header-actions .bag-button{
-  color:#111 !important;
-}
-
 .landing-header.is-scrolled .header-actions .bag-button b{
   background:#111 !important;
   color:#fff !important;
 }
 
-/* The menu is a dropdown anchored only to the left menu control. It never
-   participates in the header's center alignment. */
+/* Menu links are completely outside the header's center/right layout. */
 .landing-header .nav-links{
   position:absolute !important;
-  top:52px !important;
   left:0 !important;
+  top:50px !important;
   width:min(310px,calc(100vw - 24px)) !important;
   margin:0 !important;
   padding:10px !important;
@@ -4395,16 +3945,19 @@ button:hover {
   align-items:stretch !important;
   gap:2px !important;
   background:rgba(255,255,255,.98) !important;
-  border:1px solid rgba(17,17,17,.1) !important;
+  color:#111 !important;
+  border:1px solid rgba(17,17,17,.10) !important;
   border-radius:12px !important;
-  box-shadow:0 20px 55px rgba(0,0,0,.16) !important;
-  backdrop-filter:blur(20px) !important;
-  -webkit-backdrop-filter:blur(20px) !important;
+  box-shadow:0 20px 55px rgba(0,0,0,.14) !important;
+  backdrop-filter:blur(18px) !important;
+  -webkit-backdrop-filter:blur(18px) !important;
   z-index:140 !important;
   pointer-events:auto !important;
 }
 
-.landing-header .nav-links.nav-open{display:flex !important}
+.landing-header .nav-links.nav-open{
+  display:flex !important;
+}
 
 .landing-header .nav-links .nav-primary{
   width:100% !important;
@@ -4418,9 +3971,9 @@ button:hover {
   border-radius:8px !important;
   background:transparent !important;
   color:#111 !important;
+  text-align:left !important;
   font:700 10px/1 var(--mono) !important;
   letter-spacing:.06em !important;
-  text-align:left !important;
 }
 
 .landing-header .nav-links .nav-primary:hover,
@@ -4428,48 +3981,163 @@ button:hover {
   background:#f5f5f2 !important;
 }
 
-.landing-header .nav-links .nav-primary::after{display:none !important}
+.landing-header .nav-links .nav-primary::after{
+  display:none !important;
+}
 
-/* Hero logo is the visible logo over the image. Once scrolled, it travels to
-   the exact center of the bar, then fades away into the real header logo. */
-.hero-brand-logo{
-  position:fixed !important;
+/* True edge-to-edge hero. The header overlays it instead of consuming space. */
+.home-content{
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.shoe-hero{
+  position:relative !important;
+  width:100vw !important;
+  height:100svh !important;
+  min-height:100svh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border-radius:0 !important;
+  background:#111 !important;
+  isolation:isolate !important;
+}
+
+.landing-hero-image{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:0 !important;
+  background:#111 !important;
+}
+
+.landing-hero-image img{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  max-width:none !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+
+.landing-hero-image::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.24) 0%,
+    rgba(0,0,0,0) 44%,
+    rgba(0,0,0,.22) 100%
+  ) !important;
+}
+
+/* Invisible measurement anchor for ScrollLogo. It is never a second visible logo. */
+.hero-wordmark-placeholder{
+  position:absolute !important;
   left:50% !important;
   top:50% !important;
+  z-index:2 !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:translate(-50%,-50%) !important;
+  color:#fff !important;
+  font:900 clamp(44px,5.4vw,82px)/.9 Manrope,sans-serif !important;
+  letter-spacing:-.07em !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  user-select:none !important;
+}
+
+/* The one real logo, driven by the hero anchor and viewport coordinates. */
+.scroll-logo{
+  position:fixed !important;
+  left:0 !important;
+  top:0 !important;
   z-index:120 !important;
   margin:0 !important;
   padding:0 !important;
   border:0 !important;
   background:transparent !important;
   color:#fff !important;
-  opacity:1 !important;
-  visibility:visible !important;
-  font-family:Manrope,sans-serif !important;
+  font:900 72px/.9 Manrope,sans-serif !important;
+  letter-spacing:-.07em !important;
   text-transform:uppercase !important;
-  transform:translate(-50%,-50%) scale(1) !important;
+  white-space:nowrap !important;
+  line-height:.9 !important;
+  text-shadow:0 2px 24px rgba(0,0,0,.28) !important;
   transform-origin:center !important;
+  will-change:transform,font-size,color !important;
   transition:
-    top .7s cubic-bezier(.2,.75,.2,1),
-    transform .7s cubic-bezier(.2,.75,.2,1),
-    opacity .18s ease .58s,
-    color .25s ease,
-    text-shadow .25s ease !important;
+    color .18s ease,
+    text-shadow .18s ease !important;
+  cursor:pointer !important;
+  pointer-events:none;
+}
+
+.landing-hero-overlay{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:3 !important;
+  width:100% !important;
+  height:100% !important;
+  padding:0 5vw 34px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  background:transparent !important;
+  color:#fff !important;
+  pointer-events:none !important;
+}
+
+.landing-hero-copy{
+  width:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:18px !important;
+  text-align:center !important;
+  pointer-events:none !important;
+}
+
+.landing-hero-copy p{
+  margin:0 !important;
+  color:rgba(255,255,255,.82) !important;
+  font:700 9px/1 var(--mono) !important;
+  letter-spacing:.16em !important;
+}
+
+.landing-hero-copy button{
   pointer-events:auto !important;
+  padding:7px 0 !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(255,255,255,.82) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  font:700 10px/1 var(--mono) !important;
+  letter-spacing:.08em !important;
 }
 
-.hero-brand-scrolled{
-  top:38px !important;
-  transform:translate(-50%,-50%) scale(.39) !important;
-  opacity:0 !important;
-  color:#111 !important;
-  text-shadow:none !important;
-}
-
-.hero-brand-logo span{
-  font-size:.28em !important;
-  vertical-align:top !important;
-  margin-left:3px !important;
-  letter-spacing:0 !important;
+.landing-hero-scroll{
+  position:absolute !important;
+  left:50% !important;
+  bottom:28px !important;
+  margin:0 !important;
+  transform:translateX(-50%) !important;
+  color:rgba(255,255,255,.80) !important;
+  font:700 8px/1 var(--mono) !important;
+  letter-spacing:.14em !important;
+  white-space:nowrap !important;
 }
 
 @media(max-width:680px){
@@ -4477,14 +4145,15 @@ button:hover {
     height:64px !important;
     min-height:64px !important;
     padding:0 12px !important;
-    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
-    column-gap:8px !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
   }
+
   .landing-header-menu,
   .landing-header .header-actions{
     width:40px !important;
     height:40px !important;
   }
+
   .landing-header .mobile-menu-toggle,
   .landing-header .header-actions .bag-button{
     width:40px !important;
@@ -4492,23 +4161,35 @@ button:hover {
     min-width:40px !important;
     min-height:40px !important;
   }
-  .landing-header-brand{
-    font-size:19px !important;
-  }
+
   .landing-header .nav-links{
     top:48px !important;
     left:0 !important;
     width:calc(100vw - 24px) !important;
     max-width:320px !important;
   }
-  .landing-header.is-scrolled .nav-links{
-    top:48px !important;
+
+  .hero-wordmark-placeholder{
+    font-size:clamp(34px,10vw,54px) !important;
   }
-  .hero-brand-logo{
-    font-size:clamp(34px,10vw,52px) !important;
+
+  .scroll-logo{
+    font-size:44px !important;
   }
-  .hero-brand-scrolled{
-    top:32px !important;
-    transform:translate(-50%,-50%) scale(.43) !important;
+
+  .landing-hero-overlay{
+    padding:0 16px calc(24px + env(safe-area-inset-bottom,0px)) !important;
+  }
+
+  .landing-hero-copy{
+    padding:0 20px !important;
+  }
+
+  .landing-hero-copy p{
+    font-size:8px !important;
+  }
+
+  .landing-hero-scroll{
+    bottom:20px !important;
   }
 }
