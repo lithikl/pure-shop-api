@@ -3919,7 +3919,8 @@ button:hover {
   cursor:pointer !important;
   box-sizing:border-box !important;
 }
-\n.landing-header .header-actions{
+
+.landing-header .header-actions{
   position:absolute !important;
   right:30px !important;
   top:50% !important;
