@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, X, Search, SlidersHorizontal, Share2 } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, ShoppingBag, ShoppingCart, Menu as MenuIcon, X, Search, SlidersHorizontal, Share2 } from "lucide-react";
 import Checkout from "./Checkout";
 import Admin from "./Admin";
 import { DEFAULT_SHOES, EternalFit, HomepageSettings, Shoe, defaultSizesForProduct, loadEternalFits, loadFeatured, loadHomepageSettings, loadProducts, loadCategories, hydrateFromCloud } from "./store";
@@ -351,29 +351,28 @@ export default function App() {
       <div className="landing-header-menu">
         <button
           type="button"
-          className="menu-text-button"
+          className="menu-icon-button"
           onClick={() => setMobileMenuOpen(value => !value)}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-controls="noirknull-mobile-nav"
           aria-expanded={mobileMenuOpen}
         >
-          {mobileMenuOpen ? "Close" : "Menu"}
+          <MenuIcon size={15} strokeWidth={1.8} aria-hidden="true" />
         </button>
         <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
           <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
-          <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOES</button>
-          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
-          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
+          <button className="nav-primary" onClick={() => { openShop(); setCollectionMode("new"); setMobileMenuOpen(false); }}>NEW LAUNCHES</button>
+          <button className="nav-primary" onClick={() => { openShop(); setCollectionMode("best"); setMobileMenuOpen(false); }}>BEST SELLERS</button>
         </nav>
       </div>
       <div className="header-actions">
         <button
           type="button"
-          className="cart-text-button"
+          className="cart-icon-button"
           onClick={() => setCartOpen(true)}
           aria-label={"Cart, " + cart.length + " items"}
         >
-          Cart
+          <ShoppingCart size={15} strokeWidth={1.8} aria-hidden="true" />
         </button>
       </div>
     </header>
