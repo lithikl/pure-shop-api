@@ -357,18 +357,14 @@ export default function App() {
   return <div className="noir-site">
     <header className={"noir-header liquid-glass-header landing-header" + (landingScrolled ? " is-scrolled" : "")}>
       <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
-      <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"}>
-        <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>NEW IN</button>
+      <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
         <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
-        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("SHOES"); setMobileMenuOpen(false); }}>FOR MEN</button>
-        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>FOR WOMEN</button>
-        <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
+        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("SHOES"); setMobileMenuOpen(false); }}>SHOES</button>
+        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
+        <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
       </nav>
       <div className="header-actions">
-        <button type="button" aria-label="Search" onClick={openShop}><Search size={19}/></button>
-        <button type="button" aria-label="Account"><UserRound size={19}/></button>
-        <button type="button" aria-label="Wishlist"><Heart size={20}/></button>
-        <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Bag, " + cart.length + " items"}><ShoppingBag size={19}/><b>{cart.length}</b></button>
+        <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Cart, " + cart.length + " items"}><ShoppingBag size={20}/><b>{cart.length}</b></button>
       </div>
     </header>
 
