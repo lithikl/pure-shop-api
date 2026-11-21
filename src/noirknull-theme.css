@@ -4050,3 +4050,179 @@ button:hover {
     transform:translate(-50%,-50%) scale(.43) !important;
   }
 }
+
+
+/* Landing header final alignment: only MENU + centered moving logo + CART. */
+.landing-header{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:0 30px !important;
+}
+.landing-header .mobile-menu-toggle{
+  display:grid !important;
+  place-items:center !important;
+  width:42px !important;
+  height:42px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  cursor:pointer !important;
+  flex:0 0 42px !important;
+}
+.landing-header .header-actions{
+  margin-left:auto !important;
+  width:42px !important;
+  height:42px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex:0 0 42px !important;
+}
+.landing-header .header-actions .bag-button{
+  display:grid !important;
+  place-items:center !important;
+  position:relative !important;
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.landing-header .header-actions .bag-button b{
+  position:absolute !important;
+  top:2px !important;
+  right:0 !important;
+  margin:0 !important;
+  min-width:14px !important;
+  height:14px !important;
+  padding:0 3px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  color:#111 !important;
+  font:700 7px var(--mono) !important;
+}
+.landing-header.is-scrolled .header-actions .bag-button b{
+  background:#111 !important;
+  color:#fff !important;
+}
+.landing-header .nav-links{
+  position:fixed !important;
+  top:76px !important;
+  left:20px !important;
+  width:min(320px,calc(100vw - 40px)) !important;
+  display:none !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:0 !important;
+  padding:10px !important;
+  background:rgba(255,255,255,.97) !important;
+  border:1px solid rgba(17,17,17,.1) !important;
+  border-radius:12px !important;
+  box-shadow:0 20px 60px rgba(0,0,0,.16) !important;
+  backdrop-filter:blur(20px) !important;
+  -webkit-backdrop-filter:blur(20px) !important;
+  z-index:130 !important;
+}
+.landing-header .nav-links.nav-open{display:flex !important}
+.landing-header .nav-links .nav-primary{
+  width:100% !important;
+  padding:14px 12px !important;
+  text-align:left !important;
+  color:#111 !important;
+  background:transparent !important;
+  border:0 !important;
+  font:700 10px var(--mono) !important;
+}
+.landing-header .nav-links .nav-primary::after{display:none !important}
+.landing-header.is-scrolled .nav-links{top:76px}
+.landing-header .landing-moving-logo{display:none !important}
+
+/* The hero must be a true edge-to-edge canvas, never a card/block. */
+.home-content{margin:0 !important;padding:0 !important}
+.shoe-hero{
+  position:relative !important;
+  display:block !important;
+  width:100vw !important;
+  height:100svh !important;
+  min-height:100svh !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  background:#111 !important;
+}
+.landing-hero-image,
+.landing-hero-image img{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.landing-hero-image img{
+  display:block !important;
+  max-width:none !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+.landing-hero-image::after{
+  z-index:1 !important;
+  background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 45%,rgba(0,0,0,.25) 100%) !important;
+}
+.landing-hero-overlay{
+  position:absolute !important;
+  z-index:3 !important;
+  width:100% !important;
+  height:100% !important;
+  inset:0 !important;
+  padding:0 !important;
+}
+.landing-hero-copy{
+  position:absolute !important;
+  left:50% !important;
+  bottom:12% !important;
+  transform:translateX(-50%) !important;
+  width:auto !important;
+}
+.landing-hero-copy p{display:none !important}
+.landing-hero-copy button{
+  color:#fff !important;
+  border-bottom-color:rgba(255,255,255,.85) !important;
+}
+.landing-hero-scroll{bottom:24px !important;z-index:4 !important}
+
+/* Hero logo: white over image, then snaps cleanly into the center of the bar. */
+.hero-brand-logo{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:120 !important;
+  color:#fff !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:translate(-50%,-50%) scale(1) !important;
+  transition:top .7s cubic-bezier(.2,.75,.2,1),transform .7s cubic-bezier(.2,.75,.2,1),color .3s ease !important;
+}
+.hero-brand-scrolled{
+  top:38px !important;
+  transform:translate(-50%,-50%) scale(.39) !important;
+  color:#111 !important;
+}
+@media(max-width:680px){
+  .landing-header{height:64px !important;min-height:64px !important;padding:0 12px !important}
+  .landing-header .mobile-menu-toggle{width:40px !important;height:40px !important;flex-basis:40px !important}
+  .landing-header .header-actions{width:40px !important;height:40px !important;flex-basis:40px !important}
+  .landing-header .header-actions .bag-button{width:40px !important;height:40px !important;min-width:40px !important}
+  .landing-header .nav-links{top:64px !important;left:10px !important;width:calc(100vw - 20px) !important}
+  .landing-header.is-scrolled .nav-links{top:64px !important}
+  .hero-brand-scrolled{top:32px !important;transform:translate(-50%,-50%) scale(.43) !important}
+}
