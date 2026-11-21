@@ -4,17 +4,17 @@
    storefront, product page, cart, checkout, tracking and admin UI. */
 
 :root {
-  --nk-bg: #fff;
-  --nk-surface: #fafafa;
-  --nk-surface-2: #f5f5f2;
-  --nk-text: #111;
-  --nk-muted: #6b6b67;
-  --nk-line: #e4e4e0;
-  --nk-line-strong: #cfcfca;
+  --nk-bg: #d4d7d9;
+  --nk-surface: #e4e6e7;
+  --nk-surface-2: #c8cccf;
+  --nk-text: #17191b;
+  --nk-muted: #5e6367;
+  --nk-line: rgba(35,39,42,.14);
+  --nk-line-strong: rgba(35,39,42,.24);
   --nk-radius: 14px;
   --nk-radius-sm: 10px;
-  --nk-shadow: 0 16px 50px rgba(0,0,0,.06);
-  --nk-shadow-soft: 0 8px 28px rgba(0,0,0,.05);
+  --nk-shadow: 0 18px 50px rgba(32,36,40,.14);
+  --nk-shadow-soft: 0 8px 28px rgba(32,36,40,.10);
 }
 
 html {
@@ -4314,4 +4314,282 @@ button:hover {
   background:transparent !important;
   border:0 !important;
   box-shadow:none !important;
+}
+
+
+/* =========================================================
+   NOIRKNULL — SMOKY CHROME MASTER THEME
+   Metallic silver / smoke palette. Hero photography stays
+   untouched; chrome comes from the interface around it.
+   ========================================================= */
+
+:root{
+  --nk-chrome-hi:#f1f3f4;
+  --nk-chrome:#d5d9dc;
+  --nk-chrome-mid:#b8bdc1;
+  --nk-chrome-dark:#8e959a;
+  --nk-smoke:#6f767b;
+  --nk-ink:#17191b;
+  --nk-muted:#5e6367;
+  --nk-hairline:rgba(35,39,42,.16);
+}
+
+html,
+body,
+#root,
+.noir-site,
+.home-content,
+.shop-page,
+.shop-body,
+.product-page,
+.about-contact{
+  background:var(--nk-bg) !important;
+  color:var(--nk-text) !important;
+}
+
+.noir-site a,
+.noir-site button,
+.noir-site input,
+.noir-site select,
+.noir-site textarea{
+  color:var(--nk-text);
+}
+
+/* Main chrome surfaces */
+.topline,
+.noir-header,
+.shop-toolbar,
+.shop-page-top,
+.shop-filters-top,
+.section-wrap,
+.about-contact,
+.product-page,
+.shop-page{
+  background:linear-gradient(135deg,rgba(238,240,241,.88),rgba(194,199,202,.82) 48%,rgba(226,229,231,.9)) !important;
+}
+
+.topline,
+.noir-header,
+.shop-toolbar{
+  border-color:var(--nk-hairline) !important;
+  box-shadow:0 8px 30px rgba(35,39,42,.08) !important;
+  backdrop-filter:blur(20px) saturate(115%) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(115%) !important;
+}
+
+.noir-header{
+  background:linear-gradient(180deg,rgba(232,235,237,.82),rgba(180,186,190,.68)) !important;
+}
+
+.topline{
+  background:rgba(199,203,206,.72) !important;
+}
+
+.shop-toolbar{
+  background:rgba(210,214,217,.82) !important;
+}
+
+/* Images sit cleanly inside the smoky foundation */
+.homepage-category-image,
+.homepage-product-image,
+.shop-product-image,
+.product-main-image{
+  background:linear-gradient(135deg,#e7eaeb,#bcc1c5 52%,#dfe2e4) !important;
+}
+
+/* Chrome controls — metallic, not black */
+.bag-button,
+.shop-search,
+.shop-sort,
+.shop-mobile-search,
+.shop-mobile-sort,
+.category-filter,
+.shop-empty button{
+  background:linear-gradient(135deg,#eef0f1 0%,#bcc1c5 48%,#e4e7e8 100%) !important;
+  color:var(--nk-ink) !important;
+  border-color:rgba(35,39,42,.20) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 5px 16px rgba(35,39,42,.08) !important;
+}
+
+.bag-button:hover,
+.bag-button:focus-visible,
+.shop-empty button:hover,
+.category-filter:hover{
+  background:linear-gradient(135deg,#f3f5f6,#aeb4b8 52%,#e7e9ea) !important;
+  border-color:rgba(35,39,42,.30) !important;
+}
+
+.category-filter.active{
+  background:linear-gradient(135deg,#7e858a,#565d62 50%,#747b80) !important;
+  color:#fff !important;
+  border-color:#5d6469 !important;
+}
+
+/* Product / content cards: subtle chrome, no new chunky boxes */
+.homepage-product-card,
+.shop-product-card{
+  background:transparent !important;
+}
+
+.homepage-category-index,
+.homepage-category-arrow,
+.homepage-product-badge,
+.homepage-product-view,
+.shop-view-link,
+.shoe-tag{
+  background:rgba(222,225,227,.88) !important;
+  border-color:rgba(35,39,42,.16) !important;
+  color:var(--nk-ink) !important;
+  box-shadow:0 7px 20px rgba(35,39,42,.09) !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+/* Text remains charcoal for a premium editorial contrast */
+.kicker,
+.section-intro,
+.shop-intro,
+.product-description,
+.product-delivery-note,
+.shop-result-count,
+.filter-heading,
+.shop-mobile-sort span,
+.homepage-category-meta p,
+.homepage-category-meta > span,
+.homepage-product-meta > div > span,
+.homepage-product-meta small,
+.shop-product-meta > div > p,
+.shop-product-meta > div > span,
+.about-signoff,
+.contact-links span,
+.shop-bottom-note{
+  color:var(--nk-muted) !important;
+}
+
+.homepage-section-heading h2,
+.about-noirknull-copy h2,
+.shop-page-top h1,
+.about-contact-card h3,
+.shop-empty h2{
+  color:var(--nk-ink) !important;
+}
+
+/* Landing hero: preserve the actual photograph */
+.shoe-hero,
+.landing-hero-image{
+  background:#3f4448 !important;
+}
+
+.landing-hero-image::after{
+  background:linear-gradient(180deg,rgba(0,0,0,.23) 0%,rgba(0,0,0,0) 44%,rgba(0,0,0,.22) 100%) !important;
+}
+
+/* Landing glass bar becomes smoky chrome */
+.landing-header{
+  background:linear-gradient(180deg,rgba(207,212,215,.58),rgba(123,130,135,.30)) !important;
+  border-bottom:1px solid rgba(255,255,255,.42) !important;
+  box-shadow:0 8px 28px rgba(25,29,32,.12),inset 0 1px 0 rgba(255,255,255,.38) !important;
+  backdrop-filter:blur(22px) saturate(120%) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(120%) !important;
+}
+
+.landing-header .menu-icon-button,
+.landing-header .cart-icon-button,
+.landing-header .menu-icon-button svg,
+.landing-header .cart-icon-button svg{
+  color:#202428 !important;
+  -webkit-text-fill-color:#202428 !important;
+}
+
+.landing-header .nav-links{
+  background:rgba(189,194,198,.90) !important;
+  border:1px solid rgba(255,255,255,.38) !important;
+  box-shadow:0 18px 44px rgba(25,29,32,.18),inset 0 1px 0 rgba(255,255,255,.42) !important;
+  backdrop-filter:blur(22px) saturate(120%) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(120%) !important;
+}
+
+.landing-header .nav-links .nav-primary{
+  color:#17191b !important;
+}
+
+.landing-header .nav-links .nav-primary:hover,
+.landing-header .nav-links .nav-primary:focus-visible{
+  color:#000 !important;
+  text-shadow:0 1px 8px rgba(255,255,255,.45) !important;
+}
+
+/* Keep the animated logo metallic */
+.scroll-logo{
+  background:linear-gradient(112deg,#3f4549 0%,#aeb4b8 22%,#f0f2f3 34%,#737a7f 48%,#343a3e 64%,#c7cccf 81%,#555c61 100%) !important;
+  background-size:240% 240% !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  color:transparent !important;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.34)) !important;
+}
+
+.scroll-logo.scroll-logo-at-header{
+  background:none !important;
+  -webkit-text-fill-color:#17191b !important;
+  color:#17191b !important;
+  filter:none !important;
+}
+
+/* Hero CTA stays white because it sits on photography */
+.landing-hero-copy button,
+.landing-hero-copy p,
+.landing-hero-scroll{
+  color:#fff !important;
+}
+
+/* Footer / dividers */
+.homepage-section-footer,
+.contact-links,
+.contact-links a{
+  border-color:var(--nk-hairline) !important;
+}
+
+/* Admin surfaces follow the same smoky-chrome system */
+.admin-page,
+.admin-shell,
+.admin-main,
+.admin-sidebar,
+.admin-card,
+.admin-panel,
+.admin-toolbar,
+.admin-modal,
+.admin-image-editor,
+.admin-editor-preview-card,
+.admin-editor-tools{
+  background:linear-gradient(135deg,#e7e9ea,#c4c9cc 52%,#dde0e2) !important;
+  color:var(--nk-ink) !important;
+}
+
+.admin-card,
+.admin-panel,
+.admin-toolbar,
+.admin-modal,
+.admin-image-editor,
+.admin-editor-preview-card,
+.admin-editor-tools{
+  border-color:rgba(35,39,42,.16) !important;
+  box-shadow:0 12px 32px rgba(35,39,42,.10),inset 0 1px 0 rgba(255,255,255,.55) !important;
+}
+
+.admin-page input,
+.admin-page select,
+.admin-page textarea,
+.admin-shell input,
+.admin-shell select,
+.admin-shell textarea{
+  background:rgba(235,237,238,.76) !important;
+  color:var(--nk-ink) !important;
+  border-color:rgba(35,39,42,.20) !important;
+}
+
+@media(max-width:680px){
+  .landing-header{
+    background:linear-gradient(180deg,rgba(207,212,215,.64),rgba(123,130,135,.34)) !important;
+  }
 }
