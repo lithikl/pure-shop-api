@@ -176,8 +176,7 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
     if (!value || !imageLoaded) return;
     setBusy(true);
     try {
-      const safeRatio = Math.max(0.45, Math.min(2.4, cropRatio));
-      const width = 1600, height = Math.round(width / safeRatio);
+      const width = 1600;
       const image = await loadEditorImage();
       const canvas = document.createElement("canvas");
       drawCrop(canvas, image, width);
