@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Pencil, Plus, Save, Settings2, Trash2, X, Upload, RotateCcw } from "lucide-react";
 import { loadOrders, updateOrderStatus, Order, OrderStatus } from "./orders";
 import {
@@ -115,13 +115,17 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const dragRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 });
 
   const clampOffsets = (nextX: number, nextY: number, nextZoom = zoom) => {
     const stageWidth = 640;
     const stageHeight = stageWidth / Math.max(0.55, Math.min(2.2, aspectRatio));
-    const maxX = Math.max(0, ((stageWidth * Math.max(1, nextZoom)) - stageWidth) / 2);
-    const maxY = Math.max(0, ((stageHeight * Math.max(1, nextZoom)) - stageHeight) / 2);
+    const baseScale = imageSize.width && imageSize.height ? Math.max(stageWidth / imageSize.width, stageHeight / imageSize.height) : 1;
+    const renderedWidth = imageSize.width * baseScale * Math.max(1, nextZoom);
+    const renderedHeight = imageSize.height * baseScale * Math.max(1, nextZoom);
+    const maxX = Math.max(0, (renderedWidth - stageWidth) / 2);
+    const maxY = Math.max(0, (renderedHeight - stageHeight) / 2);
     return { x: Math.max(-maxX, Math.min(maxX, nextX)), y: Math.max(-maxY, Math.min(maxY, nextY)) };
   };
 
@@ -141,12 +145,12 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
     } finally { setBusy(false); }
   };
 
-  const beginDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+  const beginDrag = (event: PointerEvent<HTMLDivElement>) => {
     if (!value || busy) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = { active: true, startX: event.clientX, startY: event.clientY, originX: offsetX, originY: offsetY };
   };
-  const moveDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+  const moveDrag = (event: PointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.active) return;
     const next = clampOffsets(
       dragRef.current.originX + event.clientX - dragRef.current.startX,
@@ -203,7 +207,7 @@ function ImagePicker({ value, onChange, label = "UPLOAD PHOTO", aspectRatio = 1 
       <div className="admin-crop-editor-head"><div><span>IMAGE EDITOR</span><strong>Drag to position · scroll to zoom · touch friendly</strong></div><button type="button" onClick={() => setEditingCrop(false)} aria-label="Close image editor"><X size={16}/></button></div>
       <div className="admin-crop-workspace">
         <div className="admin-crop-stage" style={{ aspectRatio: String(aspectRatio), touchAction: "none" }} onPointerDown={beginDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onWheel={event => { event.preventDefault(); updateZoom(zoom + (event.deltaY > 0 ? -0.08 : 0.08)); }}>
-          <img src={value} alt="Crop editor" draggable={false} onLoad={() => setImageLoaded(true)} style={{ transform: `translate3d(${offsetX}px,${offsetY}px,0) scale(${zoom})`, opacity: imageLoaded ? 1 : 0 }} />
+          <img src={value} alt="Crop editor" draggable={false} onLoad={event => { setImageLoaded(true); setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight }); }} style={{ transform: `translate3d(${offsetX}px,${offsetY}px,0) scale(${zoom})`, opacity: imageLoaded ? 1 : 0 }} />
           <div className="admin-crop-grid" aria-hidden="true"><i/><i/><i/><i/></div>
           <div className="admin-crop-hint">DRAG TO REPOSITION</div>
         </div>
