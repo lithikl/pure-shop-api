@@ -3813,127 +3813,54 @@ button:hover {
 
 
 /* =========================================================
-   NOIRKNULL LANDING — one full-width glass bar
+   NOIRKNULL LANDING — one transparent glass bar
    ========================================================= */
 
 .landing-header{
-  --nk-bar-alpha:.10;
-  --nk-border-alpha:.28;
-  --nk-ink:255;
   position:fixed !important;
   top:0 !important;
   left:0 !important;
   right:0 !important;
   width:100% !important;
-  height:76px !important;
-  min-height:76px !important;
+  height:68px !important;
+  min-height:68px !important;
   z-index:100 !important;
   margin:0 !important;
-  padding:0 28px !important;
+  padding:0 30px !important;
   display:block !important;
-  background:rgba(255,255,255,var(--nk-bar-alpha)) !important;
-  color:rgb(var(--nk-ink) var(--nk-ink) var(--nk-ink)) !important;
+  background:rgba(255,255,255,.18) !important;
+  color:#111 !important;
   border:0 !important;
-  border-bottom:1px solid rgba(255,255,255,var(--nk-border-alpha)) !important;
+  border-bottom:1px solid rgba(255,255,255,.26) !important;
   border-radius:0 !important;
-  box-shadow:none !important;
+  box-shadow:0 6px 24px rgba(0,0,0,.05) !important;
   backdrop-filter:blur(18px) saturate(135%) !important;
   -webkit-backdrop-filter:blur(18px) saturate(135%) !important;
   pointer-events:none !important;
-}
-
-.landing-header .header-actions{
-  position:absolute !important;
-  left:28px !important;
-  top:50% !important;
-  width:42px !important;
-  height:42px !important;
-  margin:0 !important;
-  transform:translateY(-50%) !important;
-  display:grid !important;
-  place-items:center !important;
-  pointer-events:auto !important;
-}
-
-.landing-header .header-actions .bag-button{
-  width:42px !important;
-  height:42px !important;
-  min-width:42px !important;
-  min-height:42px !important;
-  margin:0 !important;
-  padding:0 !important;
-  display:grid !important;
-  place-items:center !important;
-  border:0 !important;
-  outline:0 !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  background-color:transparent !important;
-  background-image:none !important;
-  box-shadow:none !important;
-  color:rgb(var(--nk-ink) var(--nk-ink) var(--nk-ink)) !important;
-  cursor:pointer !important;
-}
-
-.landing-header .header-actions .bag-button:hover,
-.landing-header .header-actions .bag-button:active,
-.landing-header .header-actions .bag-button:focus,
-.landing-header .header-actions .bag-button:focus-visible{
-  border:0 !important;
-  outline:0 !important;
-  background:transparent !important;
-  background-color:transparent !important;
-  background-image:none !important;
-  box-shadow:none !important;
-}
-
-.landing-header .header-actions .bag-button svg{
-  width:20px !important;
-  height:20px !important;
-  display:block !important;
-  stroke:currentColor !important;
-  fill:none !important;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)) !important;
-}
-
-.landing-header .header-actions .bag-button b{
-  position:absolute !important;
-  top:0 !important;
-  right:-3px !important;
-  width:15px !important;
-  min-width:15px !important;
-  height:15px !important;
-  padding:0 !important;
-  margin:0 !important;
-  display:grid !important;
-  place-items:center !important;
-  border:0 !important;
-  border-radius:50% !important;
-  background:rgba(18,18,18,.92) !important;
-  color:#fff !important;
-  font:700 7px/1 var(--mono) !important;
+  transition:none !important;
 }
 
 .landing-header .landing-header-menu{
   position:absolute !important;
-  right:28px !important;
+  left:30px !important;
   top:50% !important;
-  width:42px !important;
-  height:42px !important;
+  width:auto !important;
+  height:32px !important;
   margin:0 !important;
   transform:translateY(-50%) !important;
   pointer-events:auto !important;
 }
 
-.landing-header .mobile-menu-toggle{
-  width:42px !important;
-  height:42px !important;
-  min-width:42px !important;
-  min-height:42px !important;
+.landing-header .menu-text-button,
+.landing-header .cart-text-button{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  height:32px !important;
   margin:0 !important;
   padding:0 !important;
-  display:grid !important;
-  place-items:center !important;
   border:0 !important;
   outline:0 !important;
   border-radius:0 !important;
@@ -3941,35 +3868,49 @@ button:hover {
   background-color:transparent !important;
   background-image:none !important;
   box-shadow:none !important;
-  color:rgb(var(--nk-ink) var(--nk-ink) var(--nk-ink)) !important;
+  color:#111 !important;
+  font:700 10px/1 var(--mono) !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
   cursor:pointer !important;
+  text-shadow:0 1px 10px rgba(255,255,255,.28) !important;
 }
 
-.landing-header .mobile-menu-toggle:hover,
-.landing-header .mobile-menu-toggle:active,
-.landing-header .mobile-menu-toggle:focus,
-.landing-header .mobile-menu-toggle:focus-visible{
-  border:0 !important;
-  outline:0 !important;
+.landing-header .menu-text-button:hover,
+.landing-header .menu-text-button:active,
+.landing-header .menu-text-button:focus,
+.landing-header .menu-text-button:focus-visible,
+.landing-header .cart-text-button:hover,
+.landing-header .cart-text-button:active,
+.landing-header .cart-text-button:focus,
+.landing-header .cart-text-button:focus-visible{
   background:transparent !important;
   background-color:transparent !important;
-  background-image:none !important;
+  border:0 !important;
+  outline:0 !important;
   box-shadow:none !important;
+  color:#111 !important;
 }
 
-.landing-header .mobile-menu-toggle svg{
-  width:20px !important;
-  height:20px !important;
-  display:block !important;
-  stroke:currentColor !important;
-  fill:none !important;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)) !important;
+.landing-header .header-actions{
+  position:absolute !important;
+  right:30px !important;
+  top:50% !important;
+  width:auto !important;
+  height:32px !important;
+  margin:0 !important;
+  transform:translateY(-50%) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  pointer-events:auto !important;
 }
 
 .landing-header .nav-links{
   position:absolute !important;
-  right:0 !important;
-  top:50px !important;
+  right:auto !important;
+  left:0 !important;
+  top:42px !important;
   width:min(310px,calc(100vw - 24px)) !important;
   margin:0 !important;
   padding:10px !important;
@@ -3977,11 +3918,11 @@ button:hover {
   flex-direction:column !important;
   align-items:stretch !important;
   gap:2px !important;
-  background:rgba(255,255,255,.97) !important;
+  background:rgba(255,255,255,.94) !important;
   color:#111 !important;
   border:1px solid rgba(17,17,17,.10) !important;
-  border-radius:12px !important;
-  box-shadow:0 20px 55px rgba(0,0,0,.14) !important;
+  border-radius:10px !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.12) !important;
   backdrop-filter:blur(18px) !important;
   -webkit-backdrop-filter:blur(18px) !important;
   z-index:140 !important;
@@ -4001,7 +3942,7 @@ button:hover {
   align-items:center !important;
   justify-content:flex-start !important;
   border:0 !important;
-  border-radius:8px !important;
+  border-radius:7px !important;
   background:transparent !important;
   color:#111 !important;
   text-align:left !important;
@@ -4074,7 +4015,7 @@ button:hover {
   padding:0 !important;
   transform:translate(-50%,-50%) !important;
   color:#fff !important;
-  font:900 clamp(44px,5.4vw,82px)/.9 Manrope,sans-serif !important;
+  font:900 clamp(36px,4vw,62px)/.9 Manrope,sans-serif !important;
   letter-spacing:-.07em !important;
   text-transform:uppercase !important;
   white-space:nowrap !important;
@@ -4091,19 +4032,29 @@ button:hover {
   margin:0 !important;
   padding:0 !important;
   border:0 !important;
-  background:linear-gradient(112deg,#858585 0%,#c8c8c8 18%,#ffffff 34%,#f7f7f7 48%,#858585 67%,#c8c8c8 84%,#ffffff 100%) !important;
+  background:linear-gradient(
+    112deg,
+    #353535 0%,
+    #646464 16%,
+    #bdbdbd 31%,
+    #686868 45%,
+    #3c3c3c 61%,
+    #929292 78%,
+    #4a4a4a 100%
+  ) !important;
   background-size:240% 240% !important;
   background-position:0% 50% !important;
   -webkit-background-clip:text !important;
   background-clip:text !important;
   -webkit-text-fill-color:transparent !important;
   color:transparent !important;
-  font:900 72px/.9 Manrope,sans-serif !important;
+  -webkit-text-stroke:.22px rgba(255,255,255,.24) !important;
+  font:900 58px/.9 Manrope,sans-serif !important;
   letter-spacing:-.07em !important;
   text-transform:uppercase !important;
   white-space:nowrap !important;
   line-height:.9 !important;
-  filter:drop-shadow(0 1px 3px rgba(0,0,0,.24)) !important;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.32)) !important;
   transform-origin:center !important;
   will-change:transform,font-size !important;
   cursor:pointer !important;
@@ -4180,44 +4131,40 @@ button:hover {
 
 @media(max-width:680px){
   .landing-header{
-    height:64px !important;
-    min-height:64px !important;
-    padding:0 14px !important;
-  }
-
-  .landing-header .header-actions{
-    left:14px !important;
-    width:38px !important;
-    height:38px !important;
+    height:60px !important;
+    min-height:60px !important;
+    padding:0 16px !important;
   }
 
   .landing-header .landing-header-menu{
-    right:14px !important;
-    width:38px !important;
-    height:38px !important;
+    left:16px !important;
+    height:30px !important;
   }
 
-  .landing-header .header-actions .bag-button,
-  .landing-header .mobile-menu-toggle{
-    width:38px !important;
-    height:38px !important;
-    min-width:38px !important;
-    min-height:38px !important;
+  .landing-header .header-actions{
+    right:16px !important;
+    height:30px !important;
+  }
+
+  .landing-header .menu-text-button,
+  .landing-header .cart-text-button{
+    height:30px !important;
+    font-size:9px !important;
   }
 
   .landing-header .nav-links{
-    top:46px !important;
-    right:0 !important;
+    top:40px !important;
+    left:0 !important;
     width:calc(100vw - 24px) !important;
     max-width:320px !important;
   }
 
   .hero-wordmark-placeholder{
-    font-size:clamp(34px,10vw,54px) !important;
+    font-size:clamp(30px,8vw,48px) !important;
   }
 
   .scroll-logo{
-    font-size:44px !important;
+    font-size:40px !important;
   }
 
   .landing-hero-overlay{
