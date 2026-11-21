@@ -348,17 +348,33 @@ export default function App() {
 
   return <div className="noir-site">
         <header className="landing-header">
-      <div className="header-actions">
-        <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Cart, " + cart.length + " items"}><ShoppingBag size={20}/><b>{cart.length}</b></button>
-      </div>
       <div className="landing-header-menu">
-        <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+        <button
+          type="button"
+          className="menu-text-button"
+          onClick={() => setMobileMenuOpen(value => !value)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-controls="noirknull-mobile-nav"
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? "Close" : "Menu"}
+        </button>
         <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
           <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
           <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOES</button>
           <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
           <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
         </nav>
+      </div>
+      <div className="header-actions">
+        <button
+          type="button"
+          className="cart-text-button"
+          onClick={() => setCartOpen(true)}
+          aria-label={"Cart, " + cart.length + " items"}
+        >
+          Cart
+        </button>
       </div>
     </header>
     <ScrollLogo homeActive={!shopOpen && !selectedProduct && !checkoutOpen} />
