@@ -71,7 +71,8 @@ export default function ScrollLogo({ homeActive }: ScrollLogoProps) {
       el.style.fontSize = `${font}px`;
       el.style.letterSpacing = `${lerp(-0.07, -0.02, p)}em`;
       el.style.transform = `translate(${state.viewportCenterX}px, ${y}px) translate(-50%, -50%)`;
-      el.style.color = `rgb(${ink} ${ink} ${ink})`;
+      el.style.color = "transparent";
+      el.style.webkitTextFillColor = "transparent";
       el.style.textShadow = p > 0.92 ? "none" : `0 2px 24px rgba(0,0,0,${(0.28 * (1 - p)).toFixed(3)})`;
       el.style.pointerEvents = p > 0.86 ? "auto" : "none";
 
