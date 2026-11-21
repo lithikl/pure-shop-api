@@ -56,15 +56,6 @@ export default function App() {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("upi");
   const [checkoutData, setCheckoutData] = useState({ email: "", phone: "", firstName: "", lastName: "", address: "", apartment: "", city: "Chennai", state: "Tamil Nadu", pincode: "" });
   const [added, setAdded] = useState<number | null>(null);
-  const [landingScrolled, setLandingScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setLandingScrolled(window.scrollY > Math.max(28, window.innerHeight * 0.42));
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -356,18 +347,20 @@ export default function App() {
   }
 
   return <div className="noir-site">
-    <header className={"noir-header liquid-glass-header landing-header" + (landingScrolled ? " is-scrolled" : "")}>
-      <div className="landing-header-menu">
-        <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
-        <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
-          <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
-          <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOES</button>
-          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
-          <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
-        </nav>
-      </div>
-      <div className="header-actions">
-        <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Cart, " + cart.length + " items"}><ShoppingBag size={20}/><b>{cart.length}</b></button>
+    <header className="landing-header">
+      <div className="landing-header-inner">
+        <div className="header-actions">
+          <button type="button" className="bag-button" onClick={() => setCartOpen(true)} aria-label={"Cart, " + cart.length + " items"}><ShoppingBag size={20}/><b>{cart.length}</b></button>
+        </div>
+        <div className="landing-header-menu">
+          <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(value => !value)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-controls="noirknull-mobile-nav" aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+          <nav id="noirknull-mobile-nav" className={mobileMenuOpen ? "nav-links nav-open" : "nav-links"} aria-hidden={!mobileMenuOpen}>
+            <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOP ALL</button>
+            <button className="nav-primary" onClick={() => { openShop(); setMobileMenuOpen(false); }}>SHOES</button>
+            <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>APPAREL</button>
+            <button className="nav-primary" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
+          </nav>
+        </div>
       </div>
     </header>
     <ScrollLogo homeActive={!shopOpen && !selectedProduct && !checkoutOpen} />
