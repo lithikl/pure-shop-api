@@ -3855,23 +3855,26 @@ button:hover {
 .landing-header .cart-text-button{
   appearance:none !important;
   -webkit-appearance:none !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  height:32px !important;
+  display:inline !important;
+  width:auto !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  height:auto !important;
   margin:0 !important;
   padding:0 !important;
   border:0 !important;
   outline:0 !important;
   border-radius:0 !important;
-  background:transparent !important;
+  background:none !important;
   background-color:transparent !important;
   background-image:none !important;
   box-shadow:none !important;
+  -webkit-box-shadow:none !important;
   color:#111 !important;
   font:700 10px/1 var(--mono) !important;
   letter-spacing:.08em !important;
   text-transform:uppercase !important;
+  text-decoration:none !important;
   cursor:pointer !important;
   text-shadow:0 1px 10px rgba(255,255,255,.28) !important;
 }
@@ -4148,7 +4151,9 @@ button:hover {
 
   .landing-header .menu-text-button,
   .landing-header .cart-text-button{
-    height:30px !important;
+    height:auto !important;
+    min-height:0 !important;
+    padding:0 !important;
     font-size:9px !important;
   }
 
