@@ -461,8 +461,7 @@ export default function App() {
         </div>
         <div className="landing-hero-overlay">
           <div className="landing-hero-copy">
-            <span>NOIRKNULL®</span>
-            <h1>NoirKnull</h1>
+            <p>FORM FOLLOWS FEELING</p>
             <button onClick={openShop}>SHOP NOW <ArrowDown size={14}/></button>
           </div>
           <div className="landing-hero-scroll">SCROLL TO EXPLORE ↓</div>
