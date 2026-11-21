@@ -4841,3 +4841,215 @@ html, body, #root, .noir-site,
   border:0 !important;
   box-shadow:none !important;
 }
+
+
+/* =========================================================
+   NOIRKNULL — FINAL PRODUCT + SECTION DARK PASS
+   Explicitly owns every visible storefront surface so legacy
+   light-theme rules cannot create white gaps or paper panels.
+   ========================================================= */
+
+html,
+body,
+#root,
+.noir-site,
+.noir-site > div,
+.home-content,
+.home-content > main,
+.homepage-categories,
+.homepage-products,
+.homepage-best-sellers,
+.section-wrap,
+.about-contact,
+.about-noirknull-copy,
+.about-contact-card {
+  background:#080808 !important;
+  color:#f5f5f5 !important;
+}
+
+.homepage-section-heading,
+.homepage-section-heading > div,
+.homepage-product-card,
+.homepage-products-grid,
+.homepage-category-card,
+.homepage-category-meta,
+.homepage-section-footer {
+  background:transparent !important;
+  color:#f5f5f5 !important;
+}
+
+.homepage-section-heading h2,
+.homepage-section-heading h2 em,
+.homepage-category-meta h3,
+.homepage-product-meta h3,
+.homepage-product-meta strong,
+.homepage-section-footer a {
+  color:#f5f5f5 !important;
+}
+
+.homepage-section-heading p,
+.homepage-category-meta p,
+.homepage-category-meta > span,
+.homepage-product-meta > div > span,
+.homepage-product-meta small,
+.homepage-section-footer span {
+  color:#a3a3a3 !important;
+}
+
+/* Product page is one continuous dark canvas. */
+.product-page,
+.product-page .product-crumb,
+.product-page .product-layout,
+.product-page .product-gallery,
+.product-page .product-information,
+.product-page .product-gallery-stage,
+.product-page .product-gallery-note,
+.product-page .product-accordions,
+.product-page .related-products,
+.product-page .related-grid {
+  background:#080808 !important;
+  color:#f5f5f5 !important;
+}
+
+.product-page .product-layout {
+  border:0 !important;
+}
+
+.product-page .product-crumb {
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+}
+
+.product-page .product-main-image {
+  background:#101010 !important;
+  border-color:rgba(255,255,255,.14) !important;
+}
+
+.product-page .product-main-image img {
+  background:transparent !important;
+  mix-blend-mode:multiply !important;
+}
+
+.product-page .product-title-row h1,
+.product-page .product-category,
+.product-page .product-price-line strong,
+.product-page .product-price-line span,
+.product-page .product-tone,
+.product-page .product-description,
+.product-page .size-heading,
+.product-page .size-not-required,
+.product-page .size-not-required strong,
+.product-page .product-number,
+.product-page .product-accordion > button,
+.product-page .related-products h2,
+.product-page .related-card,
+.product-page .related-card > span {
+  color:#f5f5f5 !important;
+}
+
+.product-page .product-category,
+.product-page .product-tone,
+.product-page .product-description,
+.product-page .product-gallery-note,
+.product-page .product-price-line span,
+.product-page .product-number,
+.product-page .related-card > small,
+.product-page .size-not-required > span {
+  color:#a3a3a3 !important;
+}
+
+.product-page .product-title-row h1 em,
+.product-page .related-products h2 em {
+  color:#f5f5f5 !important;
+}
+
+.product-page .product-share-button,
+.product-page .size-option,
+.product-page .product-accordion > button,
+.product-page .product-crumb button {
+  background:#0f0f0f !important;
+  color:#f5f5f5 !important;
+  border-color:rgba(255,255,255,.18) !important;
+}
+
+.product-page .size-option.size-selected {
+  background:#f0f0f0 !important;
+  color:#080808 !important;
+  border-color:#f0f0f0 !important;
+}
+
+.product-page .product-add-button {
+  background:#171717 !important;
+  color:#f5f5f5 !important;
+  border-color:rgba(255,255,255,.22) !important;
+}
+
+.product-page .product-glass-product-label,
+.product-page .product-image-index,
+.product-page .product-gallery-arrow,
+.product-page .product-status-badges span {
+  background:rgba(10,10,10,.92) !important;
+  color:#f5f5f5 !important;
+  border-color:rgba(255,255,255,.16) !important;
+}
+
+.product-page .product-glass-product-label *,
+.product-page .product-image-index,
+.product-page .product-gallery-arrow {
+  color:#f5f5f5 !important;
+}
+
+.product-page .related-card {
+  background:#0e0e0e !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+.product-page .related-card img {
+  background:#141414 !important;
+  mix-blend-mode:multiply !important;
+}
+
+/* Never allow a white separator between homepage sections. */
+.noir-site .homepage-categories + .homepage-products,
+.noir-site .homepage-products + .homepage-products,
+.noir-site .homepage-products + .about-contact {
+  background:#080808 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+/* Shop product cards use the same continuous dark canvas. */
+.shop-page,
+.shop-page .shop-page-top,
+.shop-page .shop-toolbar,
+.shop-page .shop-body,
+.shop-page .shop-filters-top,
+.shop-page .shop-results,
+.shop-page .shop-product-card,
+.shop-page .shop-product-meta,
+.shop-page .shop-bottom-note {
+  background:#080808 !important;
+  color:#f5f5f5 !important;
+}
+
+.shop-page .shop-product-meta h2,
+.shop-page .shop-product-meta strong {
+  color:#f5f5f5 !important;
+}
+
+.shop-page .shop-product-meta p,
+.shop-page .shop-product-meta span,
+.shop-page .shop-result-count,
+.shop-page .filter-heading,
+.shop-page .shop-bottom-note {
+  color:#a3a3a3 !important;
+}
+
+.shop-page .shop-product-image {
+  background:#101010 !important;
+}
+
+@media (max-width: 760px) {
+  .product-page .product-layout,
+  .section-wrap {
+    background:#080808 !important;
+  }
+}
