@@ -319,7 +319,7 @@ export default function App() {
 
   if (catalogLoading) {
     return (
-      <div className="noir-site" style={{ minHeight: "100svh", background: "#fff", color: "#111", display: "grid", placeItems: "center" }}>
+      <div className="noir-site" style={{ minHeight: "100svh", background: "#0b0b0b", color: "#f5f5f5", display: "grid", placeItems: "center" }}>
         <div style={{ textAlign: "center", fontFamily: "DM Mono, monospace", fontSize: "10px", letterSpacing: ".12em" }}>
           LOADING COLLECTION
         </div>
@@ -329,15 +329,15 @@ export default function App() {
 
   if (catalogError) {
     return (
-      <div className="noir-site" style={{ minHeight: "100svh", background: "#fff", color: "#111", display: "grid", placeItems: "center", padding: "24px" }}>
+      <div className="noir-site" style={{ minHeight: "100svh", background: "#0b0b0b", color: "#f5f5f5", display: "grid", placeItems: "center", padding: "24px" }}>
         <div style={{ width: "min(460px,100%)", textAlign: "center" }}>
           <p className="kicker">NOIRKNULL / COLLECTION</p>
           <h1 style={{ margin: "14px 0", fontSize: "clamp(42px,8vw,68px)", letterSpacing: "-.08em", lineHeight: ".92" }}>Collection<br/><em style={{ fontStyle: "normal", fontWeight: 300 }}>unavailable.</em></h1>
-          <p style={{ color: "#6b6b67", fontSize: "12px", lineHeight: 1.7 }}>{catalogError}</p>
+          <p style={{ color: "#a3a3a3", fontSize: "12px", lineHeight: 1.7 }}>{catalogError}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            style={{ marginTop: "18px", minHeight: "46px", padding: "0 18px", border: "1px solid #111", borderRadius: "999px", background: "#111", color: "#fff", font: "800 9px/1 var(--mono)", letterSpacing: ".08em" }}
+            style={{ marginTop: "18px", minHeight: "46px", padding: "0 18px", border: "1px solid rgba(255,255,255,.20)", borderRadius: "999px", background: "#111", color: "#fff", font: "800 9px/1 var(--mono)", letterSpacing: ".08em" }}
           >
             RETRY
           </button>
