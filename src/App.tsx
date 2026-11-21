@@ -59,7 +59,7 @@ export default function App() {
   const [landingScrolled, setLandingScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setLandingScrolled(window.scrollY > Math.max(40, window.innerHeight * 0.08));
+    const onScroll = () => setLandingScrolled(window.scrollY > Math.max(28, window.innerHeight * 0.42));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
