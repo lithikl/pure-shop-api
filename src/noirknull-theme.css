@@ -3979,7 +3979,8 @@ button:hover {
 
 .landing-header .nav-links .nav-primary:hover,
 .landing-header .nav-links .nav-primary:focus-visible{
-  background:#f5f5f2 !important;
+  background:transparent !important;
+  color:#111 !important;
 }
 
 .landing-header .nav-links .nav-primary::after{
@@ -4183,8 +4184,8 @@ button:hover {
     height:30px !important;
   }
 
-  .landing-header .menu-text-button,
-  .landing-header .cart-text-button{
+  .landing-header .menu-icon-button,
+  .landing-header .cart-icon-button{
     height:auto !important;
     min-height:0 !important;
     padding:0 !important;
@@ -4223,19 +4224,14 @@ button:hover {
   }
 }
 
-/* FINAL LANDING HEADER CLEANUP — no button boxes, no inner white panels */
+/* FINAL LANDING HEADER CLEANUP — icon-only controls, no button boxes */
 .landing-header,
 .landing-header::before,
 .landing-header::after{
-  background-color:transparent !important;
-  background-image:none !important;
   border-radius:0 !important;
-  box-shadow:none !important;
 }
 
 .landing-header{
-  background:rgba(255,255,255,.18) !important;
-  box-shadow:0 6px 24px rgba(0,0,0,.05) !important;
   overflow:visible !important;
 }
 
@@ -4249,10 +4245,8 @@ button:hover {
   border-radius:0 !important;
 }
 
-.landing-header .menu-text-button,
-.landing-header .cart-text-button,
-.landing-header button.menu-text-button,
-.landing-header button.cart-text-button{
+.landing-header .menu-icon-button,
+.landing-header .cart-icon-button{
   appearance:none !important;
   -webkit-appearance:none !important;
   background:transparent !important;
@@ -4265,35 +4259,33 @@ button:hover {
   border-radius:0 !important;
   box-shadow:none !important;
   outline:none !important;
-  -webkit-box-shadow:none !important;
-  -webkit-appearance:none !important;
   padding:0 !important;
   margin:0 !important;
-  min-width:0 !important;
-  min-height:0 !important;
-  width:auto !important;
-  height:auto !important;
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
   color:#111 !important;
   -webkit-text-fill-color:#111 !important;
-  text-shadow:none !important;
 }
 
-.landing-header .menu-text-button::before,
-.landing-header .menu-text-button::after,
-.landing-header .cart-text-button::before,
-.landing-header .cart-text-button::after{
-  content:none !important;
-  display:none !important;
+.landing-header .menu-icon-button svg,
+.landing-header .cart-icon-button svg{
+  display:block !important;
+  width:15px !important;
+  height:15px !important;
+  color:#111 !important;
+  stroke:currentColor !important;
 }
 
-.landing-header .menu-text-button:hover,
-.landing-header .menu-text-button:active,
-.landing-header .menu-text-button:focus,
-.landing-header .menu-text-button:focus-visible,
-.landing-header .cart-text-button:hover,
-.landing-header .cart-text-button:active,
-.landing-header .cart-text-button:focus,
-.landing-header .cart-text-button:focus-visible{
+.landing-header .menu-icon-button:hover,
+.landing-header .menu-icon-button:active,
+.landing-header .menu-icon-button:focus,
+.landing-header .menu-icon-button:focus-visible,
+.landing-header .cart-icon-button:hover,
+.landing-header .cart-icon-button:active,
+.landing-header .cart-icon-button:focus,
+.landing-header .cart-icon-button:focus-visible{
   background:transparent !important;
   background-color:transparent !important;
   background-image:none !important;
@@ -4302,9 +4294,23 @@ button:hover {
   outline:none !important;
 }
 
-.landing-header .header-actions > *,
-.landing-header .landing-header-menu > *{
-  background-color:transparent !important;
-  background-image:none !important;
+.landing-header .nav-links{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+.landing-header .nav-links .nav-primary{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+}
+
+.landing-header .nav-links .nav-primary:hover,
+.landing-header .nav-links .nav-primary:focus-visible{
+  background:transparent !important;
+  border:0 !important;
   box-shadow:none !important;
 }
