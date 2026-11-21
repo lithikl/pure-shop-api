@@ -3958,3 +3958,95 @@ button:hover {
   .landing-hero-copy p{font-size:8px}
   .landing-hero-scroll{bottom:22px}
 }
+
+
+/* Final landing hero fix: the banner is the containing block and the brand is
+   a single fixed element that visibly travels from image-center to nav-center. */
+.shoe-hero{
+  position:relative !important;
+  overflow:hidden !important;
+  width:100% !important;
+}
+.landing-hero-image{
+  position:absolute !important;
+  z-index:0 !important;
+  width:100% !important;
+  height:100% !important;
+}
+.landing-hero-image img{
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+}
+.landing-hero-overlay{
+  position:absolute !important;
+  z-index:2 !important;
+}
+.hero-brand-logo{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:110 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  font-family:inherit !important;
+  font-size:clamp(42px,5.4vw,82px) !important;
+  font-weight:900 !important;
+  line-height:.9 !important;
+  letter-spacing:-.065em !important;
+  text-shadow:0 2px 20px rgba(0,0,0,.2) !important;
+  transform:translate(-50%,-50%) scale(1) !important;
+  transform-origin:center !important;
+  transition:
+    top .75s cubic-bezier(.2,.75,.2,1),
+    transform .75s cubic-bezier(.2,.75,.2,1),
+    color .35s ease,
+    text-shadow .35s ease !important;
+  cursor:pointer !important;
+}
+.hero-brand-logo span{
+  font-size:.28em !important;
+  vertical-align:top !important;
+  margin-left:3px !important;
+  letter-spacing:0 !important;
+}
+.hero-brand-scrolled{
+  top:38px !important;
+  transform:translate(-50%,-50%) scale(.39) !important;
+  color:#111 !important;
+  text-shadow:none !important;
+}
+.landing-header{
+  pointer-events:none !important;
+}
+.landing-header > *{
+  pointer-events:auto !important;
+}
+.landing-header .header-actions,
+.landing-header .nav-links,
+.landing-header .mobile-menu-toggle{
+  position:relative !important;
+  z-index:120 !important;
+}
+.landing-header .header-actions > button,
+.landing-header .mobile-menu-toggle,
+.landing-header .nav-links .nav-primary{
+  text-shadow:0 1px 8px rgba(0,0,0,.16);
+}
+.landing-header.is-scrolled .header-actions > button,
+.landing-header.is-scrolled .mobile-menu-toggle,
+.landing-header.is-scrolled .nav-links .nav-primary{
+  text-shadow:none !important;
+}
+@media(max-width:680px){
+  .hero-brand-logo{
+    font-size:clamp(34px,10vw,52px) !important;
+  }
+  .hero-brand-scrolled{
+    top:32px !important;
+    transform:translate(-50%,-50%) scale(.43) !important;
+  }
+}
