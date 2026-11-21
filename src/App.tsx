@@ -364,7 +364,6 @@ export default function App() {
         <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("APPAREL"); setMobileMenuOpen(false); }}>FOR WOMEN</button>
         <button className="nav-primary desktop-only" onClick={() => { openShop(); setActiveCategory("ACCESSORIES"); setMobileMenuOpen(false); }}>ACCESSORIES</button>
       </nav>
-      <button className="noir-logo landing-moving-logo" onClick={() => { setMobileMenuOpen(false); closeProduct(); setShopOpen(false); setCheckoutOpen(false); setCartOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" })); }} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
       <div className="header-actions">
         <button type="button" aria-label="Search" onClick={openShop}><Search size={19}/></button>
         <button type="button" aria-label="Account"><UserRound size={19}/></button>
@@ -456,6 +455,7 @@ export default function App() {
     {checkoutOpen && <Checkout cart={cart} onBack={() => { setCheckoutOpen(false); setCartOpen(true); }} onComplete={() => { setCheckoutOpen(false); setCart([]); setCheckoutStep("details"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />}
     {!checkoutOpen && <main id="top" className={selectedProduct || shopOpen ? "home-content home-hidden" : "home-content"}>
       <section className="shoe-hero" aria-label="NoirKnull opening">
+        <button className={"hero-brand-logo" + (landingScrolled ? " hero-brand-scrolled" : "")} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="NoirKnull home">NoirKnull<span>®</span></button>
         <div className="landing-hero-image">
           <img src={homepage.heroImage || homepage.editorialMainImage} alt="NoirKnull collection" fetchPriority="high" decoding="async" />
         </div>
